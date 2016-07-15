@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Intelligent Artifice - Mobile</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/noodlefrenzy">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="/">Intelligent Artifice </a></h1>
+                <nav><ul>
+                    <li><a href="/pages/about-me-and-this-blog.html">About Me And This Blog</a></li>
+                    <li><a href="/category/devops.html">DevOps</a></li>
+                    <li><a href="/category/meta.html">Meta</a></li>
+                    <li><a href="/category/software.html">Software</a></li>
+                    <li><a href="/category/uncategorized.html">Uncategorized</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="/running-azure-mobile-services-locally.html">Running Azure Mobile Services Locally</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2014-09-08T11:32:00-07:00">
+                Published: Mon 08 September 2014
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/azure.html">Azure</a> <a href="/tag/mobile.html">Mobile</a> <a href="/tag/node.html">Node</a> </p>
+</footer><!-- /.post-info --><p>On a recent project, I made my first foray into using Azure Mobile
+Services <a href="http://weblogs.asp.net/scottgu/windows-azure-major-updates-for-mobile-backend-development" title="Azure Custom API Announcement">Custom
+API</a>
+support, with a Node.js-backed API implementation.  I've used (and
+loved) Mobile Services in the past for their push notification
+infrastructure, but this was new ground for me.  I liked the easy
+setup - trivial to create a new API method and write code, in the
+browser, to implement it - but once your API implementation went beyond
+"toy" it quickly became unmanageable.</p>
+<p>They have integrated
+Git support which allows you to locally clone your API code (see the
+Configure tab for the Git URL), modify it, and then push changes which
+will cause an auto-deployment. This works great, but the problem is that
+you can't run <em>or </em>test those changes locally before deployment,
+and that's not the kind of test-in-production workflow I'm into.</p>
+<p><img alt="I don't always test my code, but when I do, I do it in production." src="/images/test_in_production.jpg" /></p>
+<p>I talked with the Azure Mobile Services team about their testing story,
+and was told that they'd been focusing on improving the .NET-backed
+services first - they would love to get Node.js local development fixed
+and realized it was a gap, but just didn't have the resources right now.
+ I didn't want to wait, so decided I would fix it myself.</p>
+<h4>My Solution</h4>
+<p>I've implemented a lightweight
+local <a href="http://expressjs.com/" title="ExpressJs Home">Expressjs</a> server that
+runs locally, interrogates all .js files in your API directory to
+determine which methods are implemented, and registers those paths.
+ This allowed me to run locally, and I was easily able to extend it to
+handle the "register" method to support additional custom API paths.  I
+then included a simple example unit-test that uses
+<a href="http://visionmedia.github.io/mocha/" title="Mocha Home">Mocha</a>to run the
+tests (heavily indebted to <a href="http://51elliot.blogspot.com/2013/08/testing-expressjs-rest-api-with-mocha.html" title="Expressjs Testing With Mocha">51 Elliot's
+post</a><a href="http://51elliot.blogspot.com/2013/08/testing-expressjs-rest-api-with-mocha.html"> </a>for
+helping me out here), starting up the local Expressjs and hitting the
+API methods as needed.  I've checked all of this into GitHub so others
+can use it and extend it as they see
+fit: <a href="https://github.com/noodlefrenzy/azure-mobile-local">https://github.com/noodlefrenzy/azure-mobile-local</a>.</p>
+<p>This code depends on a few pieces of software, so you should make sure
+you've installed
+<a href="https://help.github.com/articles/set-up-git" title="Setting Up Git">Git</a>,
+<a href="http://nodejs.org/">Node.js</a> (and <strong>npm</strong> is in your path), and then
+install the Grunt CLI and Mocha before starting.  Technically, you
+don't <em>need</em> to install Mocha as you can use it just fine from Grunt and
+the dev dependency, but it's too useful not to just have it on your path
+(the first time you run <code>mocha debug</code> you'll agree with me).</p>
+<div class="highlight"><pre><span></span>npm install -g grunt-cli
+npm install -g mocha
+</pre></div>
+
+
+<p>The simplest way to use it (and I'm indebted to my colleague <a href="http://jasonpoon.ca">Jason
+Poon</a> for this) is to mount it as a <a href="http://git-scm.com/docs/git-submodule" title="Git Submodule Documentation">git
+submodule</a>
+of your Azure Mobile Service git repository.  This allows both
+code-bases to peacefully co-exist, and ensures pushing changes to tests
+or the local server don't trigger deployments of your service.  Setting
+this up is simple:</p>
+<div class="highlight"><pre><span></span>git clone _your azure mobile service git URL_
+<span class="nb">cd</span> _directory from above_
+git submodule add https://github.com/noodlefrenzy/azure-mobile-local.git <span class="nb">local</span>
+<span class="nb">cd</span> <span class="nb">local</span>
+npm install
+grunt build
+</pre></div>
+
+
+<p>When you <code>grunt build</code>, this runs
+<a href="http://www.jshint.com/" title="JSHint Home">Jshint</a>against your API, and any
+unit-tests in the <code>local/test/**/*.js</code> files.</p>
+<h4>Simple Example</h4>
+<p>For instance, with my simple example mobile service below:</p>
+<div class="highlight"><pre><span></span><span class="nx">exports</span><span class="p">.</span><span class="nx">post</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">response</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="p">{</span> <span class="nx">message</span> <span class="o">:</span> <span class="s1">&#39;Hello World!&#39;</span> <span class="p">});</span>
+<span class="p">};</span>
+
+<span class="nx">exports</span><span class="p">.</span><span class="nx">get</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">response</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="p">{</span> <span class="nx">message</span> <span class="o">:</span> <span class="s1">&#39;Hello World!&#39;</span> <span class="p">});</span>
+<span class="p">};</span>
+
+<span class="nx">exports</span><span class="p">.</span><span class="nx">register</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">api</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/mycustom&#39;</span><span class="p">,</span> <span class="nx">myCustomMethod</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="kd">function</span> <span class="nx">myCustomMethod</span><span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">response</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="p">{</span> <span class="nx">message</span> <span class="o">:</span> <span class="s1">&#39;Hello from custom routing!&#39;</span> <span class="p">});</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>I've written the following unit-tests that simply test whether the paths
+that I've registered resolve, and return 200s when called:</p>
+<div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">should</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;should&#39;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;../server.js&#39;</span><span class="p">).</span><span class="nx">app</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">port</span> <span class="o">=</span> <span class="mi">4321</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">http</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;http&#39;</span><span class="p">);</span>
+
+<span class="kd">function</span> <span class="nx">defaultGetOptions</span><span class="p">(</span><span class="nx">path</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;host&quot;</span><span class="o">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;port&quot;</span><span class="o">:</span> <span class="nx">port</span><span class="p">,</span>
+    <span class="s2">&quot;path&quot;</span><span class="o">:</span> <span class="nx">path</span><span class="p">,</span>
+    <span class="s2">&quot;method&quot;</span><span class="o">:</span> <span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+  <span class="p">};</span>
+  <span class="k">return</span> <span class="nx">options</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">describe</span><span class="p">(</span><span class="s1">&#39;app&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+
+  <span class="nx">before</span> <span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">done</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">//debugger;</span>
+    <span class="nx">app</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="nx">port</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">done</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nx">done</span><span class="p">();</span>
+      <span class="p">}</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+
+  <span class="nx">after</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">done</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">//app.close();</span>
+    <span class="nx">done</span><span class="p">();</span>
+  <span class="p">});</span>
+
+  <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should be created&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">done</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">should</span><span class="p">.</span><span class="nx">exist</span><span class="p">(</span><span class="nx">app</span><span class="p">);</span>
+    <span class="nx">done</span><span class="p">();</span>
+  <span class="p">});</span>
+
+  <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should be listening&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">done</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">headers</span> <span class="o">=</span> <span class="nx">defaultGetOptions</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">);</span>
+    <span class="nx">http</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">headers</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">res</span><span class="p">.</span><span class="nx">statusCode</span><span class="p">.</span><span class="nx">should</span><span class="p">.</span><span class="nx">eql</span><span class="p">(</span><span class="mi">404</span><span class="p">);</span>
+      <span class="nx">done</span><span class="p">();</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+
+  <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should have myendpoint api route&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">done</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">headers</span> <span class="o">=</span> <span class="nx">defaultGetOptions</span><span class="p">(</span><span class="s1">&#39;/api/myendpoint&#39;</span><span class="p">);</span>
+    <span class="nx">http</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">headers</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">res</span><span class="p">.</span><span class="nx">statusCode</span><span class="p">.</span><span class="nx">should</span><span class="p">.</span><span class="nx">eql</span><span class="p">(</span><span class="mi">200</span><span class="p">);</span>
+      <span class="nx">done</span><span class="p">();</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+
+  <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should have myendpoint/mycustom api route&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">done</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">headers</span> <span class="o">=</span> <span class="nx">defaultGetOptions</span><span class="p">(</span><span class="s1">&#39;/api/myendpoint/mycustom&#39;</span><span class="p">);</span>
+    <span class="nx">http</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">headers</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">res</span><span class="p">.</span><span class="nx">statusCode</span><span class="p">.</span><span class="nx">should</span><span class="p">.</span><span class="nx">eql</span><span class="p">(</span><span class="mi">200</span><span class="p">);</span>
+      <span class="nx">done</span><span class="p">();</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+
+<span class="p">});</span>
+</pre></div>
+
+
+<p>These tests can be extended arbitrarily, and with a simple change to the
+Gruntfile.js:</p>
+<div class="highlight"><pre><span></span>  <span class="nx">simplemocha</span><span class="o">:</span> <span class="p">{</span>
+      <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
+        <span class="nx">globals</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;should&#39;</span><span class="p">],</span>
+        <span class="nx">timeout</span><span class="o">:</span> <span class="mi">3000</span><span class="p">,</span>
+        <span class="nx">ignoreLeaks</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+        <span class="nx">ui</span><span class="o">:</span> <span class="s1">&#39;bdd&#39;</span><span class="p">,</span>
+        <span class="nx">reporter</span><span class="o">:</span> <span class="s1">&#39;list&#39;</span><span class="p">,</span>
+      <span class="p">},</span>
+      <span class="nx">all</span><span class="o">:</span> <span class="p">{</span> <span class="nx">src</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;test/**/*.js&#39;</span><span class="p">,</span> <span class="s1">&#39;../test/**/*.js&#39;</span><span class="p">]</span> <span class="p">}</span>
+  <span class="p">},</span>
+</pre></div>
+
+
+<p>You can instead add your own <code>test/</code> directory to your mobile service
+and have your tests live in the same place as the service itself (a much
+better answer, but harder to demo for me).</p>
+<h4>Further Work and Caveats</h4>
+<p>All I needed for my project was a simple API (I was passing through to
+some services on other VMs), so I didn't implement mocks for any of the
+Azure services that get included with Mobile Services (e.g. the Table
+abstraction).  I also didn't inject the mysterious statusCodes enum that
+gets included automagically in your APIs, and instead just replaced them
+with 200s.</p>
+<p>As mentioned above, the code is all in GitHub right here:
+<a href="https://github.com/noodlefrenzy/azure-mobile-local">https://github.com/noodlefrenzy/azure-mobile-local</a> - if you see
+obvious improvements, I'd love to hear about them either in comments or
+pull requests.</p><p>There are <a href="/running-azure-mobile-services-locally.html#disqus_thread">comments</a>.</p>                </article>
+            </aside><!-- /#featured -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="https://blogs.technet.microsoft.com/machinelearning/">Cortana Analytics</a></li>
+                            <li><a href="http://www.kdnuggets.com/">KDNuggets</a></li>
+                            <li><a href="http://www.hanselman.com/blog/">Hanselman</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://twitter.com/noodlefrenzy">Twitter</a></li>
+                            <li><a href="https://www.linkedin.com/in/noodlefrenzy">LinkedIn</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-54597100-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'intelligentartifice';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'https://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+</html>

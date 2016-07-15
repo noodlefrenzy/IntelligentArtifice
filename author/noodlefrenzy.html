@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Intelligent Artifice - noodlefrenzy</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/noodlefrenzy">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="/">Intelligent Artifice </a></h1>
+                <nav><ul>
+                    <li><a href="/pages/about-me-and-this-blog.html">About Me And This Blog</a></li>
+                    <li><a href="/category/devops.html">DevOps</a></li>
+                    <li><a href="/category/meta.html">Meta</a></li>
+                    <li><a href="/category/software.html">Software</a></li>
+                    <li><a href="/category/uncategorized.html">Uncategorized</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="/python-list-comprehensions-gone-crazy.html">Python List Comprehensions Gone Crazy</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2016-01-27T15:48:00-08:00">
+                Published: Wed 27 January 2016
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/python.html">Python</a> </p>
+</footer><!-- /.post-info --><p>Recently, I was messing around with some image recognition tasks in
+Python, and wanted to take a look at some of the images in my training
+set. At first, I was tempted to go open file explorer and walk around
+the directory tree spot-checking a few, but then I remembered that it
+was easy to display images in an <a href="http://ipython.org/">IPython</a> notebook
+using `IPython.display`.</p>
+<p>Perhaps I could write some code to walk the tree and show a few random
+images from each directory. Surely it couldn't be that hard. I wrote a
+simple method to do so:</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Image</span>
+
+<span class="k">def</span> <span class="nf">select_rand</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">dirname</span><span class="p">,</span> <span class="n">filenames</span><span class="p">):</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="nb">file</span> <span class="k">for</span> <span class="nb">file</span> <span class="ow">in</span> <span class="n">filenames</span> <span class="k">if</span> <span class="nb">file</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s1">&#39;.jpg&#39;</span><span class="p">,</span><span class="s1">&#39;.png&#39;</span><span class="p">))]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Found &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39; files in &#39;</span> <span class="o">+</span> <span class="n">dirname</span><span class="p">)</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">),</span> <span class="n">num</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+            <span class="n">display</span><span class="p">(</span><span class="n">Image</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirname</span><span class="p">,</span> <span class="n">filename</span><span class="p">)))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Found no files for &#39;</span> <span class="o">+</span> <span class="n">dirname</span><span class="p">)</span>
+
+<span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="n">select_rand</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Probably not the most efficient in the world, but it did exactly what I
+wanted. Of course, at this point I was basically procrastinating from
+what I was actually supposed to be doing, so decided to take it further.</p>
+<p>Could I reduce this whole shebang to a single list comprehension? Is
+this good programming? Nope, definitely not, but it's a fun way to test
+your understanding of a language, so let's do it.</p>
+<p>First, let's find a method that returns all of the files in a directory
+tree, walking the tree like `os.path.walk` but returning the results
+instead of visiting them - `os.walk` should do the trick. Why is
+`os.path.walk` a visitor pattern and `os.walk` a generator? No clue,
+let's move on.</p>
+<div class="highlight"><pre><span></span><span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">root_dir</span><span class="p">)]</span>
+</pre></div>
+
+
+<p>Second, we'll filter the files to images only:</p>
+<div class="highlight"><pre><span></span><span class="p">[</span><span class="n">img</span>
+ <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">root_dir</span><span class="p">)</span>
+ <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">if</span> <span class="n">img</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s1">&#39;.png&#39;</span><span class="p">,</span> <span class="s1">&#39;.jpg&#39;</span><span class="p">))]</span>
+</pre></div>
+
+
+<p>Now let's turn these into actual Image objects by replacing `img` with
+`Image(os.path.join(t[0], img))`. Okay, we now have Image objects for
+<em>all</em> images, but that's too many to display in our notebook. We should
+limit to three random ones from each directory:</p>
+<div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Image</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">img</span><span class="p">))</span>
+ <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">root_dir</span><span class="p">)</span> 
+ <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">([</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s1">&#39;.png&#39;</span><span class="p">,</span><span class="s1">&#39;.jpg&#39;</span><span class="p">))],</span> <span class="mi">3</span><span class="p">)]</span>
+</pre></div>
+
+
+<p>We replace our `t[2]` with a random sample based on an inner
+comprehension, and move our "is it an image" test into that
+comprehension. This, however, explodes in my example with</p>
+<div class="highlight"><pre><span></span><span class="n">ValueError</span><span class="o">:</span> <span class="n">sample</span> <span class="n">larger</span> <span class="n">than</span> <span class="n">population</span>
+</pre></div>
+
+
+<p>Boom! I apparently have some subdirectory in there with only one or two
+images. Rather than try for some even crazier nested inner lambda, I'll
+just define a simple specialization of `sample` that's protected
+against too few results, and replace `random.sample` with that. We
+then `map` each result to the `display` method to show it in the
+notebook:</p>
+<div class="highlight"><pre><span></span><span class="n">sample</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">l</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="n">l</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="k">else</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+<span class="nb">map</span><span class="p">(</span><span class="n">display</span><span class="p">,</span> <span class="p">[</span><span class="n">Image</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">img</span><span class="p">))</span>
+ <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">root_dir</span><span class="p">)</span> 
+ <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">sample</span><span class="p">([</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s1">&#39;.png&#39;</span><span class="p">,</span><span class="s1">&#39;.jpg&#39;</span><span class="p">))],</span> <span class="mi">3</span><span class="p">)])</span>
+</pre></div><p>There are <a href="/python-list-comprehensions-gone-crazy.html#disqus_thread">comments</a>.</p>                </article>
+            </aside><!-- /#featured -->
+                <section id="content" class="body">
+                    <h1>Other articles</h1>
+                    <hr />
+                    <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/tensorflow-on-azure-using-docker.html" rel="bookmark"
+                           title="Permalink to TensorFlow on Azure Using Docker">TensorFlow on Azure Using Docker</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2015-12-08T14:33:00-08:00">
+                Published: Tue 08 December 2015
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/azure.html">Azure</a> <a href="/tag/containerization.html">Containerization</a> <a href="/tag/docker.html">Docker</a> <a href="/tag/machine-learning.html">Machine Learning</a> <a href="/tag/ml.html">ML</a> <a href="/tag/neural-networks.html">Neural Networks</a> <a href="/tag/tensorflow.html">TensorFlow</a> </p>
+</footer><!-- /.post-info -->                <p>We live in a time of proliferating machine learning toolkits. From the
+not-so-humble start of <a href="http://opencv.org/">OpenCV</a> (for computer
+vision), <a href="http://www.cs.waikato.ac.nz/ml/weka/">Weka</a>, and
+<a href="http://caffe.berkeleyvision.org/">Caffe</a>, in just a short period of
+time we've added <a href="http://torch.ch/">Torch</a>,
+<a href="http://www.deeplearning.net/software/theano/">Theano</a>,
+<a href="http://research.microsoft.com/apps/pubs/?id=226641">CNTK</a>and now
+<a href="https://googleblog.blogspot.com/2015/11/tensorflow-smarter-machine-learning-for.html">TensorFlow</a>and
+<a href="http://siliconangle.com/blog/2015/11/24/ibm-open-sources-its-systemml-machine-learning-tech/">SystemML</a>
+(and I'm not even mentioning things like
+<a href="http://spark.apache.org/docs/latest/mllib-guide.html">SparkML</a>and ...</p>
+                <a class="readmore" href="/tensorflow-on-azure-using-docker.html">read more</a>
+<p>There are <a href="/tensorflow-on-azure-using-docker.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/leader-election-in-node-js-using-azure-blob-storage.html" rel="bookmark"
+                           title="Permalink to Leader Election in Node.js Using Azure Blob Storage">Leader Election in Node.js Using Azure Blob Storage</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2015-11-18T15:58:00-08:00">
+                Published: Wed 18 November 2015
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/azure.html">Azure</a> <a href="/tag/azure-blob.html">Azure Blob</a> <a href="/tag/distributed-systems.html">Distributed Systems</a> <a href="/tag/node.html">Node</a> </p>
+</footer><!-- /.post-info -->                <p><a href="https://en.wikipedia.org/wiki/Leader_election">Leader Election</a> is a
+mechanism for designating one instance of a group as the primary (or
+leader) and the others as secondaries (or followers), and is typically
+used for coordination amongst groups of machines in a distributed
+system. I first learned of leader election back in the olden times of ...</p>
+                <a class="readmore" href="/leader-election-in-node-js-using-azure-blob-storage.html">read more</a>
+<p>There are <a href="/leader-election-in-node-js-using-azure-blob-storage.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/managing-a-corpus-of-images-in-azure-blob-storage.html" rel="bookmark"
+                           title="Permalink to Managing a Corpus of Images in Azure Blob Storage">Managing a Corpus of Images in Azure Blob Storage</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2015-11-12T09:10:00-08:00">
+                Published: Thu 12 November 2015
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/azure.html">Azure</a> <a href="/tag/azure-blob.html">Azure Blob</a> </p>
+</footer><!-- /.post-info -->                <p>As mentioned in <a href="http://www.mikelanzetta.com/2015/09/image-stream-processing-to-blob-storage/">my previous
+post</a> I
+was recently working on a project training <a href="http://www.readcube.com/articles/10.1038%2Fnature14539?shared_access_token=DaxW8O-3gQoqte9kXFFUANRgN0jAjWel9jnR3ZoTv0PU8PImtLRceRBJ32CtadUBIC1dchyTLE3_1-FCJeTkHXnB0vI4SmupYf4v2t_dG6HjI9FdSJMFDQ6iWCA7T6tcte2-dAp-SzhLtuCkfPvhI6x--H5W98_7bqOVwSnqt1Vqo6bzZ5ZM7lCIPdavoThMMSXBgYmSjKSk0CrGtb5KUw%3D%3D">Deep
+ConvNets</a>
+for image recognition. As with any Machine Learning project one of the
+primary things you need to make it successful is large amounts of data -
+quality labeled data. With image-based convnets, though, the data ...</p>
+                <a class="readmore" href="/managing-a-corpus-of-images-in-azure-blob-storage.html">read more</a>
+<p>There are <a href="/managing-a-corpus-of-images-in-azure-blob-storage.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/image-stream-processing-to-blob-storage.html" rel="bookmark"
+                           title="Permalink to Image Stream Processing to Blob Storage">Image Stream Processing to Blob Storage</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2015-09-11T16:08:00-07:00">
+                Published: Fri 11 September 2015
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/net.html">.NET</a> <a href="/tag/aspnet.html">ASP.Net</a> <a href="/tag/azure.html">Azure</a> <a href="/tag/azure-blob.html">Azure Blob</a> <a href="/tag/c.html">C#</a> <a href="/tag/sql-azure.html">SQL Azure</a> </p>
+</footer><!-- /.post-info -->                <p>I was recently working on a project to train <a href="http://www.readcube.com/articles/10.1038%2Fnature14539?shared_access_token=DaxW8O-3gQoqte9kXFFUANRgN0jAjWel9jnR3ZoTv0PU8PImtLRceRBJ32CtadUBIC1dchyTLE3_1-FCJeTkHXnB0vI4SmupYf4v2t_dG6HjI9FdSJMFDQ6iWCA7T6tcte2-dAp-SzhLtuCkfPvhI6x--H5W98_7bqOVwSnqt1Vqo6bzZ5ZM7lCIPdavoThMMSXBgYmSjKSk0CrGtb5KUw%3D%3D">Deep
+ConvNets</a>
+for image recognition tasks, and ran into several interesting problems
+along the way. This post is the first in a series outlining some of
+those problems and how I went about solving them, and it focuses on the
+problem ...</p>
+                <a class="readmore" href="/image-stream-processing-to-blob-storage.html">read more</a>
+<p>There are <a href="/image-stream-processing-to-blob-storage.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/real-time-mapping-with-signalr-and-event-hubs.html" rel="bookmark"
+                           title="Permalink to Real-time Mapping with SignalR and Event Hubs">Real-time Mapping with SignalR and Event Hubs</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2015-08-18T10:20:00-07:00">
+                Published: Tue 18 August 2015
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/net.html">.NET</a> <a href="/tag/c.html">C#</a> <a href="/tag/eventhub.html">EventHub</a> <a href="/tag/geo.html">Geo</a> <a href="/tag/websockets.html">WebSockets</a> </p>
+</footer><!-- /.post-info -->                <p>One of my recent projects had to do with watching people moving around
+the city - not in a creepy stalker way, but trying to get some sense of
+where people congregated and general walking traffic flow. As anyone who
+has dealt with large data, especially large geo data can tell ...</p>
+                <a class="readmore" href="/real-time-mapping-with-signalr-and-event-hubs.html">read more</a>
+<p>There are <a href="/real-time-mapping-with-signalr-and-event-hubs.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/my-trip-to-cascadiafest.html" rel="bookmark"
+                           title="Permalink to My Trip to CascadiaFest">My Trip to CascadiaFest</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2015-08-11T11:37:00-07:00">
+                Published: Tue 11 August 2015
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/amqp.html">AMQP</a> <a href="/tag/cascadia.html">Cascadia</a> <a href="/tag/conferences.html">Conferences</a> <a href="/tag/javascript.html">Javascript</a> <a href="/tag/nitrogen.html">Nitrogen</a> <a href="/tag/node.html">Node</a> </p>
+</footer><!-- /.post-info -->                <p>... or "who knew there was anything in Blaine, Washington?"</p>
+<p>I got back recently from giving my first talk at <a href="http://2015.cascadiajs.com/">CascadiaFest
+2015</a>, held in the beautiful Semiahmoo
+Resort outside of Blaine, WA. As a long-term Seattle resident, my only
+knowledge of Blaine was as "that place where we spend too much ...</p>
+                <a class="readmore" href="/my-trip-to-cascadiafest.html">read more</a>
+<p>There are <a href="/my-trip-to-cascadiafest.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/using-project-oxford-to-pull-entities-from-images.html" rel="bookmark"
+                           title="Permalink to Using Project Oxford To Pull Entities From Images">Using Project Oxford To Pull Entities From Images</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2015-05-14T11:06:00-07:00">
+                Published: Thu 14 May 2015
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/c.html">C#</a> <a href="/tag/entity-extraction.html">Entity Extraction</a> <a href="/tag/machine-learning.html">Machine Learning</a> <a href="/tag/ml.html">ML</a> <a href="/tag/msr.html">MSR</a> <a href="/tag/ocr.html">OCR</a> <a href="/tag/project-oxford.html">Project Oxford</a> </p>
+</footer><!-- /.post-info -->                <p>I love my job. Less than a week after watching the amazing announcements
+at <a href="http://www.buildwindows.com/">//Build2015</a>, I had a chance to try
+using some of them on a real project as part of a hackathon.
+Unfortunately, I can't share the actual problem they are trying to
+solve, but the work ...</p>
+                <a class="readmore" href="/using-project-oxford-to-pull-entities-from-images.html">read more</a>
+<p>There are <a href="/using-project-oxford-to-pull-entities-from-images.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/storm-bolts-using-reactive-extensions.html" rel="bookmark"
+                           title="Permalink to Storm Bolts Using Reactive Extensions">Storm Bolts Using Reactive Extensions</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2015-04-07T11:03:00-07:00">
+                Published: Tue 07 April 2015
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/net.html">.NET</a> <a href="/tag/apache-storm.html">Apache Storm</a> <a href="/tag/c.html">C#</a> <a href="/tag/distributed-systems.html">Distributed Systems</a> <a href="/tag/reactive.html">Reactive</a> </p>
+</footer><!-- /.post-info -->                <p>As you might have noticed in some of my other posts, I've spent my share
+of time with Azure EventHubs.  It's a great ingestion pipeline able to
+cope with some of the highest scale workloads you can throw at it, but
+once the data is in there it ...</p>
+                <a class="readmore" href="/storm-bolts-using-reactive-extensions.html">read more</a>
+<p>There are <a href="/storm-bolts-using-reactive-extensions.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/time-series-processing-in-azure-ml-using-python.html" rel="bookmark"
+                           title="Permalink to Time-Series Processing in Azure ML Using Python">Time-Series Processing in Azure ML Using Python</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2015-03-14T22:09:00-07:00">
+                Published: Sat 14 March 2015
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/azure.html">Azure</a> <a href="/tag/machine-learning.html">Machine Learning</a> <a href="/tag/ml.html">ML</a> <a href="/tag/python.html">Python</a> <a href="/tag/time-series.html">Time Series</a> </p>
+</footer><!-- /.post-info -->                <p>With the general availability of Azure Machine Learning, the team has
+added a ton of new features.  Perhaps the one I'm most excited about is
+the addition of a general "Execute Python Script" module.  I've been
+meaning to brush up on my Python skills, and with the inclusion ...</p>
+                <a class="readmore" href="/time-series-processing-in-azure-ml-using-python.html">read more</a>
+<p>There are <a href="/time-series-processing-in-azure-ml-using-python.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/collaboration-on-open-source-node-projects.html" rel="bookmark"
+                           title="Permalink to Collaboration on Open-Source Node Projects">Collaboration on Open-Source Node Projects</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2015-02-11T11:38:00-08:00">
+                Published: Wed 11 February 2015
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/github.html">GitHub</a> <a href="/tag/node.html">Node</a> <a href="/tag/npm.html">NPM</a> </p>
+</footer><!-- /.post-info -->                <p>I've been working on a <a href="https://github.com/noodlefrenzy/node-amqp-1-0">Node-based AMQP
+1.0</a> library and
+<a href="https://github.com/noodlefrenzy/node-sbus-amqp10">wrappers</a> that allow
+it to talk ServiceBus and EventHub easily with a colleague of mine at
+work, and it's taught me many things about doing Node.js
+development, collaborating on GitHub, and publishing on npmjs.  The
+documentation ...</p>
+                <a class="readmore" href="/collaboration-on-open-source-node-projects.html">read more</a>
+<p>There are <a href="/collaboration-on-open-source-node-projects.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/node-js-and-net-talking-eventhub-together.html" rel="bookmark"
+                           title="Permalink to Node.js and .NET Talking EventHub, Together">Node.js and .NET Talking EventHub, Together</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2015-01-28T13:48:00-08:00">
+                Published: Wed 28 January 2015
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/net.html">.NET</a> <a href="/tag/amqp.html">AMQP</a> <a href="/tag/azure.html">Azure</a> <a href="/tag/c.html">C#</a> <a href="/tag/eventhub.html">EventHub</a> <a href="/tag/node.html">Node</a> </p>
+</footer><!-- /.post-info -->                <p>Over the past few months, I've been working on <a href="https://github.com/noodlefrenzy/node-amqp10">a Node.js client for
+AMQP 1.0</a> - the <em>lingua
+franca</em> of Azure's EventHub and ServiceBus.  Well, the EventHub support
+is just about complete, and ServiceBus Topics and Queues should follow
+shortly thereafter (it's just me working on ...</p>
+                <a class="readmore" href="/node-js-and-net-talking-eventhub-together.html">read more</a>
+<p>There are <a href="/node-js-and-net-talking-eventhub-together.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/data-cleaning-with-azureml-and-r-dates.html" rel="bookmark"
+                           title="Permalink to Data Cleaning with AzureML and R: Dates">Data Cleaning with AzureML and R: Dates</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2015-01-19T17:42:00-08:00">
+                Published: Mon 19 January 2015
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/azure.html">Azure</a> <a href="/tag/azureml.html">AzureML</a> <a href="/tag/ml.html">ML</a> <a href="/tag/r.html">R</a> </p>
+</footer><!-- /.post-info -->                <p>I've been working with
+<a href="http://azure.microsoft.com/en-us/services/machine-learning/" title="Azure Machine Learning">AzureML</a>for
+a while now, and it's fantastic.  Having done ML in a few other
+platforms over the years, the ease with which I can put together a few
+regression models, do parameter-sweeps, and compare results is just
+groundbreaking.</p>
+<p>However, one area where it ...</p>
+                <a class="readmore" href="/data-cleaning-with-azureml-and-r-dates.html">read more</a>
+<p>There are <a href="/data-cleaning-with-azureml-and-r-dates.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/i-miss-integers.html" rel="bookmark"
+                           title="Permalink to I Miss Integers">I Miss Integers</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2015-01-12T16:53:00-08:00">
+                Published: Mon 12 January 2015
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/javascript.html">Javascript</a> <a href="/tag/random-musings.html">Random musings</a> <a href="/tag/weirdness.html">weirdness</a> </p>
+</footer><!-- /.post-info -->                <p>One of the worst things about working with Node.js is the .js part - as
+much as I like Node, I still think JavaScript is a strange, broken
+little language.  Not quite OO, not quite functional, it's a language
+made to help browsers validate form fields and is now ...</p>
+                <a class="readmore" href="/i-miss-integers.html">read more</a>
+<p>There are <a href="/i-miss-integers.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/talking-to-eventhub-with-amqp-1-0.html" rel="bookmark"
+                           title="Permalink to Talking to EventHub with AMQP 1.0">Talking to EventHub with AMQP 1.0</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-11-06T14:50:00-08:00">
+                Published: Thu 06 November 2014
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/amqp.html">AMQP</a> <a href="/tag/azure.html">Azure</a> <a href="/tag/eventhub.html">EventHub</a> </p>
+</footer><!-- /.post-info -->                <p>Lately, I've been working on a Node.js-based library for speaking AMQP
+1.0, since all of the existing ones are still on 0.9.1 and don't seem
+intent on updating, or are based on Qpid Proton and thus burdened with
+more native code than I'd ...</p>
+                <a class="readmore" href="/talking-to-eventhub-with-amqp-1-0.html">read more</a>
+<p>There are <a href="/talking-to-eventhub-with-amqp-1-0.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/developing-on-windows.html" rel="bookmark"
+                           title="Permalink to Developing on Windows">Developing on Windows</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-10-09T08:31:00-07:00">
+                Published: Thu 09 October 2014
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/uncategorized.html">Uncategorized</a>.</p>
+
+</footer><!-- /.post-info -->                <p>This isn't a long post, I just wanted to shout-out my colleague <a href="http://www.felixrieseberg.com/">Felix
+Rieseberg</a>, who has <a href="http://www.felixrieseberg.com/the-windows-dev-environment/">a great
+post</a>outlining
+a whole selection of tools to help you get up and running with a Windows
+development environment.  The most notable is probably <a href="http://chocolatey.org/">Chocolatey
+NuGet</a>, which if you're a ...</p>
+                <a class="readmore" href="/developing-on-windows.html">read more</a>
+<p>There are <a href="/developing-on-windows.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/caching-responses-in-expressjs.html" rel="bookmark"
+                           title="Permalink to Caching Responses in Expressjs">Caching Responses in Expressjs</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-10-04T15:32:00-07:00">
+                Published: Sat 04 October 2014
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/caching.html">caching</a> <a href="/tag/expressjs.html">Expressjs</a> <a href="/tag/memoization.html">memoization</a> <a href="/tag/node.html">Node</a> </p>
+</footer><!-- /.post-info -->                <p>On a recent project, I found myself writing a web service in Node via
+Azure Mobile Services, and realized that the client pattern was to call
+a common set of requests on startup and in early interactions, and then
+dig down into more detailed requests.  Furthermore, these common
+requests were ...</p>
+                <a class="readmore" href="/caching-responses-in-expressjs.html">read more</a>
+<p>There are <a href="/caching-responses-in-expressjs.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/talking-to-eventhub-from-node.html" rel="bookmark"
+                           title="Permalink to Talking to EventHub from Node">Talking to EventHub from Node</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-09-28T13:14:00-07:00">
+                Published: Sun 28 September 2014
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/azure.html">Azure</a> <a href="/tag/eventhub.html">EventHub</a> <a href="/tag/node.html">Node</a> </p>
+</footer><!-- /.post-info -->                <p>This past week, I participated in a hackfest trying to get some
+<a href="https://www.alljoyn.org/">Alljoyn</a> devices talking to
+<a href="http://nitrogen.io/">Nitrogen</a>.  It was a great time, getting to learn
+some new technologies, get exposed to the ~~pain ~~wonder of working
+with IoT hardware, and watch my bosses (<a href="http://blogs.msdn.com/b/johnshews_blog/">John
+Shewchuk</a> and <a href="http://channel9.msdn.com/Events/Visual-Studio/Visual-Studio-Live/Tracey-Trewin-Architecture-Intellitrace-DevOps-Unit-Testing">Tracey
+Trewin</a>)
+sling some ...</p>
+                <a class="readmore" href="/talking-to-eventhub-from-node.html">read more</a>
+<p>There are <a href="/talking-to-eventhub-from-node.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/azure-storage-architecture-troubleshooting.html" rel="bookmark"
+                           title="Permalink to Azure Storage: Architecture Troubleshooting">Azure Storage: Architecture  Troubleshooting</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-09-16T10:12:00-07:00">
+                Published: Tue 16 September 2014
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/azure.html">Azure</a> </p>
+</footer><!-- /.post-info -->                <p>I've been dealing with Azure Storage for years now, and while most of
+the time it's rock solid, on occasion you can get hit with networking
+issues or other "brownout" drops in availability that can make you
+question your sanity.  I find it helpful to know what's ...</p>
+                <a class="readmore" href="/azure-storage-architecture-troubleshooting.html">read more</a>
+<p>There are <a href="/azure-storage-architecture-troubleshooting.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/running-azure-mobile-services-locally.html" rel="bookmark"
+                           title="Permalink to Running Azure Mobile Services Locally">Running Azure Mobile Services Locally</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-09-08T11:32:00-07:00">
+                Published: Mon 08 September 2014
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/azure.html">Azure</a> <a href="/tag/mobile.html">Mobile</a> <a href="/tag/node.html">Node</a> </p>
+</footer><!-- /.post-info -->                <p>On a recent project, I made my first foray into using Azure Mobile
+Services <a href="http://weblogs.asp.net/scottgu/windows-azure-major-updates-for-mobile-backend-development" title="Azure Custom API Announcement">Custom
+API</a>
+support, with a Node.js-backed API implementation.  I've used (and
+loved) Mobile Services in the past for their push notification
+infrastructure, but this was new ground for me.  I liked the easy
+setup ...</p>
+                <a class="readmore" href="/running-azure-mobile-services-locally.html">read more</a>
+<p>There are <a href="/running-azure-mobile-services-locally.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/old-ie-new-vagrant.html" rel="bookmark"
+                           title="Permalink to Old IE, New Vagrant">Old IE, New Vagrant</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-09-03T08:05:00-07:00">
+                Published: Wed 03 September 2014
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/devops.html">DevOps</a>.</p>
+<p>tags: <a href="/tag/web-development.html">Web Development</a> </p>
+</footer><!-- /.post-info -->                <p>I've been messing around with
+<a href="http://www.vagrantup.com/" title="Vagrant">Vagrant</a>for a few weeks now, on
+and off, to manage my Linux VMs on my Win8.1 box with Hyper-V.  So far,
+it's been working well, barring a few caveats due primarily to MSIT's
+restrictive proxy settings (although I could find ...</p>
+                <a class="readmore" href="/old-ie-new-vagrant.html">read more</a>
+<p>There are <a href="/old-ie-new-vagrant.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/distributed-systems-primer.html" rel="bookmark"
+                           title="Permalink to Distributed Systems Primer">Distributed Systems Primer</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-08-14T13:29:00-07:00">
+                Published: Thu 14 August 2014
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/distributed-systems.html">Distributed Systems</a> </p>
+</footer><!-- /.post-info -->                <p><a href="https://twitter.com/HenryR">Henry Robinson</a>, the smart Cloudera SDE
+behind The <a href="http://the-paper-trail.org/blog/">Paper Trail</a> blog, just
+posted a great <a href="http://the-paper-trail.org/blog/distributed-systems-theory-for-the-distributed-systems-engineer/" title="Distributed Systems Theory for the Distributed Systems Engineer">primer on distributed
+systems</a>.
+ I highly recommend anyone interested in this field go and take a
+look - if you've been around long enough, you'll have read most of the
+papers, but it's ...</p>
+                <a class="readmore" href="/distributed-systems-primer.html">read more</a>
+<p>There are <a href="/distributed-systems-primer.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/sql-vs-nosql.html" rel="bookmark"
+                           title="Permalink to SQL vs. NoSQL">SQL vs. NoSQL</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-08-01T17:11:00-07:00">
+                Published: Fri 01 August 2014
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/distributed-systems.html">Distributed Systems</a> <a href="/tag/nosql.html">NoSQL</a> </p>
+</footer><!-- /.post-info -->                <p>I was recently asked by a colleague of mine why anyone is even using
+NoSQL solutions at all, and not just sticking with SQL.  After telling
+them that people use them because they're
+<a href="https://www.youtube.com/watch?v=b2F-DItXtZs">web-scale</a>, I did some
+thinking about when you should use NoSQL vs. just sticking with good ...</p>
+                <a class="readmore" href="/sql-vs-nosql.html">read more</a>
+<p>There are <a href="/sql-vs-nosql.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/starting-fresh.html" rel="bookmark"
+                           title="Permalink to Starting Fresh">Starting Fresh</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-07-09T22:08:00-07:00">
+                Published: Wed 09 July 2014
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/meta.html">Meta</a>.</p>
+<p>tags: <a href="/tag/random-musings.html">Random musings</a> </p>
+</footer><!-- /.post-info -->                <p>I've decided to move from <a href="http://blogs.msdn.com/b/milanz/">my MSDN
+blog</a> to my own WordPress site.  No big
+deal, since my cobweb of a blog hadn't been updated in years, but you
+might notice that this site is much younger than most of the posts on
+it.  I've migrated my ...</p>
+                <a class="readmore" href="/starting-fresh.html">read more</a>
+<p>There are <a href="/starting-fresh.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/duck-typing-in-c-4-0.html" rel="bookmark"
+                           title="Permalink to Duck Typing in C# 4.0">Duck Typing in C# 4.0</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2010-05-01T16:04:00-07:00">
+                Published: Sat 01 May 2010
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/net.html">.NET</a> <a href="/tag/c.html">C#</a> </p>
+</footer><!-- /.post-info -->                <p>One of my favorite new features in C# 4.0 is the <span
+style="font-family: Consolas;"><span
+style="font-size: small;">dynamic</span> </span>keyword.  Not only does
+it allow you to do freaky things with interactions between C# and
+scripting languages like IronRuby, but it opens up one of my favorite
+features ...</p>
+                <a class="readmore" href="/duck-typing-in-c-4-0.html">read more</a>
+<p>There are <a href="/duck-typing-in-c-4-0.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/misusing-infer-net-for-fun-and-profit.html" rel="bookmark"
+                           title="Permalink to Misusing Infer.NET For Fun and Profit">Misusing Infer.NET For Fun and Profit</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2009-12-04T22:21:00-08:00">
+                Published: Fri 04 December 2009
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/net.html">.NET</a> <a href="/tag/ml.html">ML</a> </p>
+</footer><!-- /.post-info -->                <p>I’ve recently started looking
+into <a href="http://research.microsoft.com/en-us/um/cambridge/projects/infernet/">Infer.NET</a> –
+I’m trying to learn some Bayesian inference, and it seems like a good
+tool for the job (I’m a bear of little brain, and need all the help I
+can get).  However, it’s an exciting library, so I’ve ...</p>
+                <a class="readmore" href="/misusing-infer-net-for-fun-and-profit.html">read more</a>
+<p>There are <a href="/misusing-infer-net-for-fun-and-profit.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/using-java-concurrency-primitives-readwritelock.html" rel="bookmark"
+                           title="Permalink to Using Java Concurrency Primitives: ReadWriteLock">Using Java Concurrency Primitives: ReadWriteLock</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2009-10-21T21:54:00-07:00">
+                Published: Wed 21 October 2009
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/concurrency.html">concurrency</a> <a href="/tag/java.html">Java</a> </p>
+</footer><!-- /.post-info -->                <p>So it’s been some time since I updated this blog, and I thought I’d
+explain why just on the off-chance folks are actually reading. My wife
+and I just bought a new house (well, town-house, we are in Seattle), and
+that took (and is still taking) a lot ...</p>
+                <a class="readmore" href="/using-java-concurrency-primitives-readwritelock.html">read more</a>
+<p>There are <a href="/using-java-concurrency-primitives-readwritelock.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/writing-a-powershell-snapin-for-bing.html" rel="bookmark"
+                           title="Permalink to Writing a Powershell Snapin for Bing">Writing a Powershell Snapin for Bing</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2009-06-05T19:16:00-07:00">
+                Published: Fri 05 June 2009
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/powershell.html">Powershell</a> </p>
+</footer><!-- /.post-info -->                <p>I’ve been meaning to write a post on how to author custom Powershell
+Cmdlets for some time now, as it’s incredibly easy to do and makes an
+awesome cmd shell even better.  I’m still more comfortable in tcsh, but
+for working in Windows, Powershell makes life a ...</p>
+                <a class="readmore" href="/writing-a-powershell-snapin-for-bing.html">read more</a>
+<p>There are <a href="/writing-a-powershell-snapin-for-bing.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/javas-checked-vs-unchecked-exceptions.html" rel="bookmark"
+                           title="Permalink to Java’s Checked vs. Unchecked Exceptions">Java’s Checked vs. Unchecked Exceptions</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2009-05-05T12:17:00-07:00">
+                Published: Tue 05 May 2009
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/java.html">Java</a> </p>
+</footer><!-- /.post-info -->                <p>I’m probably late to the party here (I’ve been in C#-land lately), but
+I think I’ve finally worked out what irks me about the Checked vs.
+Unchecked Exception religious war in the Java world.  I’ve always been
+on the Checked side of the fence, but ...</p>
+                <a class="readmore" href="/javas-checked-vs-unchecked-exceptions.html">read more</a>
+<p>There are <a href="/javas-checked-vs-unchecked-exceptions.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/you-cant-use-that-its-not-performant.html" rel="bookmark"
+                           title="Permalink to “You can’t use that, it’s not performant”">“You can’t use that, it’s not performant”</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2009-04-08T12:54:00-07:00">
+                Published: Wed 08 April 2009
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/performance.html">performance</a> </p>
+</footer><!-- /.post-info -->                <p>I can’t tell you how many times I’ve heard this - from PMs, dev leads,
+and colleagues.  Other than the use of the “word” performant, what bugs
+me about this is that usually they don’t have any data (or current data)
+to back it up.  Coming from the ...</p>
+                <a class="readmore" href="/you-cant-use-that-its-not-performant.html">read more</a>
+<p>There are <a href="/you-cant-use-that-its-not-performant.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+                </ol><!-- /#posts-list -->
+                </section><!-- /#content -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="https://blogs.technet.microsoft.com/machinelearning/">Cortana Analytics</a></li>
+                            <li><a href="http://www.kdnuggets.com/">KDNuggets</a></li>
+                            <li><a href="http://www.hanselman.com/blog/">Hanselman</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://twitter.com/noodlefrenzy">Twitter</a></li>
+                            <li><a href="https://www.linkedin.com/in/noodlefrenzy">LinkedIn</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-54597100-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'intelligentartifice';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'https://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+</html>

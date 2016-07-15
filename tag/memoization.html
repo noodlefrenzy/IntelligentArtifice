@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Intelligent Artifice - memoization</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/noodlefrenzy">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="/">Intelligent Artifice </a></h1>
+                <nav><ul>
+                    <li><a href="/pages/about-me-and-this-blog.html">About Me And This Blog</a></li>
+                    <li><a href="/category/devops.html">DevOps</a></li>
+                    <li><a href="/category/meta.html">Meta</a></li>
+                    <li><a href="/category/software.html">Software</a></li>
+                    <li><a href="/category/uncategorized.html">Uncategorized</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="/caching-responses-in-expressjs.html">Caching Responses in Expressjs</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2014-10-04T15:32:00-07:00">
+                Published: Sat 04 October 2014
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/caching.html">caching</a> <a href="/tag/expressjs.html">Expressjs</a> <a href="/tag/memoization.html">memoization</a> <a href="/tag/node.html">Node</a> </p>
+</footer><!-- /.post-info --><p>On a recent project, I found myself writing a web service in Node via
+Azure Mobile Services, and realized that the client pattern was to call
+a common set of requests on startup and in early interactions, and then
+dig down into more detailed requests.  Furthermore, these common
+requests were common across just about all clients.  Caching these
+responses seemed like a natural thing to do, but the problem was that i
+couldn't just cache the response object, I had to replay the previous
+response so that the same status, headers, and body would be sent.  Also
+I wanted the ability to control whether a request was cached based on
+the content, and to avoid caching error responses.  I decided to write
+it in such a way that others could potentially use it, and I've put it
+<a href="https://github.com/noodlefrenzy/memoize-express">up on GitHub</a>.</p>
+<p>For the backbone, I wrote a simple object - Replayer - that allows you
+to wrap an object, trapping all function calls and recording all
+parameters given, and then allowing you to replay those calls on another
+object instance.  It does this by making a proxy function for all
+functions on the object:</p>
+<div class="highlight"><pre><span></span><span class="kd">function</span> <span class="nx">makeProxy</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="nx">replayer</span><span class="p">,</span> <span class="nx">fnName</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">);</span>
+        <span class="nx">replayer</span><span class="p">.</span><span class="nx">record</span><span class="p">.</span><span class="nx">push</span><span class="p">([</span> <span class="nx">fnName</span><span class="p">,</span> <span class="nx">args</span> <span class="p">]);</span>
+        <span class="kd">var</span> <span class="nx">result</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">args</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">result</span> <span class="o">=</span> <span class="nx">obj</span><span class="p">[</span><span class="nx">fnName</span><span class="p">].</span><span class="nx">call</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="nx">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nx">result</span> <span class="o">=</span> <span class="nx">obj</span><span class="p">[</span><span class="nx">fnName</span><span class="p">].</span><span class="nx">call</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span> 
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="nx">result</span> <span class="o">===</span> <span class="nx">obj</span> <span class="o">?</span> <span class="nx">replayer</span> <span class="o">:</span> <span class="nx">result</span><span class="p">;</span>        
+    <span class="p">};</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Note that last line - this allows method-chaining APIs to work
+correctly, so <code>res.status(200).body(data)</code> works as expected, with both
+<code>status</code> and <code>body</code> being correctly recorded.</p>
+<p>I use this "Replayer" (<a href="https://github.com/noodlefrenzy/replayer">packaged on
+GitHub independently</a>, in case
+it's useful on its own) within the Express Memoizer to record
+all express request/response functions, leaving the actual memoizer
+function pretty clean:</p>
+<div class="highlight"><pre><span></span><span class="nx">Memoizer</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">memoize</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">fn</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">theCache</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">cache</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">shouldCacheReq</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">shouldCacheRequest</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">shouldCacheRes</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">shouldCacheResponse</span><span class="p">;</span>
+    <span class="k">return</span> <span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">shouldCacheReq</span><span class="p">(</span><span class="nx">req</span><span class="p">))</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">key</span> <span class="o">=</span> <span class="nx">requestKey</span><span class="p">(</span><span class="nx">req</span><span class="p">);</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">theCache</span><span class="p">.</span><span class="nx">has</span><span class="p">(</span><span class="nx">key</span><span class="p">))</span> <span class="p">{</span>
+                <span class="kd">var</span> <span class="nx">prevRes</span> <span class="o">=</span> <span class="nx">theCache</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">key</span><span class="p">);</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">shouldCacheRes</span><span class="p">(</span><span class="nx">prevRes</span><span class="p">.</span><span class="nx">getWrapped</span><span class="p">()))</span> <span class="p">{</span>
+                    <span class="nx">prevRes</span><span class="p">.</span><span class="nx">replay</span><span class="p">(</span><span class="nx">res</span><span class="p">);</span>
+                    <span class="k">return</span><span class="p">;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+            <span class="kd">var</span> <span class="nx">fakeRes</span> <span class="o">=</span> <span class="nx">replayer</span><span class="p">.</span><span class="nx">watch</span><span class="p">(</span><span class="nx">res</span><span class="p">);</span>
+            <span class="nx">theCache</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">fakeRes</span><span class="p">);</span>
+            <span class="nx">fn</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">fakeRes</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nx">fn</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">};</span>
+<span class="p">};</span>
+</pre></div>
+
+
+<p>This checks the predicate for the incoming request to determine whether
+it should be cached (if not, the call is just passed through), and then
+checks the cache to see if the request is already cached.  If so, it
+pulls the cached replayer instance, determines whether it should have
+been cached, and if so then replays it on the current response object.</p>
+<h3>Caveats</h3>
+<p>I was doing this to solve a particular problem, and also to learn how to
+do some things in JS that I'm used to doing in other languages, so there
+are plenty of caveats to this solution (and there might be other
+solutions out there, although none of the existing memoization node
+packages seemed to do what I needed).  I've documented them all in the
+readme.md in each project, but I'll outline a few here as well.  First
+off, the Replayer has three main caveats that would prevent wide
+adoption, but didn't impact my use:</p>
+<ol>
+<li>It only wraps objects, so not on built-ins like String/Number.</li>
+<li>It stores the arguments literally, not in some serialized and then
+    re-hydrated form, meaning that mutable objects could potentially
+    change between the recording and the playback.</li>
+<li>It doesn't support async methods, so no invocation of callbacks,
+    etc.</li>
+</ol>
+<p>Additionally, it basically "duck-types" on playback, attempting replay
+on whatever you've passed in, so if you've wrapped an object that has an
+<code>indexOf</code> method, and eventually play it back on a string, it should
+"work", but might not be the behavior you need (it will, however, be
+<a href="http://treasure.diylol.com/uploads/post/image/169566/resized_true-hero-meme-generator-he-s-the-hero-we-deserve-but-not-the-one-we-need-right-now-65e69f.jpg">the behavior you
+deserve</a>).
+ The Memoizer inherits these caveats, and additionally has whatever
+caveats are inherited by the cache implementation you use.  In addition,
+the response predicate is only checked on retrieval from the cache, so
+that there's no ordering dependence on how the caller chooses to invoke
+response methods, and the memoizer doesn't need to keep track of
+when/whether the response has completed.</p><p>There are <a href="/caching-responses-in-expressjs.html#disqus_thread">comments</a>.</p>                </article>
+            </aside><!-- /#featured -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="https://blogs.technet.microsoft.com/machinelearning/">Cortana Analytics</a></li>
+                            <li><a href="http://www.kdnuggets.com/">KDNuggets</a></li>
+                            <li><a href="http://www.hanselman.com/blog/">Hanselman</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://twitter.com/noodlefrenzy">Twitter</a></li>
+                            <li><a href="https://www.linkedin.com/in/noodlefrenzy">LinkedIn</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-54597100-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'intelligentartifice';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'https://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+</html>

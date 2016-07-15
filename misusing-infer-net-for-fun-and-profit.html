@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Misusing Infer.NET For Fun and Profit</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/noodlefrenzy">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="/">Intelligent Artifice </a></h1>
+                <nav><ul>
+                    <li><a href="/pages/about-me-and-this-blog.html">About Me And This Blog</a></li>
+                    <li><a href="/category/devops.html">DevOps</a></li>
+                    <li><a href="/category/meta.html">Meta</a></li>
+                    <li class="active"><a href="/category/software.html">Software</a></li>
+                    <li><a href="/category/uncategorized.html">Uncategorized</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="/misusing-infer-net-for-fun-and-profit.html" rel="bookmark"
+           title="Permalink to Misusing Infer.NET For Fun and Profit">Misusing Infer.NET For Fun and Profit</a></h1>
+<a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="noodlefrenzy">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2009-12-04T22:21:00-08:00">
+                Published: Fri 04 December 2009
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/net.html">.NET</a> <a href="/tag/ml.html">ML</a> </p>
+</footer><!-- /.post-info -->      <p>I’ve recently started looking
+into <a href="http://research.microsoft.com/en-us/um/cambridge/projects/infernet/">Infer.NET</a> –
+I’m trying to learn some Bayesian inference, and it seems like a good
+tool for the job (I’m a bear of little brain, and need all the help I
+can get).  However, it’s an exciting library, so I’ve been playing with
+it in other contexts – the subject of this post.</p>
+<p>One thing I find myself doing on occasion is using random variables to
+drive some heuristic, whether it’s messing about with genetic
+programming or just driving some randomization in tests.  Currently, the
+main way to do this is to instantiate a random number generator and use
+it to generate either ints or doubles, using those values to drive
+decisions:</p>
+<div class="highlight"><pre><span></span><span class="n">Random</span> <span class="n">dist</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Random</span><span class="p">();</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">dist</span><span class="p">.</span><span class="n">NextDouble</span><span class="p">()</span> <span class="p">&lt;=</span> <span class="m">0.5</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="c1">// Do something...</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>With Infer.NET, you have a host of distributions to choose from, so you
+can be a bit more selective.  For instance, if you were to implement the
+above code using Infer.NET, you could use:</p>
+<div class="highlight"><pre><span></span><span class="n">Beta</span> <span class="n">dist</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Beta</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">dist</span><span class="p">.</span><span class="n">Sample</span><span class="p">()</span> <span class="p">&lt;=</span> <span class="m">0.5</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="c1">// Do something...</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Using a <a href="http://www.wolframalpha.com/input/?i=beta+distribution+%281%2C1%29">uniform Beta
+distribution</a> to
+provide a pseudo-random that matches the behavior above.  However, you
+could go one step further:</p>
+<div class="highlight"><pre><span></span><span class="n">Bernoulli</span> <span class="n">dist</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Bernoulli</span><span class="p">(</span><span class="m">0.5</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">dist</span><span class="p">.</span><span class="n">Sample</span><span class="p">())</span>
+<span class="p">{</span>
+<span class="c1">// Do something...</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>With a <a href="http://www.wolframalpha.com/input/?i=bernoulli+distribution">Bernoulli
+distribution</a>,
+you make your intent plain – a software coin-flip with the behavior as
+expected.  I’m a big fan of making my intent plain when coding – it fits
+my laziness theory, I’ll have less to remember the next time I look at
+the code.</p>
+<p>There are some <a href="http://research.microsoft.com/en-us/um/cambridge/projects/infernet/codedoc/html/N_MicrosoftResearch_Infer_Distributions.htm">other
+distributions</a> available
+to you with Infer.NET, which you might find handy.  For instance,
+sometimes I need to implement exponential backoff scenarios with
+jitter.  Normally, I’d just use a simple random and fuzz uniformly
+around the delay, but in many cases I’d prefer to have a tighter
+grouping around the delay – one which a uniform distribution can’t
+provide.  Now with Infer.NET, I can use
+a <a href="http://www.wolframalpha.com/input/?i=gaussian+distribution+%281%2C2%29">Gaussian</a>:</p>
+<div class="highlight"><pre><span></span><span class="n">Gaussian</span> <span class="n">dist</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Gaussian</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">);</span>
+<span class="c1">// ...</span>
+<span class="n">delay</span> <span class="p">+=</span> <span class="n">dist</span><span class="p">.</span><span class="n">Sample</span><span class="p">();</span>
+</pre></div>
+
+
+<p>I realize these examples are somewhat contrived, but I’m excited by the
+possibilities behind Infer.NET – both great and small – and examples
+like these help me work through them.  I’m hoping that this post will
+help bring Infer.NET to a wider audience - well, all two people who read
+my blog :)</p>
+    </div><!-- /.entry-content -->
+
+  </article>
+</section>
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="https://blogs.technet.microsoft.com/machinelearning/">Cortana Analytics</a></li>
+                            <li><a href="http://www.kdnuggets.com/">KDNuggets</a></li>
+                            <li><a href="http://www.hanselman.com/blog/">Hanselman</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://twitter.com/noodlefrenzy">Twitter</a></li>
+                            <li><a href="https://www.linkedin.com/in/noodlefrenzy">LinkedIn</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-54597100-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'intelligentartifice';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'https://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+</html>

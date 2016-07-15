@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>TensorFlow on Azure Using Docker</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/noodlefrenzy">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="/">Intelligent Artifice </a></h1>
+                <nav><ul>
+                    <li><a href="/pages/about-me-and-this-blog.html">About Me And This Blog</a></li>
+                    <li><a href="/category/devops.html">DevOps</a></li>
+                    <li><a href="/category/meta.html">Meta</a></li>
+                    <li class="active"><a href="/category/software.html">Software</a></li>
+                    <li><a href="/category/uncategorized.html">Uncategorized</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="/tensorflow-on-azure-using-docker.html" rel="bookmark"
+           title="Permalink to TensorFlow on Azure Using Docker">TensorFlow on Azure Using Docker</a></h1>
+<a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="noodlefrenzy">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2015-12-08T14:33:00-08:00">
+                Published: Tue 08 December 2015
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/azure.html">Azure</a> <a href="/tag/containerization.html">Containerization</a> <a href="/tag/docker.html">Docker</a> <a href="/tag/machine-learning.html">Machine Learning</a> <a href="/tag/ml.html">ML</a> <a href="/tag/neural-networks.html">Neural Networks</a> <a href="/tag/tensorflow.html">TensorFlow</a> </p>
+</footer><!-- /.post-info -->      <p>We live in a time of proliferating machine learning toolkits. From the
+not-so-humble start of <a href="http://opencv.org/">OpenCV</a> (for computer
+vision), <a href="http://www.cs.waikato.ac.nz/ml/weka/">Weka</a>, and
+<a href="http://caffe.berkeleyvision.org/">Caffe</a>, in just a short period of
+time we've added <a href="http://torch.ch/">Torch</a>,
+<a href="http://www.deeplearning.net/software/theano/">Theano</a>,
+<a href="http://research.microsoft.com/apps/pubs/?id=226641">CNTK</a>and now
+<a href="https://googleblog.blogspot.com/2015/11/tensorflow-smarter-machine-learning-for.html">TensorFlow</a>and
+<a href="http://siliconangle.com/blog/2015/11/24/ibm-open-sources-its-systemml-machine-learning-tech/">SystemML</a>
+(and I'm not even mentioning things like
+<a href="http://spark.apache.org/docs/latest/mllib-guide.html">SparkML</a>and
+<a href="https://azure.microsoft.com/en-us/services/machine-learning/">AzureML</a>).
+As a non-researcher who actually needs to make use of these things,
+honestly, it's kind of freaking me out - way too much to learn in way
+too short a time.</p>
+<p><a href="https://www.tensorflow.org/">TensorFlow</a>is a shiny new tensor-based
+neural network toolkit (so computational flow graphs instead of the more
+traditional layer-based neural networks) which currently runs on Linux
+and MacOS (but not Windows, due primarily to their dependence on Bazel
+for building, see <a href="https://github.com/tensorflow/tensorflow/issues/17">issue
+17</a> on their GitHub
+repo). However, in the new Microsoft we don't let things like that stop
+us! In this guide I'll show you how to deploy a TensorFlow-enabled
+Python (Jupyter, really) Notebook onto a Linux VM in Azure using Docker.</p>
+<h2>Docker On Azure</h2>
+<p>If you're unfamiliar with Docker, it's a containerization service -
+meaning that you build out a machine once, and let Docker take care of
+stamping that image on as many "machines" (really, containers) as you
+want. Container definitions can inherit, meaning if someone has built
+almost exactly what you need, you're free to inherit from that and
+add/remove as you see fit. The good news for me is that I can "stand on
+the shoulders of giants" and use the hard work of others for my own
+purposes.</p>
+<p>Docker came to Azure last year in a big way, and now it's easier than
+ever to fire up a new VM running a Docker engine. Using the now-GA "new"
+portal, just search for "Docker on Ubuntu":</p>
+<p><img alt="Search for docker on ubuntu
+server" src="/images/New_Docker.png" /></p>
+<p>Once you select "Docker on Ubuntu Server" you'll be guided through the
+creation process:</p>
+<p><img alt="Docker VM Creation
+Process" src="/images/Docker_VM_Create.png" /></p>
+<p>Upon completion, your VM will start up, and you can then SSH into it and
+execute whatever Docker commands you wish.</p>
+<h2>Installing TensorFlow</h2>
+<p>Once you have Docker installed on a VM, it's simple to install
+TensorFlow into a container on that VM. You could use the image that
+<a href="https://www.tensorflow.org/versions/master/get_started/os_setup.html#docker_install">Google has
+provided</a>
+with their release, but I prefer to have it running inside of a<a href="http://jupyter.org/">Jupyter
+notebook</a> to allow me to play around with it.</p>
+<p>Fortunately, I'm not alone, and someone has already created a Docker
+image on DockerHub containing a <a href="https://hub.docker.com/r/xblaster/tensorflow-jupyter/">Jupyter installation with
+TensorFlow</a> -
+thanks xblaster! Since Jupyter notebooks run a local server, we need to
+allow port-forwarding for the port we intend to run on. Let's assume we
+use the default that xblaster mentions in his readme - 8888. We need to
+not only port-forward from the container to the Docker-engine-running
+VM, but we need to port-forward from the VM externally. To do so, we
+simple expose that port via the Azure portal by adding a new endpoint
+mapping 8888 to whichever external port you choose:</p>
+<p><img alt="Exposing the Jupyter notebook
+endpoint" src="/images/Expose_VM_Endpoint.png" /></p>
+<p>Now that you've exposed the endpoint from Azure, you can fire up the
+Docker container by using the command:</p>
+<div class="highlight"><pre><span></span>docker run -d -p 8888:8888 -v /notebook:/notebook xblaster/tensorflow-jupyter
+</pre></div>
+
+
+<p>This will take some time, but once it's complete you should have a fully
+functional Docker container running TensorFlow inside a Jupyter
+notebook, which will persist the notebook for you.</p>
+<h2>Testing the Installation</h2>
+<p>Now that you have a running Jupyter notebook instance, you can hit your
+endpoint from your own home machine at
+http://\&lt;your-vm>.cloudapp.net:8888/ and see it in action. Create a new
+Python2 notebook, and then paste the code below and run it to verify
+that TensorFlow is installed and working (from <a href="https://www.tensorflow.org/versions/master/get_started/index.html">their
+documentation</a>):</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="kn">as</span> <span class="nn">tf</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="c1"># Create 100 phony x, y data points in NumPy, y = x * 0.1 + 0.3</span>
+<span class="n">x_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float32&quot;</span><span class="p">)</span>
+<span class="n">y_data</span> <span class="o">=</span> <span class="n">x_data</span> <span class="o">*</span> <span class="mf">0.1</span> <span class="o">+</span> <span class="mf">0.3</span>
+
+<span class="c1"># Try to find values for W and b that compute y_data = W * x_data + b</span>
+<span class="c1"># (We know that W should be 0.1 and b 0.3, but Tensorflow will</span>
+<span class="c1"># figure that out for us.)</span>
+<span class="n">W</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">random_uniform</span><span class="p">([</span><span class="mi">1</span><span class="p">],</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">))</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">1</span><span class="p">]))</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">W</span> <span class="o">*</span> <span class="n">x_data</span> <span class="o">+</span> <span class="n">b</span>
+
+<span class="c1"># Minimize the mean squared errors.</span>
+<span class="n">loss</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">y_data</span><span class="p">))</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">GradientDescentOptimizer</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">train</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
+
+<span class="c1"># Before starting, initialize the variables.  We will &#39;run&#39; this first.</span>
+<span class="n">init</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">initialize_all_variables</span><span class="p">()</span>
+
+<span class="c1"># Launch the graph.</span>
+<span class="n">sess</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+<span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">init</span><span class="p">)</span>
+
+<span class="c1"># Fit the line.</span>
+<span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">201</span><span class="p">):</span>
+    <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">train</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">step</span> <span class="o">%</span> <span class="mi">20</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">print</span> <span class="n">step</span><span class="p">,</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">W</span><span class="p">),</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+
+<span class="c1"># Learns best fit is W: [0.1], b: [0.3]</span>
+</pre></div>
+
+
+<p>Now you know it works, but notice that you didn't need to hit an https
+endpoint or type in any credentials - this is "security through
+obscurity", otherwise known as <em>not secure at all!</em> Do me a favor and
+don't use this for anything you don't mind losing, and shut it down when
+you're done. If you want to secure your notebook, that's beyond the
+scope of this post, but the <a href="http://jupyter-notebook.readthedocs.org/en/latest/public_server.html">documentation is easy to
+follow</a>.</p>
+<p>Happy coding!</p>
+    </div><!-- /.entry-content -->
+
+  </article>
+</section>
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="https://blogs.technet.microsoft.com/machinelearning/">Cortana Analytics</a></li>
+                            <li><a href="http://www.kdnuggets.com/">KDNuggets</a></li>
+                            <li><a href="http://www.hanselman.com/blog/">Hanselman</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://twitter.com/noodlefrenzy">Twitter</a></li>
+                            <li><a href="https://www.linkedin.com/in/noodlefrenzy">LinkedIn</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-54597100-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'intelligentartifice';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'https://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+</html>

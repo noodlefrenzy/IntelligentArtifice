@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Intelligent Artifice - concurrency</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/noodlefrenzy">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="/">Intelligent Artifice </a></h1>
+                <nav><ul>
+                    <li><a href="/pages/about-me-and-this-blog.html">About Me And This Blog</a></li>
+                    <li><a href="/category/devops.html">DevOps</a></li>
+                    <li><a href="/category/meta.html">Meta</a></li>
+                    <li><a href="/category/software.html">Software</a></li>
+                    <li><a href="/category/uncategorized.html">Uncategorized</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="/using-java-concurrency-primitives-readwritelock.html">Using Java Concurrency Primitives: ReadWriteLock</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2009-10-21T21:54:00-07:00">
+                Published: Wed 21 October 2009
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/concurrency.html">concurrency</a> <a href="/tag/java.html">Java</a> </p>
+</footer><!-- /.post-info --><p>So it’s been some time since I updated this blog, and I thought I’d
+explain why just on the off-chance folks are actually reading. My wife
+and I just bought a new house (well, town-house, we are in Seattle), and
+that took (and is still taking) a lot of my time. In addition, we’re in
+the process of preparing for a new release at work, so I’ve been quite
+busy with that. Finally, our office just moved from Seattle to Bellevue
+(Microsoft is not just in Redmond), and that’s been distracting (my
+commute has gone from 20 to 60 minutes each way).</p>
+<p>As of JDK 5, Java has added a host of new concurrency primitives that
+allow you to fine-tune your code for multi-core scenarios (.NET has
+added/is adding many more as of 4.0, but we’ll save that for future
+posts).  I thought I’d do a few blog posts outlining how these new
+primitives have helped me improve my code.  I’m not saying this is the
+ideal way to do things, but they’re methods that have helped me and I
+thought I’d pass them along.</p>
+<p>First up – the synchronized keyword vs. explicit locking. 
+java.util.concurrent.locks contains a few new lock types, with the
+ReadWriteLock being my favorite.  Yet I still see a lot of code that
+looks like this:</p>
+<div class="highlight"><pre><span></span><span class="cm">/* Called a bunch */</span>
+<span class="kd">public</span> <span class="kd">synchronized</span> <span class="n">Object</span> <span class="nf">getStuff</span><span class="o">()</span>
+<span class="o">{</span>
+  <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">stuff</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="cm">/* Called on occasion, by some sort of timer */</span>
+<span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">computeNewStuff</span><span class="o">()</span>
+<span class="o">{</span>
+  <span class="c1">// do some expensive computation to build new stuff object</span>
+<span class="o">}</span>
+</pre></div>
+
+
+<p>There are a few improvements we could make to this code, but here we’re
+focusing on using the new lock construct. 
+The <a href="http://java.sun.com/javase/6/docs/api/java/util/concurrent/locks/ReentrantReadWriteLock.html">ReentrantReadWriteLock</a> is
+ideal for these cases, where the “stuff” object is read more than it is
+written.  The above code could be restructured as follows:</p>
+<div class="highlight"><pre><span></span><span class="kd">public</span> <span class="n">Object</span> <span class="nf">getBetterStuff</span><span class="o">()</span>
+<span class="o">{</span>
+  <span class="k">this</span><span class="o">.</span><span class="na">lock</span><span class="o">.</span><span class="na">readLock</span><span class="o">().</span><span class="na">lock</span><span class="o">();</span>
+  <span class="k">try</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">betterStuff</span><span class="o">;</span>
+  <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">lock</span><span class="o">.</span><span class="na">readLock</span><span class="o">().</span><span class="na">unlock</span><span class="o">();</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">computeBetterStuff</span><span class="o">()</span>
+<span class="o">{</span>
+  <span class="n">Object</span> <span class="n">newStuff</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+  <span class="c1">// do some expensive computation to build newStuff</span>
+  <span class="k">this</span><span class="o">.</span><span class="na">lock</span><span class="o">.</span><span class="na">writeLock</span><span class="o">().</span><span class="na">lock</span><span class="o">();</span>
+  <span class="k">try</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">betterStuff</span> <span class="o">=</span> <span class="n">newStuff</span><span class="o">;</span>
+  <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">lock</span><span class="o">.</span><span class="na">writeLock</span><span class="o">().</span><span class="na">unlock</span><span class="o">();</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">private</span> <span class="n">ReadWriteLock</span> <span class="n">lock</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ReentrantReadWriteLock</span><span class="o">();</span>
+</pre></div>
+
+
+<p>This contains two enhancements – first, we limit the locking period on
+recomputation to just the piece of code where we’re storing the
+newly-computed value.  This is doable even with existing constructs by
+using an internal Object instance as a synchronization point.  Second,
+we use the read-write lock to allow multiple readers to access the value
+without contending with each other.  Only when we’re in the process of
+setting the newly-computed value will readers be locked out.</p>
+<p>This example is largely illustrative, though..  In reality, since we’re
+only resetting one value under computation, there’s no need for such a
+heavyweight solution and I’d probably just go with an AtomicReference:</p>
+<div class="highlight"><pre><span></span><span class="kd">public</span> <span class="n">Object</span> <span class="nf">getBestStuff</span><span class="o">()</span> <span class="o">{</span>
+  <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">bestStuff</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
+<span class="o">}</span>
+
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">computeBestStuff</span><span class="o">()</span> <span class="o">{</span>
+  <span class="n">Object</span> <span class="n">newStuff</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+  <span class="c1">// do some expensive computation to build newStuff</span>
+  <span class="k">this</span><span class="o">.</span><span class="na">bestStuff</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">newStuff</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="kd">private</span> <span class="n">AtomicReference</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">bestStuff</span><span class="o">;</span>
+</pre></div>
+
+
+<p>I hope this proves useful for some folks.  I’m planning on following
+this up with more posts about both Java and .NET constructs for
+concurrency, and as always I welcome comments and suggestions on future
+directions.</p><p>There are <a href="/using-java-concurrency-primitives-readwritelock.html#disqus_thread">comments</a>.</p>                </article>
+            </aside><!-- /#featured -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="https://blogs.technet.microsoft.com/machinelearning/">Cortana Analytics</a></li>
+                            <li><a href="http://www.kdnuggets.com/">KDNuggets</a></li>
+                            <li><a href="http://www.hanselman.com/blog/">Hanselman</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://twitter.com/noodlefrenzy">Twitter</a></li>
+                            <li><a href="https://www.linkedin.com/in/noodlefrenzy">LinkedIn</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-54597100-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'intelligentartifice';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'https://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+</html>

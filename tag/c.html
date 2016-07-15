@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Intelligent Artifice - C#</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/noodlefrenzy">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="/">Intelligent Artifice </a></h1>
+                <nav><ul>
+                    <li><a href="/pages/about-me-and-this-blog.html">About Me And This Blog</a></li>
+                    <li><a href="/category/devops.html">DevOps</a></li>
+                    <li><a href="/category/meta.html">Meta</a></li>
+                    <li><a href="/category/software.html">Software</a></li>
+                    <li><a href="/category/uncategorized.html">Uncategorized</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="/image-stream-processing-to-blob-storage.html">Image Stream Processing to Blob Storage</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2015-09-11T16:08:00-07:00">
+                Published: Fri 11 September 2015
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/net.html">.NET</a> <a href="/tag/aspnet.html">ASP.Net</a> <a href="/tag/azure.html">Azure</a> <a href="/tag/azure-blob.html">Azure Blob</a> <a href="/tag/c.html">C#</a> <a href="/tag/sql-azure.html">SQL Azure</a> </p>
+</footer><!-- /.post-info --><p>I was recently working on a project to train <a href="http://www.readcube.com/articles/10.1038%2Fnature14539?shared_access_token=DaxW8O-3gQoqte9kXFFUANRgN0jAjWel9jnR3ZoTv0PU8PImtLRceRBJ32CtadUBIC1dchyTLE3_1-FCJeTkHXnB0vI4SmupYf4v2t_dG6HjI9FdSJMFDQ6iWCA7T6tcte2-dAp-SzhLtuCkfPvhI6x--H5W98_7bqOVwSnqt1Vqo6bzZ5ZM7lCIPdavoThMMSXBgYmSjKSk0CrGtb5KUw%3D%3D">Deep
+ConvNets</a>
+for image recognition tasks, and ran into several interesting problems
+along the way. This post is the first in a series outlining some of
+those problems and how I went about solving them, and it focuses on the
+problem of image uploads to Azure Blob storage. As always, the
+MIT-licensed code is <a href="https://github.com/noodlefrenzy/asp-blob-uploader">on
+GitHub</a>.</p>
+<p>The crux of the issue: we had a deployed neural net out there just
+waiting for images to come in and be scored, and I'd deployed an ASP.Net
+service for handling image uploads. Two problems: I needed to transform
+those images prior to scoring, and I wanted to make sure I didn't write
+them to the local file system if possible (as a crash would leave
+hanging files and fill up the disk).</p>
+<h2>Uploading Files</h2>
+<p>On the web, the typical way you upload files hasn't changed all that
+much in over a decade - most people use a multi-part form submission
+with MIME-encoded content. Using this format for a simple captioned
+picture, the resulting payload looks something like:</p>
+<div class="highlight"><pre><span></span><span class="nt">POST</span> <span class="o">...</span>
+<span class="nt">Content-Type</span><span class="o">:</span> <span class="nt">multipart</span><span class="o">/</span><span class="nt">form-data</span><span class="o">;</span> <span class="nt">boundary</span><span class="o">=</span><span class="nt">---------------------------8675309</span>
+
+<span class="nt">-----------------------------8675309</span>
+<span class="nt">Content-Disposition</span><span class="o">:</span> <span class="nt">form-data</span><span class="o">;</span> <span class="nt">name</span><span class="o">=</span><span class="s2">&quot;description&quot;</span>
+
+<span class="nt">Look</span> <span class="nt">at</span> <span class="nt">this</span> <span class="nt">epic</span> <span class="nt">sandwich</span>
+<span class="nt">-----------------------------8675309</span>
+<span class="nt">Content-Disposition</span><span class="o">:</span> <span class="nt">form-data</span><span class="o">;</span> <span class="nt">name</span><span class="o">=</span><span class="s2">&quot;image1&quot;</span><span class="o">;</span> <span class="nt">filename</span><span class="o">=</span><span class="s2">&quot;EpicSandwich.jpg&quot;</span>
+<span class="nt">Content-Type</span><span class="o">:</span> <span class="nt">image</span><span class="o">/</span><span class="nt">jpeg</span>
+
+<span class="o">..</span><span class="nc">.bits</span><span class="o">...</span>
+<span class="nt">-----------------------------8675309--</span>
+</pre></div>
+
+
+<p>Note the form data is all in one section, and the files are each in
+their own MIME-encoded section with included filenames.</p>
+<h2>Processing Files In ASP.Net</h2>
+<p>Mike Wasson has <a href="http://www.asp.net/web-api/overview/advanced/sending-html-form-data,-part-2">a great blog
+post</a>with
+explicit instructions on how to process multi-part form data from within
+ASP.Net. To summarize, you need to instantiate
+a <code>MultipartFormDataStreamProvider</code> pointed to where you want to store
+the files on disk, and then use <code>ReadAsMultipartAsync</code> to put them
+there. It does the decoding and stores things correctly, but the problem
+is that if you crash at any point during this process, you've just left
+files littering the disk.</p>
+<p>There are a few different ways around this (detecting the files on
+startup, clearing temp on restart, etc.), but since I wanted to
+pre-process the image before storing it anyway, I decided to seek
+another solution. Ultimately, I wanted to take the incoming data stream,
+process it, and then store it directly into Azure Blob storage. For
+that, I would need a custom form data processor.</p>
+<h2>Building a Blob Stream Provider</h2>
+<p>There seem to be two main steps in switching away from local file
+storage to Azure Blob store - first create a Stream capable of storing
+to an Azure Blob, and then create a provider to return those streams.
+Then, when <code>ReadAsMultipartAsync</code> gets called, it'll store those files
+into blobs for you. In reality, it's slightly more complicated since it
+doesn't seem to guarantee a call to Close on the stream, so it's tough
+to know when to write it to blob storage, so I would up implementing my
+custom Stream as a wrapper around a MemoryStream and then giving my
+custom Provider a SaveAll method to push everything to the cloud.</p>
+<h4>Customizing a Stream</h4>
+<p>My custom Stream is a simple wrapper around a <code>MemoryStream</code> with some
+sugar to massage the filename into blob-friendly format, and a helper
+method to do the actual upload:</p>
+<div class="highlight"><pre><span></span><span class="k">public</span> <span class="k">class</span> <span class="nc">MultipartBlobStream</span> <span class="p">:</span> <span class="n">Stream</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="nf">MultipartBlobStream</span><span class="p">(</span><span class="n">CloudBlobContainer</span> <span class="n">container</span><span class="p">,</span> <span class="kt">string</span> <span class="n">filename</span><span class="p">,</span> <span class="kt">string</span> <span class="n">extension</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">extension</span> <span class="p">=</span> <span class="n">extension</span><span class="p">.</span><span class="n">ToLowerInvariant</span><span class="p">().</span><span class="n">TrimStart</span><span class="p">(</span><span class="sc">&#39;.&#39;</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">filename</span><span class="p">.</span><span class="n">EndsWith</span><span class="p">(</span><span class="n">extension</span><span class="p">))</span>
+        <span class="p">{</span>
+            <span class="n">filename</span> <span class="p">=</span> <span class="n">filename</span><span class="p">.</span><span class="n">Substring</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="n">filename</span><span class="p">.</span><span class="n">Length</span> <span class="p">-</span> <span class="m">1</span> <span class="p">-</span> <span class="n">extension</span><span class="p">.</span><span class="n">Length</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">blobContainer</span> <span class="p">=</span> <span class="n">container</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">FileName</span> <span class="p">=</span> <span class="n">filename</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">Extension</span> <span class="p">=</span> <span class="n">extension</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">private</span> <span class="n">CloudBlobContainer</span> <span class="n">blobContainer</span><span class="p">;</span>
+    <span class="k">private</span> <span class="n">MemoryStream</span> <span class="n">underlyingStream</span> <span class="p">=</span> <span class="k">new</span> <span class="n">MemoryStream</span><span class="p">();</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">FileName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">Extension</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">override</span> <span class="kt">bool</span> <span class="n">CanRead</span> <span class="p">{</span> <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="n">underlyingStream</span><span class="p">.</span><span class="n">CanRead</span><span class="p">;</span> <span class="p">}</span> <span class="p">}</span>
+    <span class="c1">// ... other Stream overrides delegating to underlyingStream</span>
+
+    <span class="k">public</span> <span class="kt">string</span> <span class="nf">BlobPath</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="n">Uri</span><span class="p">.</span><span class="n">EscapeUriString</span><span class="p">(</span><span class="kt">string</span><span class="p">.</span><span class="n">Format</span><span class="p">(</span><span class="s">&quot;{0}.{1}&quot;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="n">FileName</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="n">Extension</span><span class="p">));</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">async</span> <span class="n">Task</span><span class="p">&lt;</span><span class="n">Uri</span><span class="p">&gt;</span> <span class="n">UploadStreamToBlobAsync</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="kt">var</span> <span class="n">blobPath</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">BlobPath</span><span class="p">();</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">underlyingStream</span><span class="p">.</span><span class="n">Position</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span>
+        <span class="kt">var</span> <span class="n">blob</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">blobContainer</span><span class="p">.</span><span class="n">GetBlockBlobReference</span><span class="p">(</span><span class="n">blobPath</span><span class="p">);</span>
+        <span class="k">await</span> <span class="n">blob</span><span class="p">.</span><span class="n">UploadFromStreamAsync</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">underlyingStream</span><span class="p">);</span>
+        <span class="k">return</span> <span class="n">blob</span><span class="p">.</span><span class="n">Uri</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<h4>My Custom Provider</h4>
+<p>Using this custom Stream from within my own provider is simple.
+When <code>ReadAsMultipartAsync</code> is called, it basically walks the form
+elements and for each file calls <code>GetStream</code>.</p>
+<div class="highlight"><pre><span></span><span class="k">public</span> <span class="k">override</span> <span class="n">Stream</span> <span class="nf">GetStream</span><span class="p">(</span><span class="n">HttpContent</span> <span class="n">parent</span><span class="p">,</span> <span class="n">HttpContentHeaders</span> <span class="n">headers</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">ContentDispositionHeaderValue</span> <span class="n">contentDisposition</span> <span class="p">=</span> <span class="n">headers</span><span class="p">.</span><span class="n">ContentDisposition</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">contentDisposition</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// Found a file! Track it, and ultimately upload to blob store.</span>
+        <span class="k">if</span> <span class="p">(!</span><span class="n">String</span><span class="p">.</span><span class="n">IsNullOrWhiteSpace</span><span class="p">(</span><span class="n">contentDisposition</span><span class="p">.</span><span class="n">FileName</span><span class="p">))</span>
+        <span class="p">{</span>
+            <span class="kt">var</span> <span class="n">fileInfo</span> <span class="p">=</span> <span class="k">new</span> <span class="n">FileInfo</span><span class="p">(</span><span class="n">contentDisposition</span><span class="p">.</span><span class="n">FileName</span><span class="p">.</span><span class="n">Trim</span><span class="p">(</span><span class="sc">&#39;&quot;&#39;</span><span class="p">));</span>
+            <span class="kt">var</span> <span class="n">blobStream</span> <span class="p">=</span> <span class="k">new</span> <span class="n">MultipartBlobStream</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">imageBlobContainer</span><span class="p">,</span> <span class="n">fileInfo</span><span class="p">.</span><span class="n">Name</span><span class="p">,</span> <span class="n">fileInfo</span><span class="p">.</span><span class="n">Extension</span><span class="p">);</span>
+            <span class="k">this</span><span class="p">.</span><span class="n">FormFiles</span><span class="p">[</span><span class="n">fileInfo</span><span class="p">.</span><span class="n">Name</span><span class="p">]</span> <span class="p">=</span> <span class="n">blobStream</span><span class="p">;</span>
+            <span class="k">return</span> <span class="n">blobStream</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">else</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="k">new</span> <span class="nf">MemoryStream</span><span class="p">();</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">else</span>
+    <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nf">InvalidOperationException</span><span class="p">(</span><span class="s">&quot;No &#39;Content-Disposition&#39; header&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Once processing is complete, <code>ExecutePostProcessingAsync</code> is called, and
+I do my form field processing there.</p>
+<div class="highlight"><pre><span></span><span class="k">public</span> <span class="k">override</span> <span class="k">async</span> <span class="n">Task</span> <span class="nf">ExecutePostProcessingAsync</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">formContent</span> <span class="k">in</span> <span class="n">Contents</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">ContentDispositionHeaderValue</span> <span class="n">contentDisposition</span> <span class="p">=</span> <span class="n">formContent</span><span class="p">.</span><span class="n">Headers</span><span class="p">.</span><span class="n">ContentDisposition</span><span class="p">;</span>
+        <span class="c1">// Not a file, treat as a form field.</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">String</span><span class="p">.</span><span class="n">IsNullOrWhiteSpace</span><span class="p">(</span><span class="n">contentDisposition</span><span class="p">.</span><span class="n">FileName</span><span class="p">))</span>
+        <span class="p">{</span>
+            <span class="kt">var</span> <span class="n">fieldName</span> <span class="p">=</span> <span class="p">(</span><span class="n">contentDisposition</span><span class="p">.</span><span class="n">Name</span> <span class="p">??</span> <span class="s">&quot;&quot;</span><span class="p">).</span><span class="n">Trim</span><span class="p">(</span><span class="sc">&#39;&quot;&#39;</span><span class="p">);</span>
+            <span class="kt">var</span> <span class="n">fieldValue</span> <span class="p">=</span> <span class="k">await</span> <span class="n">formContent</span><span class="p">.</span><span class="n">ReadAsStringAsync</span><span class="p">();</span>
+            <span class="k">this</span><span class="p">.</span><span class="n">FormFields</span><span class="p">[</span><span class="n">fieldName</span><span class="p">]</span> <span class="p">=</span> <span class="n">fieldValue</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Finally, I've added a method <code>SaveAllAsync</code> to do the actual blob
+uploads - this allows me to do any post-processing I want to do without
+blocking the response to the client, and decouples the form processing
+from the blob upload steps. It also allows me to store metadata about
+the upload into Azure Table Storage. For the purposes of this blog
+however, I've called that from within the controller.</p>
+<div class="highlight"><pre><span></span><span class="k">public</span> <span class="k">async</span> <span class="n">Task</span><span class="p">&lt;</span><span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">UploadedImage</span><span class="p">&gt;&gt;</span> <span class="n">SaveAllAsync</span><span class="p">(</span><span class="kt">string</span> <span class="n">imageDescription</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">var</span> <span class="n">tasks</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Task</span><span class="p">&lt;</span><span class="n">UploadedImage</span><span class="p">&gt;&gt;();</span>
+    <span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">blob</span> <span class="k">in</span> <span class="k">this</span><span class="p">.</span><span class="n">FormFiles</span><span class="p">.</span><span class="n">Values</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">tasks</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">Task</span><span class="p">.</span><span class="n">Run</span><span class="p">(</span><span class="k">async</span> <span class="p">()</span> <span class="p">=&gt;</span>
+        <span class="p">{</span>
+            <span class="kt">var</span> <span class="n">blobUri</span> <span class="p">=</span> <span class="k">await</span> <span class="n">blob</span><span class="p">.</span><span class="n">UploadStreamToBlobAsync</span><span class="p">();</span>
+
+            <span class="kt">var</span> <span class="n">upload</span> <span class="p">=</span> <span class="k">new</span> <span class="n">UploadedImage</span><span class="p">()</span>
+            <span class="p">{</span>
+                <span class="n">PartitionKey</span> <span class="p">=</span> <span class="n">blob</span><span class="p">.</span><span class="n">FileName</span><span class="p">,</span>
+                <span class="n">RowKey</span> <span class="p">=</span> <span class="n">blob</span><span class="p">.</span><span class="n">Extension</span><span class="p">,</span>
+                <span class="n">FileName</span> <span class="p">=</span> <span class="n">blob</span><span class="p">.</span><span class="n">FileName</span><span class="p">,</span>
+                <span class="n">Extension</span> <span class="p">=</span> <span class="n">blob</span><span class="p">.</span><span class="n">Extension</span><span class="p">,</span>
+                <span class="n">BlobPath</span> <span class="p">=</span> <span class="n">blobUri</span><span class="p">.</span><span class="n">ToString</span><span class="p">(),</span>
+                <span class="n">UploadedOn</span> <span class="p">=</span> <span class="n">DateTime</span><span class="p">.</span><span class="n">UtcNow</span>
+            <span class="p">};</span>
+            <span class="kt">var</span> <span class="n">upsert</span> <span class="p">=</span> <span class="n">TableOperation</span><span class="p">.</span><span class="n">InsertOrReplace</span><span class="p">(</span><span class="n">upload</span><span class="p">);</span>
+            <span class="k">await</span> <span class="k">this</span><span class="p">.</span><span class="n">imageDataTable</span><span class="p">.</span><span class="n">ExecuteAsync</span><span class="p">(</span><span class="n">upsert</span><span class="p">);</span>
+
+            <span class="k">return</span> <span class="n">upload</span><span class="p">;</span>
+        <span class="p">}));</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="k">await</span> <span class="n">Task</span><span class="p">.</span><span class="n">WhenAll</span><span class="p">(</span><span class="n">tasks</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<h2>Putting It All Together</h2>
+<p>Once you've created these pieces, you need to use them from your code. I
+wrote a simple HTML Form for uploading, and a simple ASP.Net controller
+to do so. The form code is trivial:</p>
+<div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">h2</span><span class="p">&gt;</span>Upload File<span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
+
+@using (Html.BeginForm(&quot;upload&quot;, &quot;api&quot;, FormMethod.Post, new { enctype = &quot;multipart/form-data&quot; }))
+{
+    <span class="p">&lt;</span><span class="nt">label</span><span class="p">&gt;</span>Image Description:<span class="p">&lt;/</span><span class="nt">label</span><span class="p">&gt;</span> <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;text&quot;</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;ImageDescription&quot;</span> <span class="na">value</span><span class="o">=</span><span class="s">&quot;Testing&quot;</span> <span class="p">/&gt;&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+    <span class="p">&lt;</span><span class="nt">label</span><span class="p">&gt;</span>Image: <span class="p">&lt;/</span><span class="nt">label</span><span class="p">&gt;</span> <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;file&quot;</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;FileUpload1&quot;</span> <span class="p">/&gt;&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+    <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;submit&quot;</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;Submit&quot;</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;Submit&quot;</span> <span class="na">value</span><span class="o">=</span><span class="s">&quot;Upload&quot;</span> <span class="p">/&gt;</span>
+}
+</pre></div>
+
+
+<p>The controller is not much more complicated, and is a simple WebAPI
+Controller at api/upload:</p>
+<div class="highlight"><pre><span></span><span class="k">public</span> <span class="k">class</span> <span class="nc">UploadController</span> <span class="p">:</span> <span class="n">ApiController</span>
+<span class="p">{</span>
+<span class="na">    [Route(&quot;api/upload&quot;)]</span>
+    <span class="k">public</span> <span class="k">async</span> <span class="n">Task</span><span class="p">&lt;</span><span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">UploadedImage</span><span class="p">&gt;&gt;</span> <span class="n">Post</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(!</span><span class="n">Request</span><span class="p">.</span><span class="n">Content</span><span class="p">.</span><span class="n">IsMimeMultipartContent</span><span class="p">(</span><span class="s">&quot;form-data&quot;</span><span class="p">))</span>
+        <span class="p">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">HttpResponseException</span><span class="p">(</span><span class="n">HttpStatusCode</span><span class="p">.</span><span class="n">UnsupportedMediaType</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="kt">var</span> <span class="n">multipartStreamProvider</span> <span class="p">=</span> <span class="k">new</span> <span class="n">AzureBlobMultipartProvider</span><span class="p">(</span>
+            <span class="k">await</span> <span class="n">AzureUtilities</span><span class="p">.</span><span class="n">GetImageBlobContainerAsync</span><span class="p">(</span><span class="s">&quot;ImageDataConnectionString&quot;</span><span class="p">),</span>
+            <span class="k">await</span> <span class="n">AzureUtilities</span><span class="p">.</span><span class="n">GetImageDataTableAsync</span><span class="p">(</span><span class="s">&quot;ImageDataConnectionString&quot;</span><span class="p">));</span>
+        <span class="kt">var</span> <span class="n">results</span> <span class="p">=</span> <span class="k">await</span> <span class="n">Request</span><span class="p">.</span><span class="n">Content</span><span class="p">.</span><span class="n">ReadAsMultipartAsync</span><span class="p">&lt;</span><span class="n">AzureBlobMultipartProvider</span><span class="p">&gt;(</span><span class="n">multipartStreamProvider</span><span class="p">);</span>
+        <span class="kt">var</span> <span class="n">imageDescription</span> <span class="p">=</span> <span class="n">results</span><span class="p">.</span><span class="n">FormFields</span><span class="p">[</span><span class="s">&quot;ImageDescription&quot;</span><span class="p">];</span>
+
+        <span class="k">return</span> <span class="k">await</span> <span class="n">results</span><span class="p">.</span><span class="n">SaveAllAsync</span><span class="p">(</span><span class="n">imageDescription</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<h2>Next Steps</h2>
+<p>I now have a form and controller capable of uploading images directly
+into Azure Blob storage. There's nothing stopping me from adapting my
+<code>MultipartBlobStream</code> to do processing of the image data before storing
+it. In fact, in my application, I built several additional processors
+into this step - one for downscaling the image to more useful
+resolutions, another for storing subsamples of the image into multiple
+blobs. Anything is possible here, as long as you're willing to take a
+dependency on GDI+ or other low-level image stream processing libraries.</p>
+<p>As always, I've made my code available <a href="https://github.com/noodlefrenzy/asp-blob-uploader">on GitHub as
+asp-blob-uploader</a>
+under the MIT permissive license - feel free to fork, submit PRs, and
+open issues as you see fit.</p><p>There are <a href="/image-stream-processing-to-blob-storage.html#disqus_thread">comments</a>.</p>                </article>
+            </aside><!-- /#featured -->
+                <section id="content" class="body">
+                    <h1>Other articles</h1>
+                    <hr />
+                    <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/real-time-mapping-with-signalr-and-event-hubs.html" rel="bookmark"
+                           title="Permalink to Real-time Mapping with SignalR and Event Hubs">Real-time Mapping with SignalR and Event Hubs</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2015-08-18T10:20:00-07:00">
+                Published: Tue 18 August 2015
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/net.html">.NET</a> <a href="/tag/c.html">C#</a> <a href="/tag/eventhub.html">EventHub</a> <a href="/tag/geo.html">Geo</a> <a href="/tag/websockets.html">WebSockets</a> </p>
+</footer><!-- /.post-info -->                <p>One of my recent projects had to do with watching people moving around
+the city - not in a creepy stalker way, but trying to get some sense of
+where people congregated and general walking traffic flow. As anyone who
+has dealt with large data, especially large geo data can tell ...</p>
+                <a class="readmore" href="/real-time-mapping-with-signalr-and-event-hubs.html">read more</a>
+<p>There are <a href="/real-time-mapping-with-signalr-and-event-hubs.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/using-project-oxford-to-pull-entities-from-images.html" rel="bookmark"
+                           title="Permalink to Using Project Oxford To Pull Entities From Images">Using Project Oxford To Pull Entities From Images</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2015-05-14T11:06:00-07:00">
+                Published: Thu 14 May 2015
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/c.html">C#</a> <a href="/tag/entity-extraction.html">Entity Extraction</a> <a href="/tag/machine-learning.html">Machine Learning</a> <a href="/tag/ml.html">ML</a> <a href="/tag/msr.html">MSR</a> <a href="/tag/ocr.html">OCR</a> <a href="/tag/project-oxford.html">Project Oxford</a> </p>
+</footer><!-- /.post-info -->                <p>I love my job. Less than a week after watching the amazing announcements
+at <a href="http://www.buildwindows.com/">//Build2015</a>, I had a chance to try
+using some of them on a real project as part of a hackathon.
+Unfortunately, I can't share the actual problem they are trying to
+solve, but the work ...</p>
+                <a class="readmore" href="/using-project-oxford-to-pull-entities-from-images.html">read more</a>
+<p>There are <a href="/using-project-oxford-to-pull-entities-from-images.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/storm-bolts-using-reactive-extensions.html" rel="bookmark"
+                           title="Permalink to Storm Bolts Using Reactive Extensions">Storm Bolts Using Reactive Extensions</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2015-04-07T11:03:00-07:00">
+                Published: Tue 07 April 2015
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/net.html">.NET</a> <a href="/tag/apache-storm.html">Apache Storm</a> <a href="/tag/c.html">C#</a> <a href="/tag/distributed-systems.html">Distributed Systems</a> <a href="/tag/reactive.html">Reactive</a> </p>
+</footer><!-- /.post-info -->                <p>As you might have noticed in some of my other posts, I've spent my share
+of time with Azure EventHubs.  It's a great ingestion pipeline able to
+cope with some of the highest scale workloads you can throw at it, but
+once the data is in there it ...</p>
+                <a class="readmore" href="/storm-bolts-using-reactive-extensions.html">read more</a>
+<p>There are <a href="/storm-bolts-using-reactive-extensions.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/node-js-and-net-talking-eventhub-together.html" rel="bookmark"
+                           title="Permalink to Node.js and .NET Talking EventHub, Together">Node.js and .NET Talking EventHub, Together</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2015-01-28T13:48:00-08:00">
+                Published: Wed 28 January 2015
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/net.html">.NET</a> <a href="/tag/amqp.html">AMQP</a> <a href="/tag/azure.html">Azure</a> <a href="/tag/c.html">C#</a> <a href="/tag/eventhub.html">EventHub</a> <a href="/tag/node.html">Node</a> </p>
+</footer><!-- /.post-info -->                <p>Over the past few months, I've been working on <a href="https://github.com/noodlefrenzy/node-amqp10">a Node.js client for
+AMQP 1.0</a> - the <em>lingua
+franca</em> of Azure's EventHub and ServiceBus.  Well, the EventHub support
+is just about complete, and ServiceBus Topics and Queues should follow
+shortly thereafter (it's just me working on ...</p>
+                <a class="readmore" href="/node-js-and-net-talking-eventhub-together.html">read more</a>
+<p>There are <a href="/node-js-and-net-talking-eventhub-together.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/duck-typing-in-c-4-0.html" rel="bookmark"
+                           title="Permalink to Duck Typing in C# 4.0">Duck Typing in C# 4.0</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2010-05-01T16:04:00-07:00">
+                Published: Sat 01 May 2010
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/net.html">.NET</a> <a href="/tag/c.html">C#</a> </p>
+</footer><!-- /.post-info -->                <p>One of my favorite new features in C# 4.0 is the <span
+style="font-family: Consolas;"><span
+style="font-size: small;">dynamic</span> </span>keyword.  Not only does
+it allow you to do freaky things with interactions between C# and
+scripting languages like IronRuby, but it opens up one of my favorite
+features ...</p>
+                <a class="readmore" href="/duck-typing-in-c-4-0.html">read more</a>
+<p>There are <a href="/duck-typing-in-c-4-0.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+                </ol><!-- /#posts-list -->
+                </section><!-- /#content -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="https://blogs.technet.microsoft.com/machinelearning/">Cortana Analytics</a></li>
+                            <li><a href="http://www.kdnuggets.com/">KDNuggets</a></li>
+                            <li><a href="http://www.hanselman.com/blog/">Hanselman</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://twitter.com/noodlefrenzy">Twitter</a></li>
+                            <li><a href="https://www.linkedin.com/in/noodlefrenzy">LinkedIn</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-54597100-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'intelligentartifice';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'https://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+</html>

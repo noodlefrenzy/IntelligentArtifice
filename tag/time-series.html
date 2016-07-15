@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Intelligent Artifice - Time Series</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/noodlefrenzy">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="/">Intelligent Artifice </a></h1>
+                <nav><ul>
+                    <li><a href="/pages/about-me-and-this-blog.html">About Me And This Blog</a></li>
+                    <li><a href="/category/devops.html">DevOps</a></li>
+                    <li><a href="/category/meta.html">Meta</a></li>
+                    <li><a href="/category/software.html">Software</a></li>
+                    <li><a href="/category/uncategorized.html">Uncategorized</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="/time-series-processing-in-azure-ml-using-python.html">Time-Series Processing in Azure ML Using Python</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2015-03-14T22:09:00-07:00">
+                Published: Sat 14 March 2015
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/azure.html">Azure</a> <a href="/tag/machine-learning.html">Machine Learning</a> <a href="/tag/ml.html">ML</a> <a href="/tag/python.html">Python</a> <a href="/tag/time-series.html">Time Series</a> </p>
+</footer><!-- /.post-info --><p>With the general availability of Azure Machine Learning, the team has
+added a ton of new features.  Perhaps the one I'm most excited about is
+the addition of a general "Execute Python Script" module.  I've been
+meaning to brush up on my Python skills, and with the inclusion of
+Pandas and Numpy it opens up a lot of data processing options -
+particularly for time-series data.  There are still a few quirks when
+using it though, so similar to my previous post on <a href="http://www.mikelanzetta.com/2015/01/data-cleaning-with-azureml-and-r-dates/">coping with dates in
+AzureML's R
+module</a>, I
+thought I'd outline those quirks in a post.  I'll be doing so in a
+step-by-step fashion so hopefully I can show how you'd go about
+diagnosing these sorts of quirks yourself.</p>
+<p>One of the things I love about Python's Pandas library is its <a href="http://pandas.pydata.org/pandas-docs/stable/timeseries.html">fantastic
+support for
+time-series</a>
+data manipulation.  The ability to normalize dates, roll up into
+aggregates, and easily slice ranges is phenomenal.</p>
+<p><img alt="execute_python" src="/images/execute_python.png" /></p>
+<p>To get started, we'll pull in some time-series data, and mess around
+with it in the Python module - set up an experiment with a Reader
+connected to an "Execute Python Script" module.</p>
+<p>The Reader can pull data directly from plenty of different sources, but
+for this time-series example, let's use finance data from Yahoo's ichart
+API.  We'll pull data for a single stock's history - let's use an
+exasperating one like
+TSLA: http://ichart.finance.yahoo.com/table.csv?s=TSLA.  This returns
+data as a CSV with a header row, leading to the final Reader
+configuration
+below.</p>
+<p><img alt="ichart_reader_config" src="/images/ichart_reader_config.png" /></p>
+<p>Once we have the data coming in, it's time to do something fun with it.
+ Let's take a first crack at it - we'll take the input and turn it into
+monthly means.  In regular Python with Pandas, that looks like:</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+
+<span class="n">tsla</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;http://ichart.finance.yahoo.com/table.csv?s=TSLA&#39;</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">tsla_monthly</span> <span class="o">=</span> <span class="n">tsla</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>This is why I love Pandas - that code is clean, easy to read, and easy
+to write (at least with intellisense/completion).  Let's assume that
+resample would work the same on the data from the reader, and try it in
+the module:</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+
+<span class="k">def</span> <span class="nf">azureml_main</span><span class="p">(</span><span class="n">dataframe1</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">dataframe2</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+
+    <span class="n">dfMonthly</span> <span class="o">=</span> <span class="n">dataframe1</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dfMonthly</span><span class="p">,</span>
+</pre></div>
+
+
+<p>Boom!  Well, that didn't work:</p>
+<blockquote>
+<p><code>File "C:\pyhome\lib\site-packages\pandas\tseries\resample.py", line 101, in resample</code>\
+ <code>raise TypeError('Only valid with DatetimeIndex or PeriodIndex')</code></p>
+</blockquote>
+<p>So we don't have a <code>DatetimeIndex</code>- must not be importing an index,
+we'll need to make our own
+using <code>dataframe1.set_index('Date', inplace=True).</code>  Hmm, same error.
+ Is Azure ML just not parsing the dates?  Let's print things out and see
+what we have:</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">azureml_main</span><span class="p">(</span><span class="n">dataframe1</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">dataframe2</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">dataframe1</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">dataframe1</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+
+    <span class="k">return</span> <span class="n">dataframe1</span><span class="p">,</span>
+</pre></div>
+
+
+<p>gives us:</p>
+<div class="highlight"><pre><span></span>&lt;class &#39;pandas.core.frame.DataFrame&#39;&gt;
+Int64Index: 1185 entries, 0 to 1184
+Data columns (total 7 columns):
+Date         1185 non-null float64
+Open         1185 non-null float64
+High         1185 non-null float64
+Low          1185 non-null float64
+Close        1185 non-null float64
+Volume       1185 non-null int32
+Adj Close    1185 non-null float64
+</pre></div>
+
+
+<p>Notice <code>Date</code> is listed as a <code>float64</code>.  That's exciting news!  Why is
+it a float64?  I'd expect it to be either a Date, a Datetime, or maybe a
+String - but a Float?  And why did I not get the <code>head()</code> output?  Let's
+solve the second part first - I'm going to guess it's an issue with
+buffering, since I've seen similar issues in the past (the distant
+past - C++ streams - but still).  Let's just print a bunch of spaces and
+hope for the best: <code>print(' ' * 4096)</code>.  Paydirt!</p>
+<div class="highlight"><pre><span></span>         Date    Open    High     Low   Close   Volume  Adj Close
+0  1426204800  188.95  191.75  187.32  188.68  5378600     188.68
+1  1426118400  193.75  194.45  189.75  191.07  4123500     191.07
+2  1426032000  191.15  196.18  191.01  193.74  4950300     193.74
+3  1425945600  188.46  193.50  187.60  190.32  5530900     190.32
+4  1425859200  194.39  194.49  188.25  190.88  6717300     190.88
+</pre></div>
+
+
+<p>I notice two things immediately - we were right about the lack of an
+index and that float actually looks like a long, in particular a
+timestamp.  Let's guess this is related to Posix timestamps, and add a
+conversion before our set_index call:</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">datetime</span> <span class="kn">as</span> <span class="nn">dt</span>
+
+<span class="k">def</span> <span class="nf">azureml_main</span><span class="p">(</span><span class="n">dataframe1</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">dataframe2</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+    <span class="n">dataframe1</span><span class="o">.</span><span class="n">Date</span> <span class="o">=</span> <span class="n">dataframe1</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">dataframe1</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;Date&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">dfMonthly</span> <span class="o">=</span> <span class="n">dataframe1</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dfMonthly</span><span class="p">,</span>
+</pre></div>
+
+
+<p><img alt="orig_output" src="/images/orig_output.png" /> </p>
+<p>This worked!  However, looking at the output there is no Date column - so I'm
+guessing that in the same way the input data didn't pull the first
+column as an index, the output doesn't write out the index either.
+ We'll need to turn our index back into a
+column: <code>dfMonthly.reset_index(level=0, inplace=True)</code>.  Finally, all
+don... wha?!</p>
+<p><code>Exception: Type unsupported &lt;class 'pandas.tslib.Timestamp'&gt;</code></p>
+<p>Crap.  Looks like the output from the Python module can't handle
+Timestamps.  Well, we really only want the date, and strings should be
+fine, so lets just convert these Timestamps to strings and hope that
+downstream modules can handle those effectively, and in the meantime
+I'll let the AzureML team know.  The final code looks like:</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">datetime</span> <span class="kn">as</span> <span class="nn">dt</span>
+
+<span class="k">def</span> <span class="nf">azureml_main</span><span class="p">(</span><span class="n">dataframe1</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">dataframe2</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+    <span class="n">dataframe1</span><span class="o">.</span><span class="n">Date</span> <span class="o">=</span> <span class="n">dataframe1</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">dataframe1</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;Date&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">dfMonthly</span> <span class="o">=</span> <span class="n">dataframe1</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">)</span>
+    <span class="n">dfMonthly</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">dfMonthly</span><span class="o">.</span><span class="n">Date</span> <span class="o">=</span> <span class="n">dfMonthly</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dfMonthly</span><span class="p">,</span>
+</pre></div>
+
+
+<p>I hope this helps!  If you find any other quirks let me know - I'll
+definitely let the AzureML team know, and add the workarounds to my
+list.</p><p>There are <a href="/time-series-processing-in-azure-ml-using-python.html#disqus_thread">comments</a>.</p>                </article>
+            </aside><!-- /#featured -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="https://blogs.technet.microsoft.com/machinelearning/">Cortana Analytics</a></li>
+                            <li><a href="http://www.kdnuggets.com/">KDNuggets</a></li>
+                            <li><a href="http://www.hanselman.com/blog/">Hanselman</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://twitter.com/noodlefrenzy">Twitter</a></li>
+                            <li><a href="https://www.linkedin.com/in/noodlefrenzy">LinkedIn</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-54597100-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'intelligentartifice';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'https://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+</html>

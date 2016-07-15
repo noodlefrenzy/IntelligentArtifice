@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Storm Bolts Using Reactive Extensions</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/noodlefrenzy">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="/">Intelligent Artifice </a></h1>
+                <nav><ul>
+                    <li><a href="/pages/about-me-and-this-blog.html">About Me And This Blog</a></li>
+                    <li><a href="/category/devops.html">DevOps</a></li>
+                    <li><a href="/category/meta.html">Meta</a></li>
+                    <li class="active"><a href="/category/software.html">Software</a></li>
+                    <li><a href="/category/uncategorized.html">Uncategorized</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="/storm-bolts-using-reactive-extensions.html" rel="bookmark"
+           title="Permalink to Storm Bolts Using Reactive Extensions">Storm Bolts Using Reactive Extensions</a></h1>
+<a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="noodlefrenzy">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2015-04-07T11:03:00-07:00">
+                Published: Tue 07 April 2015
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/net.html">.NET</a> <a href="/tag/apache-storm.html">Apache Storm</a> <a href="/tag/c.html">C#</a> <a href="/tag/distributed-systems.html">Distributed Systems</a> <a href="/tag/reactive.html">Reactive</a> </p>
+</footer><!-- /.post-info -->      <p>As you might have noticed in some of my other posts, I've spent my share
+of time with Azure EventHubs.  It's a great ingestion pipeline able to
+cope with some of the highest scale workloads you can throw at it, but
+once the data is in there it's another matter to pull it out and do
+something useful with it.  You need a system capable of processing
+multiple input streams at extremely high scale and combining them in
+various ways, building aggregates, and storing results.  Apache Storm is
+one such system, as are Spark and Azure Data Factory which I will
+discuss in future posts.  It's quite easy to get Storm up and running on
+Azure and it's easy to code the requisite pieces in C#, but the Storm
+architecture has some idiosyncrasies which make it difficult to decouple
+the business logic of processing your data from the Storm-specific code
+for managing the appropriate pieces and ensuring reliability semantics.
+This post, in particular, discusses turning the Storm workflow on its
+head using the Reactive Extensions allowing me to decouple the
+Storm-specific code from my business logic in an elegant fashion.  In
+a future post I will discuss using this structure to process input
+from EventHubs. Programming note: all of the code in this post is
+<a href="https://github.com/noodlefrenzy/ReactiveStorm">available on GitHub</a>.</p>
+<h2>Into the Storm</h2>
+<p><img alt="topology" src="/images/topology1.png" /></p>
+<p>Like any other data processing pipeline, Apache Storm consists of a way to
+get data into the system followed by a series of processing
+steps resulting in one or more data outputs.  In Storm, the
+input consists of "Spouts" which produce data in the form of "Tuples".
+ One or more Spouts can then drive processing elements called "Bolts"
+which ingest that data and may emit additional Tuples of their own.
+ Eventually these chains of Bolts might produce one or more outputs
+which would get stored to whichever data stores you have configured.
+ Storm has a robust and tune-able fault tolerance model, with Tuples
+allowing themselves to be "anchored" to downstream Tuples, and only
+"done" when the entire dependency chain is successfully "ack'd". For
+more details I'd encourage you to <a href="http://storm.apache.org/documentation/Guaranteeing-message-processing.html">peruse their
+documentation</a> which,
+on this subject, is actually solid and well-written.</p>
+<h2>Storm on HDInsight, on Visual Studio</h2>
+<p>To get started with Storm on HDInsight make sure you've installed the
+HDInsight Azure tools for your version of Visual Studio - there's a
+<a href="http://azure.microsoft.com/en-us/documentation/articles/hdinsight-hadoop-visual-studio-tools-get-started/">great post on the Azure
+site</a>on
+installing the tools, connecting to your subscription and getting
+started.  You'll notice a host of new project types specifically for
+working with HDInsight once you've installed it and restarted VS - we
+want "Storm Application".</p>
+<p><img alt="HDInsight -&gt; Storm Application" src="/images/create_storm_project.png" /></p>
+<p>When you create the project, you'll wind up with a C# Class Library
+project with a few files you can use as templates to build out your
+storm Topology - we'll be replacing most of those, as outlined below.
+ Notice that although Storm itself seems like a stream-processing
+system, in reality what it's doing is producing Tuples from within
+Spouts using <code>NextTuple()</code> and consuming those Tuples (and potentially
+producing more) from within the Bolt's <code>Execute()</code> method.
+ Architecturally for Storm this makes sense, but for the user it's a bit
+of a disconnect from how they think about the problem.  I know for me I
+think of it as processing a stream of input into one or more streams of
+output, and so had mentally geared myself for <code>Enumerables</code>
+and <code>yield return</code> blocks, but instead I've almost got the dual of
+that - I'm seeing a single element at a time, and sending a single
+element at a time back out.  I immediately thought of Reactive
+Extensions and <code>IObservable -</code> <a href="http://csl.stanford.edu/~christos/pldi2010.fit/meijer.duality.pdf">the dual
+of <code>IEnumerable</code>!</a></p>
+<p>First we need to add Reactive to the mix - open the "Manage NuGet
+Packages" dialogue, and search for Rx-Main.  Add that to the project,
+and you will now have access to the whole Reactive toolkit - from
+<code>Subjects</code> to <code>Reactive.Linq</code>.  I'd definitely recommend spending some
+time learning the framework if you don't know it - it'll break your
+brain, but it's kind of amazing when you start wielding its power.  I'd
+suggest this <a href="http://go.microsoft.com/fwlink/?LinkID=205219">paper on design
+guidelines</a>, and this
+<a href="http://channel9.msdn.com/Search?term=reactive%20extensions%20api%20in%20depth#ch9Search">series of Channel 9
+videos</a>.</p>
+<h2>Building a Reactive Bolt</h2>
+<p>Now to the implementation!  So the first thing we want to do is turn
+this Bolt inside-out - we'll have an <code>Observable</code> of the Bolt's inputs
+mapping through some processing to an <code>Observable</code> of the Bolt's
+outputs.  We can factor out the logic that turns these Tuples into input
+types and turns the output types into Values, and then the processor can
+just focus on the logic itself.  These inputs and outputs should keep
+track of the Tuples they've used so we can, if needed, anchor the output
+of the Bolt as appropriate.  To do so, we'll wrap these inputs and
+outputs in a couple simple parameterized structs:</p>
+<div class="highlight"><pre><span></span><span class="c1">/// &lt;summary&gt;</span>
+<span class="c1">/// Wrap the (converted) input to keep track of the original tuple for anchoring.</span>
+<span class="c1">/// &lt;/summary&gt;</span>
+<span class="k">public</span> <span class="k">struct</span> <span class="nc">BoltInput</span><span class="p">&lt;</span><span class="n">TIn</span><span class="p">&gt;</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="n">SCPTuple</span> <span class="n">Original</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="n">TIn</span> <span class="n">Converted</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">/// &lt;summary&gt;</span>
+<span class="c1">/// Wrap the result to keep track of all tuples that should anchor to the output.</span>
+<span class="c1">/// &lt;/summary&gt;</span>
+<span class="k">public</span> <span class="k">struct</span> <span class="nc">BoltOutput</span><span class="p">&lt;</span><span class="n">TOut</span><span class="p">&gt;</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">SCPTuple</span><span class="p">&gt;</span> <span class="n">Anchors</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="n">TOut</span> <span class="n">Result</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Since we now have several responsibilities and since the topology
+builder likes each Bolt to be a distinct class, we'll turn this Reactive
+Bolt into a nice abstract base class taking on the grunt work of
+Reactifying (<em>is that a word?</em>) the code and leaving the child class to
+just do the basics.  The result looks like this:</p>
+<div class="highlight"><pre><span></span><span class="k">public</span> <span class="k">abstract</span> <span class="k">class</span> <span class="nc">ReactiveBoltBase</span><span class="p">&lt;</span><span class="n">TIn</span><span class="p">,</span> <span class="n">TOut</span><span class="p">&gt;</span> <span class="p">:</span> <span class="n">ISCPBolt</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="nf">ReactiveBoltBase</span><span class="p">(</span><span class="n">Context</span> <span class="n">context</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">Context</span> <span class="p">=</span> <span class="n">context</span><span class="p">;</span>
+        <span class="n">MapSchemas</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">Context</span><span class="p">);</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">Input</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Subject</span><span class="p">&lt;</span><span class="n">BoltInput</span><span class="p">&lt;</span><span class="n">TIn</span><span class="p">&gt;&gt;();</span>
+        <span class="n">ProcessInput</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">Input</span><span class="p">).</span><span class="n">Subscribe</span><span class="p">(</span>
+            <span class="n">output</span> <span class="p">=&gt;</span>
+            <span class="p">{</span>
+                <span class="kt">var</span> <span class="n">converted</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">ConvertOutput</span><span class="p">(</span><span class="n">output</span><span class="p">.</span><span class="n">Result</span><span class="p">);</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">output</span><span class="p">.</span><span class="n">Anchors</span> <span class="p">!=</span> <span class="k">null</span> <span class="p">&amp;&amp;</span> <span class="n">output</span><span class="p">.</span><span class="n">Anchors</span><span class="p">.</span><span class="n">Any</span><span class="p">())</span>
+                <span class="p">{</span>
+                    <span class="k">this</span><span class="p">.</span><span class="n">Context</span><span class="p">.</span><span class="n">Emit</span><span class="p">(</span><span class="n">Constants</span><span class="p">.</span><span class="n">DEFAULT_STREAM_ID</span><span class="p">,</span> <span class="n">output</span><span class="p">.</span><span class="n">Anchors</span><span class="p">,</span> <span class="n">converted</span><span class="p">);</span>
+                <span class="p">}</span>
+                <span class="k">else</span>
+                <span class="p">{</span>
+                    <span class="k">this</span><span class="p">.</span><span class="n">Context</span><span class="p">.</span><span class="n">Emit</span><span class="p">(</span><span class="n">Constants</span><span class="p">.</span><span class="n">DEFAULT_STREAM_ID</span><span class="p">,</span> <span class="n">converted</span><span class="p">);</span>
+                <span class="p">}</span>
+            <span class="p">},</span>
+            <span class="n">err</span> <span class="p">=&gt;</span>
+            <span class="p">{</span>
+                <span class="n">Trace</span><span class="p">.</span><span class="n">TraceError</span><span class="p">(</span><span class="n">err</span><span class="p">.</span><span class="n">ToString</span><span class="p">());</span>
+            <span class="p">},</span>
+            <span class="p">()</span> <span class="p">=&gt;</span>
+            <span class="p">{</span>
+                <span class="n">Trace</span><span class="p">.</span><span class="n">TraceInformation</span><span class="p">(</span><span class="s">&quot;Bolt shutting down.&quot;</span><span class="p">);</span>
+            <span class="p">});</span>
+    <span class="p">}</span>
+
+    <span class="k">private</span> <span class="n">Context</span> <span class="n">Context</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+
+    <span class="c1">/// &lt;summary&gt;</span>
+    <span class="c1">/// IObservable for the input data - fed to the processor.</span>
+    <span class="c1">/// &lt;/summary&gt;</span>
+    <span class="k">private</span> <span class="n">Subject</span><span class="p">&lt;</span><span class="n">BoltInput</span><span class="p">&lt;</span><span class="n">TIn</span><span class="p">&gt;&gt;</span> <span class="n">Input</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+
+    <span class="c1">/// &lt;summary&gt;</span>
+    <span class="c1">/// Execute now just feeds the tuple to the observable (and, potentially, acks).</span>
+    <span class="c1">/// &lt;/summary&gt;</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Execute</span><span class="p">(</span><span class="n">SCPTuple</span> <span class="n">tuple</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">Input</span><span class="p">.</span><span class="n">OnNext</span><span class="p">(</span>
+            <span class="k">new</span> <span class="n">BoltInput</span><span class="p">&lt;</span><span class="n">TIn</span><span class="p">&gt;()</span>
+            <span class="p">{</span>
+                <span class="n">Original</span> <span class="p">=</span> <span class="n">tuple</span><span class="p">,</span>
+                <span class="n">Converted</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">ConvertInput</span><span class="p">(</span><span class="n">tuple</span><span class="p">)</span>
+            <span class="p">});</span>
+    <span class="p">}</span>
+
+    <span class="c1">/// &lt;summary&gt;</span>
+    <span class="c1">/// Map schemas into the Context using DeclareComponentSchema.</span>
+    <span class="c1">/// &lt;/summary&gt;</span>
+    <span class="k">protected</span> <span class="k">abstract</span> <span class="k">void</span> <span class="nf">MapSchemas</span><span class="p">(</span><span class="n">Context</span> <span class="n">context</span><span class="p">);</span>
+
+    <span class="c1">/// &lt;summary&gt;</span>
+    <span class="c1">/// Convert SCPTuple into the input type.</span>
+    <span class="c1">/// &lt;/summary&gt;</span>
+    <span class="k">protected</span> <span class="k">abstract</span> <span class="n">TIn</span> <span class="nf">ConvertInput</span><span class="p">(</span><span class="n">SCPTuple</span> <span class="n">tuple</span><span class="p">);</span>
+
+    <span class="c1">/// &lt;summary&gt;</span>
+    <span class="c1">/// Convert output type into Values for Emitting.</span>
+    <span class="c1">/// &lt;/summary&gt;</span>
+    <span class="k">protected</span> <span class="k">abstract</span> <span class="n">Values</span> <span class="nf">ConvertOutput</span><span class="p">(</span><span class="n">TOut</span> <span class="n">output</span><span class="p">);</span>
+
+    <span class="c1">/// &lt;summary&gt;</span>
+    <span class="c1">/// Process the input data from its observable into output data.</span>
+    <span class="c1">/// &lt;/summary&gt;</span>
+    <span class="k">protected</span> <span class="k">abstract</span> <span class="n">IObservable</span><span class="p">&lt;</span><span class="n">BoltOutput</span><span class="p">&lt;</span><span class="n">TOut</span><span class="p">&gt;&gt;</span> <span class="n">ProcessInput</span><span class="p">(</span>
+        <span class="n">IObservable</span><span class="p">&lt;</span><span class="n">BoltInput</span><span class="p">&lt;</span><span class="n">TIn</span><span class="p">&gt;&gt;</span> <span class="n">input</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>So there are only four methods that child classes need to implement.
+ This may seem like more than it needed to in the first place (because
+it is), but each of those is focused on a very specific task.
+ <code>MapSchemas</code> is used to tell the <code>Context</code> what the input and output
+schemas look like.  <code>ConvertInput/ConvertOutput</code> just convert values
+from/to the input/output formats expected by Storm, and <code>ProcessInput</code>
+does the meat of the work - subscribing to the input observable and
+letting us watch for output.  The Bolt itself just <code>Subscribes</code> to the
+<code>IObservable</code> handed back from <code>ProcessInput</code>, and <code>Emits</code> results as it
+sees them (anchored appropriately).  That leaves <code>Execute</code> to just
+publish inputs to the <code>Subject</code>, driving the <code>ProcessInput</code> logic.</p>
+<h2>Making Your Spout Reactive</h2>
+<p>Spouts are a bit tougher to make Reactive, primarily because even though
+it's just an Emitter it has no control over when it emits. Storm drives
+it through calls to <code>NextTuple</code>, which for good or ill is how Storm does
+flow-control. We should honor Storm's wishes and not just flood the
+stream by emitting everything the first time <code>NextTuple</code> is called.
+ There are a couple of options for this throttling: for instance, we
+could internally queue up our outputs and then dequeue when asked in
+<code>NextTuple</code>.  However, going this route we might as well skip Reactive
+since it really provides no value - and that's a perfectly acceptable
+solution! It just doesn't make for much of a blog post, so let's dig a
+little.</p>
+<p>The other option is to put in some sort of gate. Every time the
+<code>Observable</code> wants to produce a value it hits the gate, and if it has
+capacity it goes through; every time <code>NextTuple</code> is called it adds a
+unit of capacity to the gate.  In C#, the way we implement this sort of
+logic is with a <code>SemaphoreSlim</code> - we <code>Wait()</code> on the capacity of the
+gate, and we <code>Release()</code> more capacity when asked.  Also since we're
+going Reactive anyway, let's turn the Ack/Fail calls into an
+<code>Observable</code> people can subscribe to.  Putting this all together results
+in the class below:</p>
+<div class="highlight"><pre><span></span><span class="k">public</span> <span class="k">abstract</span> <span class="k">class</span> <span class="nc">ReactiveSpoutBase</span><span class="p">&lt;</span><span class="n">TOut</span><span class="p">&gt;</span> <span class="p">:</span> <span class="n">ISCPSpout</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="nf">ReactiveSpoutBase</span><span class="p">(</span><span class="n">Context</span> <span class="n">context</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">Context</span> <span class="p">=</span> <span class="n">context</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">MapSchema</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">Context</span><span class="p">);</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">Credits</span> <span class="p">=</span> <span class="k">new</span> <span class="n">SemaphoreSlim</span><span class="p">(</span><span class="m">0</span><span class="p">);</span>
+        <span class="n">Task</span><span class="p">.</span><span class="n">Run</span><span class="p">(()</span> <span class="p">=&gt;</span>
+        <span class="p">{</span>
+            <span class="k">this</span><span class="p">.</span><span class="n">GenerateOutput</span><span class="p">().</span><span class="n">Subscribe</span><span class="p">(</span>
+                <span class="n">output</span> <span class="p">=&gt;</span>
+                <span class="p">{</span>
+                    <span class="k">this</span><span class="p">.</span><span class="n">Credits</span><span class="p">.</span><span class="n">Wait</span><span class="p">();</span>
+                    <span class="k">this</span><span class="p">.</span><span class="n">Context</span><span class="p">.</span><span class="n">Emit</span><span class="p">(</span><span class="n">Constants</span><span class="p">.</span><span class="n">DEFAULT_STREAM_ID</span><span class="p">,</span>
+                        <span class="k">this</span><span class="p">.</span><span class="n">ConvertOutput</span><span class="p">(</span><span class="n">output</span><span class="p">));</span>
+                <span class="p">},</span>
+                <span class="n">err</span> <span class="p">=&gt;</span>
+                <span class="p">{</span>
+                    <span class="n">Trace</span><span class="p">.</span><span class="n">TraceError</span><span class="p">(</span><span class="n">err</span><span class="p">.</span><span class="n">ToString</span><span class="p">());</span>
+                <span class="p">},</span>
+                <span class="p">()</span> <span class="p">=&gt;</span>
+                <span class="p">{</span>
+                    <span class="k">this</span><span class="p">.</span><span class="n">AckFailMessages</span><span class="p">.</span><span class="n">OnCompleted</span><span class="p">();</span>
+                <span class="p">});</span>
+        <span class="p">});</span>
+    <span class="p">}</span>
+
+    <span class="k">protected</span> <span class="n">Subject</span><span class="p">&lt;</span><span class="n">Tuple</span><span class="p">&lt;</span><span class="kt">long</span><span class="p">,</span> <span class="kt">bool</span><span class="p">&gt;&gt;</span> <span class="n">AckFailMessages</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Subject</span><span class="p">&lt;</span><span class="n">Tuple</span><span class="p">&lt;</span><span class="kt">long</span><span class="p">,</span> <span class="kt">bool</span><span class="p">&gt;&gt;();</span>
+
+    <span class="k">private</span> <span class="n">Context</span> <span class="n">Context</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+
+    <span class="k">private</span> <span class="n">SemaphoreSlim</span> <span class="n">Credits</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+
+    <span class="k">protected</span> <span class="k">abstract</span> <span class="k">void</span> <span class="nf">MapSchema</span><span class="p">(</span><span class="n">Context</span> <span class="n">context</span><span class="p">);</span>
+
+    <span class="k">protected</span> <span class="k">abstract</span> <span class="n">Values</span> <span class="nf">ConvertOutput</span><span class="p">(</span><span class="n">TOut</span> <span class="n">output</span><span class="p">);</span>
+
+    <span class="k">protected</span> <span class="k">abstract</span> <span class="n">IObservable</span><span class="p">&lt;</span><span class="n">TOut</span><span class="p">&gt;</span> <span class="n">GenerateOutput</span><span class="p">();</span>
+
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">NextTuple</span><span class="p">(</span><span class="n">Dictionary</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">,</span> <span class="kt">object</span><span class="p">&gt;</span> <span class="n">parms</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">Credits</span><span class="p">.</span><span class="n">Release</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Ack</span><span class="p">(</span><span class="kt">long</span> <span class="n">seqId</span><span class="p">,</span> <span class="n">Dictionary</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">,</span> <span class="n">Object</span><span class="p">&gt;</span> <span class="n">parms</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">AckFailMessages</span><span class="p">.</span><span class="n">OnNext</span><span class="p">(</span><span class="n">Tuple</span><span class="p">.</span><span class="n">Create</span><span class="p">(</span><span class="n">seqId</span><span class="p">,</span> <span class="k">true</span><span class="p">));</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Fail</span><span class="p">(</span><span class="kt">long</span> <span class="n">seqId</span><span class="p">,</span> <span class="n">Dictionary</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">,</span> <span class="n">Object</span><span class="p">&gt;</span> <span class="n">parms</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">AckFailMessages</span><span class="p">.</span><span class="n">OnNext</span><span class="p">(</span><span class="n">Tuple</span><span class="p">.</span><span class="n">Create</span><span class="p">(</span><span class="n">seqId</span><span class="p">,</span> <span class="k">false</span><span class="p">));</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Notice in particular the call to <code>Task.Run</code> when starting up the
+subscription to <code>GenerateOutput</code> - this is just hedging our bets, making
+sure that <code>NextTuple</code> isn't trying to Release on the same thread that
+the emitter is Waiting on and avoiding potential deadlock situations.
+ Also notice that akin to the Bolt, we've left the children to implement
+just a few tightly-focused methods: <code>MapSchema</code> for telling the Context
+about the output schema, <code>ConvertOutput</code> for turning the friendly output
+type into the expected <code>Values</code> type, and <code>GenerateOutput</code> which does
+the real heavy lifting.</p>
+<h2>A Simple Moving Average Example</h2>
+<p>I know this is a lot of code and you may not really understand how it
+all fits together until you see it in action, so let's code up a simple
+example that turns a stream of integers into a moving average of the
+last two entries.  First let's code up the spout. I'll leave out the
+MapSchema and ConvertOutput calls because those are trivial (and all of
+the source is <a href="https://github.com/noodlefrenzy/ReactiveStorm">on
+GitHub</a>if you're
+interested) and focus on the meat of emitting a sequence of integers:</p>
+<div class="highlight"><pre><span></span><span class="k">public</span> <span class="k">class</span> <span class="nc">RxIntSpout</span> <span class="p">:</span> <span class="n">ReactiveSpoutBase</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="nf">RxIntSpout</span><span class="p">(</span><span class="n">Context</span> <span class="n">context</span><span class="p">)</span> <span class="p">:</span> <span class="k">base</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">MaxValue</span> <span class="p">=</span> <span class="m">10</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">private</span> <span class="kt">int</span> <span class="n">MaxValue</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+
+    <span class="k">protected</span> <span class="k">override</span> <span class="n">IObservable</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="n">GenerateOutput</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="n">Enumerable</span><span class="p">.</span><span class="n">Range</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="n">MaxValue</span> <span class="p">+</span> <span class="m">1</span><span class="p">).</span><span class="n">ToObservable</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="c1">// ... some other stuff, elided ...</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Wow, that's pretty simple.  Okay, now that that bit's complete, what
+does it look like from the Bolt side - taking those integers and
+emitting doubles of the 2-period moving average?  Once again, I've
+removed some of the extraneous code (MapSchemas, ConvertInput/Output)
+and focused on the core:</p>
+<div class="highlight"><pre><span></span><span class="k">public</span> <span class="k">class</span> <span class="nc">RxMovingAverageBolt</span> <span class="p">:</span> <span class="n">ReactiveBoltBase</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="kt">double</span><span class="p">&gt;</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="nf">RxMovingAverageBolt</span><span class="p">(</span><span class="n">Context</span> <span class="n">context</span><span class="p">)</span> <span class="p">:</span> <span class="k">base</span><span class="p">(</span><span class="n">context</span><span class="p">)</span> <span class="p">{}</span>
+
+    <span class="k">protected</span> <span class="k">override</span> <span class="n">IObservable</span><span class="p">&lt;</span><span class="n">BoltOutput</span><span class="p">&lt;</span><span class="kt">double</span><span class="p">&gt;&gt;</span> <span class="n">ProcessInput</span><span class="p">(</span><span class="n">IObservable</span><span class="p">&lt;</span><span class="n">BoltInput</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;&gt;</span> <span class="n">input</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="n">input</span><span class="p">.</span><span class="n">Zip</span><span class="p">(</span><span class="n">input</span><span class="p">.</span><span class="n">Skip</span><span class="p">(</span><span class="m">1</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">)</span> <span class="p">=&gt;</span>
+            <span class="p">{</span>
+                <span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="p">(</span><span class="n">v1</span><span class="p">.</span><span class="n">Converted</span> <span class="p">+</span> <span class="n">v2</span><span class="p">.</span><span class="n">Converted</span><span class="p">)</span> <span class="p">/</span> <span class="m">2.0</span><span class="p">;</span>
+                <span class="n">Trace</span><span class="p">.</span><span class="n">TraceInformation</span><span class="p">(</span><span class="s">&quot;{0} + {1} / 2 = {2}&quot;</span><span class="p">,</span> <span class="n">v1</span><span class="p">.</span><span class="n">Converted</span><span class="p">,</span> <span class="n">v2</span><span class="p">.</span><span class="n">Converted</span><span class="p">,</span> <span class="n">result</span><span class="p">);</span>
+                <span class="k">return</span> <span class="k">new</span> <span class="n">BoltOutput</span><span class="p">&lt;</span><span class="kt">double</span><span class="p">&gt;()</span> <span class="p">{</span> <span class="n">Result</span> <span class="p">=</span> <span class="n">result</span> <span class="p">};</span>
+            <span class="p">});</span>
+    <span class="p">}</span>
+
+    <span class="c1">// ... some other stuff, elided ...</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Okay, that looks pretty simple as well.  The only tricky bit there is
+the <code>Zip</code> call where we basically join the incoming input to itself,
+skipping the first value and resulting in pairs of values to be
+averaged.  Even that's pretty simple to understand though.  Looks like
+the conversion to Reactive is making the actual logic in the spouts and
+bolts easier to understand and more separable, which was my goal in the
+first place.</p>
+<h2>Testing Locally</h2>
+<p>Rather than set up a full Storm cluster just to test this out, you can
+drive the Spouts and Bolts from within your main method fairly easily.
+ First, you need to switch your project from a Class Library to a
+Console Application - that's a simple drop-down on
+Project->Properties->Application->Output type.  Now you can actually
+run your code, so create a Main to exercise your Spout and then your
+Bolt - it's not quite end-to-end since in reality there will be
+interplay between the two, but it's close enough for testing purposes.
+ The code to do so is below, and basically just creates instances of
+each with their own local context, runs them, and stores off the
+results.  The Bolt reads from the results of the Spout via the file
+system - not necessary, but allows troubleshooting if intermediate
+stages fail.</p>
+<div class="highlight"><pre><span></span><span class="c1">// Let&#39;s watch the trace messages.</span>
+<span class="n">Trace</span><span class="p">.</span><span class="n">Listeners</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="k">new</span> <span class="n">ConsoleTraceListener</span><span class="p">());</span>
+<span class="n">SCPRuntime</span><span class="p">.</span><span class="n">Initialize</span><span class="p">();</span>
+
+<span class="kt">var</span> <span class="n">spoutCtx</span> <span class="p">=</span> <span class="n">LocalContext</span><span class="p">.</span><span class="n">Get</span><span class="p">();</span>
+<span class="kt">var</span> <span class="n">seqSpout</span> <span class="p">=</span> <span class="k">new</span> <span class="n">RxIntSpout</span><span class="p">(</span><span class="n">spoutCtx</span><span class="p">,</span> <span class="k">null</span><span class="p">);</span>
+<span class="k">while</span> <span class="p">(</span><span class="cm">/* ??? seqSpout has more values ??? */</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">seqSpout</span><span class="p">.</span><span class="n">NextTuple</span><span class="p">(</span><span class="k">null</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="n">spoutCtx</span><span class="p">.</span><span class="n">WriteMsgQueueToFile</span><span class="p">(</span><span class="s">&quot;seq.txt&quot;</span><span class="p">);</span>
+
+<span class="kt">var</span> <span class="n">rxCtx</span> <span class="p">=</span> <span class="n">LocalContext</span><span class="p">.</span><span class="n">Get</span><span class="p">();</span>
+<span class="kt">var</span> <span class="n">rxBolt</span> <span class="p">=</span> <span class="k">new</span> <span class="n">RxMovingAverageBolt</span><span class="p">(</span><span class="n">rxCtx</span><span class="p">);</span>
+<span class="n">rxCtx</span><span class="p">.</span><span class="n">ReadFromFileToMsgQueue</span><span class="p">(</span><span class="s">&quot;seq.txt&quot;</span><span class="p">);</span>
+<span class="n">rxCtx</span><span class="p">.</span><span class="n">RecvFromMsgQueue</span><span class="p">().</span><span class="n">ToList</span><span class="p">()</span>
+    <span class="p">.</span><span class="n">ForEach</span><span class="p">(</span><span class="n">tuple</span> <span class="p">=&gt;</span> <span class="n">rxBolt</span><span class="p">.</span><span class="n">Execute</span><span class="p">(</span><span class="n">tuple</span><span class="p">));</span>
+<span class="n">rxCtx</span><span class="p">.</span><span class="n">WriteMsgQueueToFile</span><span class="p">(</span><span class="s">&quot;rx.txt&quot;</span><span class="p">);</span>
+
+<span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;Finished&quot;</span><span class="p">);</span>
+<span class="n">Console</span><span class="p">.</span><span class="n">ReadKey</span><span class="p">();</span>
+</pre></div>
+
+
+<p>Pretty straightforward, but note the confusion in the while loop?  Since
+we're pumping the Spout ourselves and need to finish when it's done with
+its data, we need some way of knowing when that is.  We can add a simple
+flag value to the <code>ReactiveSpoutBase</code> to track that for us:</p>
+<div class="highlight"><pre><span></span><span class="k">public</span> <span class="nf">ReactiveSpoutBase</span><span class="p">(</span><span class="n">Context</span> <span class="n">context</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// ...</span>
+    <span class="n">Task</span><span class="p">.</span><span class="n">Run</span><span class="p">(()</span> <span class="p">=&gt;</span>
+    <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">GenerateOutput</span><span class="p">().</span><span class="n">Subscribe</span><span class="p">(</span>
+            <span class="n">output</span> <span class="p">=&gt;</span> <span class="p">{</span> <span class="cm">/* elided */</span> <span class="p">},</span>
+            <span class="n">err</span> <span class="p">=&gt;</span> <span class="p">{</span> <span class="cm">/* elided */</span> <span class="p">},</span>
+            <span class="p">()</span> <span class="p">=&gt;</span>
+            <span class="p">{</span>
+                <span class="n">Trace</span><span class="p">.</span><span class="n">TraceInformation</span><span class="p">(</span><span class="s">&quot;Spout shutting down.&quot;</span><span class="p">);</span>
+                <span class="k">this</span><span class="p">.</span><span class="n">FinishedTransmitting</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+                <span class="k">this</span><span class="p">.</span><span class="n">AckFailMessages</span><span class="p">.</span><span class="n">OnCompleted</span><span class="p">();</span>
+            <span class="p">});</span>
+    <span class="p">});</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="kt">bool</span> <span class="n">FinishedTransmitting</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+
+<span class="c1">// ...</span>
+</pre></div>
+
+
+<p>and alter the while loop appropriately:</p>
+<div class="highlight"><pre><span></span><span class="k">while</span> <span class="p">(!</span><span class="n">seqSpout</span><span class="p">.</span><span class="n">FinishedTransmitting</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">seqSpout</span><span class="p">.</span><span class="n">NextTuple</span><span class="p">(</span><span class="k">null</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>You now have something you can run locally, which should produce output
+like:</p>
+<div class="highlight"><pre><span></span>ReactiveStorm.vshost.exe Information: 0 : 0 + 1 / 2 = 0.5
+ReactiveStorm.vshost.exe Information: 0 : 1 + 2 / 2 = 1.5
+ReactiveStorm.vshost.exe Information: 0 : 2 + 3 / 2 = 2.5
+ReactiveStorm.vshost.exe Information: 0 : 3 + 4 / 2 = 3.5
+ReactiveStorm.vshost.exe Information: 0 : 4 + 5 / 2 = 4.5
+ReactiveStorm.vshost.exe Information: 0 : 5 + 6 / 2 = 5.5
+ReactiveStorm.vshost.exe Information: 0 : 6 + 7 / 2 = 6.5
+ReactiveStorm.vshost.exe Information: 0 : 7 + 8 / 2 = 7.5
+ReactiveStorm.vshost.exe Information: 0 : 8 + 9 / 2 = 8.5
+ReactiveStorm.vshost.exe Information: 0 : 9 + 10 / 2 = 9.5
+</pre></div>
+
+
+<h2>Summary</h2>
+<p>Apache Storm is a promising pipeline processing technology, and with
+HDInsight bringing it onto the Azure platform, deploying it yourself is
+trivial.  However, writing all of the Spouts and Bolts can mean rewiring
+your intuition a bit and mixing your business logic with Storm
+internals.  Hopefully, by using Reactive and the code above, you can
+make that process easier and provide better isolation between the two,
+in a mental model that maps a bit better to what you're trying to
+accomplish.  All of the code above is <a href="https://github.com/noodlefrenzy/ReactiveStorm">published on
+GitHub</a>- feel free to
+clone it, modify it to your heart's content, and if you find any issues
+file them or submit a PR.  I hope I've helped, and comments, as always,
+are welcome.</p>
+    </div><!-- /.entry-content -->
+
+  </article>
+</section>
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="https://blogs.technet.microsoft.com/machinelearning/">Cortana Analytics</a></li>
+                            <li><a href="http://www.kdnuggets.com/">KDNuggets</a></li>
+                            <li><a href="http://www.hanselman.com/blog/">Hanselman</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://twitter.com/noodlefrenzy">Twitter</a></li>
+                            <li><a href="https://www.linkedin.com/in/noodlefrenzy">LinkedIn</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-54597100-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'intelligentartifice';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'https://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+</html>

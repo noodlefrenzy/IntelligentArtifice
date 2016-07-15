@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Talking to EventHub from Node</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/noodlefrenzy">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="/">Intelligent Artifice </a></h1>
+                <nav><ul>
+                    <li><a href="/pages/about-me-and-this-blog.html">About Me And This Blog</a></li>
+                    <li><a href="/category/devops.html">DevOps</a></li>
+                    <li><a href="/category/meta.html">Meta</a></li>
+                    <li class="active"><a href="/category/software.html">Software</a></li>
+                    <li><a href="/category/uncategorized.html">Uncategorized</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="/talking-to-eventhub-from-node.html" rel="bookmark"
+           title="Permalink to Talking to EventHub from Node">Talking to EventHub from Node</a></h1>
+<a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="noodlefrenzy">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-09-28T13:14:00-07:00">
+                Published: Sun 28 September 2014
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/azure.html">Azure</a> <a href="/tag/eventhub.html">EventHub</a> <a href="/tag/node.html">Node</a> </p>
+</footer><!-- /.post-info -->      <p>This past week, I participated in a hackfest trying to get some
+<a href="https://www.alljoyn.org/">Alljoyn</a> devices talking to
+<a href="http://nitrogen.io/">Nitrogen</a>.  It was a great time, getting to learn
+some new technologies, get exposed to the ~~pain ~~wonder of working
+with IoT hardware, and watch my bosses (<a href="http://blogs.msdn.com/b/johnshews_blog/">John
+Shewchuk</a> and <a href="http://channel9.msdn.com/Events/Visual-Studio/Visual-Studio-Live/Tracey-Trewin-Architecture-Intellitrace-DevOps-Unit-Testing">Tracey
+Trewin</a>)
+sling some code.  My goal was to have Nitrogen write device telemetry
+data to <a href="http://azure.microsoft.com/en-us/services/event-hubs/">Azure
+EventHub</a>, and
+potentially have other Node or C# workers process the telemetry across
+devices.</p>
+<p>To that end, I downloaded the Azure Node SDK and went to connect to my
+hub - at that point I realized I had a problem, the Node SDK hasn't been
+extended to talk to EventHub yet!  I looked around, and perhaps my
+bingle-fu is weak but I didn't see any existing unofficial Node
+packages, so I decided I'd write one myself.</p>
+<p>First, I took a look at the .NET API, figuring I'd just copy that - no
+dice, as that client uses magic to send messages, creating the client
+based on the connection string in the app's config:</p>
+<div class="highlight"><pre><span></span><span class="kt">var</span> <span class="n">eventHubClient</span> <span class="p">=</span> <span class="n">EventHubClient</span><span class="p">.</span><span class="n">Create</span><span class="p">(</span><span class="s">&quot;hubName&quot;</span><span class="p">);</span>
+</pre></div>
+
+
+<p>or using the Shared Access Signature Token created via a different form
+of magic:</p>
+<div class="highlight"><pre><span></span><span class="kt">var</span> <span class="n">serviceUri</span> <span class="p">=</span> <span class="n">ServiceBusEnvironment</span><span class="p">.</span><span class="n">CreateServiceUri</span><span class="p">(</span>
+      <span class="s">&quot;https&quot;</span><span class="p">,</span> <span class="n">namespace</span><span class="p">,</span> 
+      <span class="kt">string</span><span class="p">.</span><span class="n">Format</span><span class="p">(</span><span class="s">&quot;{0}/publishers/{1}/messages&quot;</span><span class="p">,</span> <span class="n">hub</span><span class="p">,</span> <span class="n">publisher</span><span class="p">))</span>
+  <span class="p">.</span><span class="n">ToString</span><span class="p">()</span>
+  <span class="p">.</span><span class="n">Trim</span><span class="p">(</span><span class="sc">&#39;/&#39;</span><span class="p">);</span>
+<span class="kt">var</span> <span class="n">token</span> <span class="p">=</span> <span class="n">SharedAccessSignatureTokenProvider</span><span class="p">.</span><span class="n">GetSharedAccessSignature</span><span class="p">(</span>
+      <span class="n">sasKeyName</span><span class="p">,</span> <span class="n">sasKeyValue</span><span class="p">,</span> 
+      <span class="n">serviceUri</span><span class="p">,</span> <span class="n">tokenTTL</span><span class="p">);</span>
+</pre></div>
+
+
+<p>Neither of these methods exist in the Azure Node SDK, so I was forced to
+seek farther afield.</p>
+<h4>Creating a Token and Sending RESTfully</h4>
+<p>With the help of a <a href="http://developers.de/blogs/damir_dobric/archive/2013/10/17/how-to-create-shared-access-signature-for-service-bus.aspx">great
+post</a>
+by Damir Dobric, I was able to convert his code into a Node-ful way of
+doing things, then use the <a href="http://msdn.microsoft.com/en-us/library/azure/dn790664.aspx">EventHub REST
+API</a> to
+send messages to my very own Event Hub.  I created a custom SAS key for
+sending using the portal:</p>
+<p><a href="/images/eventhub_saskeys.png"><img alt="Creating
+Alternate SAS
+Keys" src="/images/eventhub_saskeys.png" /></a></p>
+<p>used my new code to build a token from them:</p>
+<div class="highlight"><pre><span></span><span class="kd">function</span> <span class="nx">createSharedAccessToken</span><span class="p">(</span><span class="nx">namespace</span><span class="p">,</span> <span class="nx">hubName</span><span class="p">,</span> <span class="nx">saName</span><span class="p">,</span> <span class="nx">saKey</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">namespace</span> <span class="o">||</span> <span class="o">!</span><span class="nx">hubName</span> <span class="o">||</span> <span class="o">!</span><span class="nx">saName</span> <span class="o">||</span> <span class="o">!</span><span class="nx">saKey</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="s2">&quot;Missing required parameter&quot;</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kd">var</span> <span class="nx">uri</span> <span class="o">=</span> <span class="s1">&#39;https://&#39;</span> <span class="o">+</span> <span class="nx">namespace</span> <span class="o">+</span>
+        <span class="s1">&#39;.servicebus.windows.net/&#39;</span> <span class="o">+</span> <span class="nx">hubName</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span><span class="p">;</span>
+
+    <span class="kd">var</span> <span class="nx">encoded</span> <span class="o">=</span> <span class="nb">encodeURIComponent</span><span class="p">(</span><span class="nx">uri</span><span class="p">);</span>
+
+    <span class="kd">var</span> <span class="nx">epoch</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="mi">1970</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">now</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">();</span>
+    <span class="kd">var</span> <span class="nx">year</span> <span class="o">=</span> <span class="mi">365</span> <span class="o">*</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">ttl</span> <span class="o">=</span> <span class="p">((</span><span class="nx">now</span><span class="p">.</span><span class="nx">getTime</span><span class="p">()</span> <span class="o">-</span> <span class="nx">epoch</span><span class="p">.</span><span class="nx">getTime</span><span class="p">())</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="nx">year</span> <span class="o">*</span> <span class="mi">5</span><span class="p">);</span>
+
+    <span class="kd">var</span> <span class="nx">signature</span> <span class="o">=</span> <span class="nx">encoded</span> <span class="o">+</span> <span class="s1">&#39;\n&#39;</span> <span class="o">+</span> <span class="nx">ttl</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">signatureUTF8</span> <span class="o">=</span> <span class="nx">utf8</span><span class="p">.</span><span class="nx">encode</span><span class="p">(</span><span class="nx">signature</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">hash</span> <span class="o">=</span> <span class="nx">crypto</span><span class="p">.</span><span class="nx">createHmac</span><span class="p">(</span><span class="s1">&#39;sha256&#39;</span><span class="p">,</span> <span class="nx">saKey</span><span class="p">).</span><span class="nx">update</span><span class="p">(</span><span class="nx">signatureUTF8</span><span class="p">).</span><span class="nx">digest</span><span class="p">(</span><span class="s1">&#39;base64&#39;</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="s1">&#39;SharedAccessSignature sr=&#39;</span> <span class="o">+</span> <span class="nx">encoded</span> <span class="o">+</span> <span class="s1">&#39;&amp;sig=&#39;</span> <span class="o">+</span> 
+        <span class="nb">encodeURIComponent</span><span class="p">(</span><span class="nx">hash</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;&amp;se=&#39;</span> <span class="o">+</span> <span class="nx">ttl</span> <span class="o">+</span> <span class="s1">&#39;&amp;skn=&#39;</span> <span class="o">+</span> <span class="nx">saName</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>and sent the message.  I've <a href="https://github.com/noodlefrenzy/event-hub-client">open-sourced this code on
+GitHub</a>, please feel
+free to use it (Apache v2 licensed), and pull requests are always
+welcome.  Now I just needed to hook up the receive API and I'd be all
+set!</p>
+<p><em>This is where things really went sideways.</em></p>
+<p>For the receive piece, EventHub only supports AMQP - specifically AMQP
+1.0.  I've been looking through the various Nodejs packages, and haven't
+found anything I can use to talk AMQP 1.0.  For <code>amqp.node</code> and <code>node-amqp</code>,
+they only support 0.9.1 and I don't see 1.0 support pending or in
+anyone's forks.  The node-qpid package seems promising, as it's based on
+Apache Qpid Proton which does support 1.0, but the package is a native
+code package that requires you to have Proton 0.3 installed, and I can't
+get that to build on Windows at this point.  I've started porting
+the node-qpid package to Proton 0.7 (the latest), but I'm running into
+linker errors.</p>
+<p>At this point, it has gone beyond a slight investigation for a hackfest
+and into something more serious.  I'm starting to talk with the EventHub
+team about their release schedule, and I'm looking for insight from the
+community as to whether they'd like one of the non-native-code packages
+(amqp.node or node-amqp) updated to 1.0, or whether they'd want
+node-qpid upgraded to 0.7 - I only have time to work on so much.  At
+this point, my inclination is to upgrade amqp.node, but suggestions and
+advice are always welcome.</p>
+<h4>PostScript</h4>
+<p>Link to event-hub-client, my start on a Nodejs REST-based EventHub
+client: <a href="https://github.com/noodlefrenzy/event-hub-client">https://github.com/noodlefrenzy/event-hub-client</a>, now
+published in the <code>npm</code> registry
+at <a href="https://www.npmjs.org/package/event-hub-client">https://www.npmjs.org/package/event-hub-client</a>.</p>
+<p>Also, shortly after I'd done this work and started the write-up, I found
+<a href="http://hypernephelist.com/2014/09/16/sending-data-to-azure-event-hubs-from-nodejs.html">this
+post</a>
+from Hypernephelist that covers much of the same ground.  If only I'd
+found it a week sooner!  It doesn't cope with AMQP, and it doesn't
+package things up into a <code>package.json</code>-includable form, so I thought my
+post still had value.</p>
+    </div><!-- /.entry-content -->
+
+  </article>
+</section>
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="https://blogs.technet.microsoft.com/machinelearning/">Cortana Analytics</a></li>
+                            <li><a href="http://www.kdnuggets.com/">KDNuggets</a></li>
+                            <li><a href="http://www.hanselman.com/blog/">Hanselman</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://twitter.com/noodlefrenzy">Twitter</a></li>
+                            <li><a href="https://www.linkedin.com/in/noodlefrenzy">LinkedIn</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-54597100-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'intelligentartifice';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'https://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+</html>

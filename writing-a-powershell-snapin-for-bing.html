@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Writing a Powershell Snapin for Bing</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/noodlefrenzy">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="/">Intelligent Artifice </a></h1>
+                <nav><ul>
+                    <li><a href="/pages/about-me-and-this-blog.html">About Me And This Blog</a></li>
+                    <li><a href="/category/devops.html">DevOps</a></li>
+                    <li><a href="/category/meta.html">Meta</a></li>
+                    <li class="active"><a href="/category/software.html">Software</a></li>
+                    <li><a href="/category/uncategorized.html">Uncategorized</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="/writing-a-powershell-snapin-for-bing.html" rel="bookmark"
+           title="Permalink to Writing a Powershell Snapin for Bing">Writing a Powershell Snapin for Bing</a></h1>
+<a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="noodlefrenzy">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2009-06-05T19:16:00-07:00">
+                Published: Fri 05 June 2009
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/powershell.html">Powershell</a> </p>
+</footer><!-- /.post-info -->      <p>I’ve been meaning to write a post on how to author custom Powershell
+Cmdlets for some time now, as it’s incredibly easy to do and makes an
+awesome cmd shell even better.  I’m still more comfortable in tcsh, but
+for working in Windows, Powershell makes life a lot easier – and the
+fact that the pipeline is composed of objects allows for some serious
+craziness.</p>
+<p>Anyway, I’ll have a future article on using Powershell itself, but for
+now I want to focus on writing cmdlets.  You write cmdlets in .NET as
+part of a “snapin” – ‘10 blue links’.  I work on the team and am still
+surprised by queries that answer my questions (<a href="http://www.bing.com/search?q=98102+weather&amp;go=&amp;form=QBRE">98102
+weather</a>, <a href="http://www.bing.com/search?q=seattle+zip+code&amp;go=&amp;form=QBRE">seattle
+zip code</a>)
+or make me laugh (<a href="http://www.bing.com/search?q=calories+in+a+squirrel&amp;go=&amp;form=QBRE">calories in a
+squirrel</a>). 
+Well, they’ve released a new version of the API to coincide with Bing,
+and using it is easy.  For my example, I’ll be building a cmdlet to do
+Bing Web Search, and output the results as either a string or an
+XDocument.</p>
+<p>Bing has a simple developer API (see <a href="http://www.bing.com/developers">here for
+details</a>), and for my purposes I’m
+planning on using the REST-based XML binding, allowing simple HTTP GET
+queries
+like <a href="http://api.search.live.net/xml.aspx?Appid=%E2%80%A6&amp;query=foo&amp;sources=web">http://api.search.live.net/xml.aspx?Appid=…&amp;query=foo&amp;sources=web</a> to
+return XML results (obviously, substituting a valid AppID).</p>
+<p>Writing these cmdlets and snapins is not that difficult, but can be
+eased even further with the help of <a href="http://psvs2008.codeplex.com/Release/ProjectReleases.aspx?ReleaseId=26356">Powershell templates for
+VS2008</a> (<a href="http://www.gangleri.net/2009/04/21/BuildingPowerShellCmdletsWithVisualStudio2008.aspx">and
+some usage
+details...</a>).  
+Once these are installed, I create my Get-BingWeb cmdlet as follows:</p>
+<ol>
+<li>New->Project->PowershellCmdlet named BingCmdlets</li>
+<li>Add->New Item…->PowershellCmdlet SnapIn named BingCmdletsSnapin</li>
+<li>Add->New Item…->Powershell Cmdlet named BingWebCmdlet (Note: this
+    should really be GetBingWebCmdlet, but to make using the template
+    easier I'm leaving as-is)</li>
+<li>Add->New Item…->Class named BingUtil</li>
+<li>Add Reference…->System.Net (for HttpWebRequest/Response)</li>
+<li>Add Reference…->System.Xml.Linq (for XDocument)</li>
+</ol>
+<p>Then I write some source code (I’ll post the full sln as a tarball
+sometime soon – right now all I’ve got is a VS2010 Beta version).  This
+code, by the way, is not meant to be production quality (or even
+particularly good), so if you find problems with it I’ll refuse to be
+surprised :).</p>
+<p>I won’t even cover BingCmdletsSnapin.cs, since its implementation is
+trivial based on the helpful templates linked above.</p>
+<p>BingUtil.cs contains utility methods for doing the query (BingAppId has
+been redacted - I want folks to get their own and play with it):</p>
+<div class="highlight"><pre><span></span><span class="k">private</span> <span class="k">const</span> <span class="kt">string</span> <span class="n">BingApiUrlForXml</span> <span class="p">=</span> <span class="s">&quot;http://api.search.live.net/xml.aspx&quot;</span><span class="p">;</span>
+
+<span class="k">public</span> <span class="kt">string</span> <span class="nf">Search</span><span class="p">(</span><span class="kt">string</span> <span class="n">sourceType</span><span class="p">,</span> <span class="kt">string</span> <span class="n">searchTerm</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="kt">string</span> <span class="n">requestUrl</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">BuildUrl</span><span class="p">(</span><span class="n">sourceType</span><span class="p">,</span> <span class="n">searchTerm</span><span class="p">);</span>
+  <span class="n">HttpWebRequest</span> <span class="n">request</span> <span class="p">=</span> <span class="p">(</span><span class="n">HttpWebRequest</span><span class="p">)</span><span class="n">HttpWebRequest</span><span class="p">.</span><span class="n">Create</span><span class="p">(</span><span class="n">requestUrl</span><span class="p">);</span>
+  <span class="n">HttpWebResponse</span> <span class="n">response</span> <span class="p">=</span> <span class="p">(</span><span class="n">HttpWebResponse</span><span class="p">)</span><span class="n">request</span><span class="p">.</span><span class="n">GetResponse</span><span class="p">();</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">StatusCode</span> <span class="p">==</span> <span class="n">HttpStatusCode</span><span class="p">.</span><span class="n">OK</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="n">ReadResponse</span><span class="p">(</span><span class="n">response</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="k">throw</span> <span class="k">new</span> <span class="nf">IOException</span><span class="p">(</span><span class="s">&quot;Failed to read response from [&quot;</span><span class="p">+</span><span class="n">requestUrl</span><span class="p">+</span><span class="s">&quot;].  Received status code &quot;</span><span class="p">+</span><span class="n">response</span><span class="p">.</span><span class="n">StatusCode</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">private</span> <span class="kt">string</span> <span class="nf">BuildUrl</span><span class="p">(</span><span class="kt">string</span> <span class="n">sourceType</span><span class="p">,</span> <span class="kt">string</span> <span class="n">searchTerm</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">return</span> <span class="kt">string</span><span class="p">.</span><span class="n">Format</span><span class="p">(</span><span class="s">&quot;{0}?Appid={1}&amp;query={2}&amp;sources={3}&quot;</span><span class="p">,</span>
+    <span class="n">BingUtil</span><span class="p">.</span><span class="n">BingApiUrlForXml</span><span class="p">,</span>
+    <span class="n">BingUtil</span><span class="p">.</span><span class="n">BingAppId</span><span class="p">,</span>
+    <span class="n">searchTerm</span><span class="p">,</span>
+    <span class="n">sourceType</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">private</span> <span class="kt">string</span> <span class="nf">ReadResponse</span><span class="p">(</span><span class="n">HttpWebResponse</span> <span class="n">response</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">using</span> <span class="p">(</span><span class="n">StreamReader</span> <span class="n">reader</span> <span class="p">=</span> <span class="k">new</span> <span class="n">StreamReader</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">GetResponseStream</span><span class="p">()))</span>
+  <span class="p">{</span>
+    <span class="k">return</span> <span class="n">reader</span><span class="p">.</span><span class="n">ReadToEnd</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>BingWebCmdlet.cs is the cmdlet itself, containing the parameters, and
+the all-important ProcessRecord method.  ProcessRecord is called by
+Powershell on cmdlet classes to get them to actually do work.  Output
+from ProcessRecord to the next phase of the pipeline (or the screen) is
+done via the WriteObject method – write whatever you want, and
+Powershell will figure it out.  Anyway, here’s what the code looks like:</p>
+<div class="highlight"><pre><span></span><span class="k">protected</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">ProcessRecord</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="n">BingUtil</span> <span class="n">util</span> <span class="p">=</span> <span class="k">new</span> <span class="n">BingUtil</span><span class="p">();</span>
+  <span class="kt">string</span> <span class="n">resultStr</span> <span class="p">=</span> <span class="n">util</span><span class="p">.</span><span class="n">Search</span><span class="p">(</span><span class="s">&quot;web&quot;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="n">SearchTerm</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">AsXml</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="n">XDocument</span> <span class="n">doc</span> <span class="p">=</span> <span class="n">XDocument</span><span class="p">.</span><span class="n">Parse</span><span class="p">(</span><span class="n">resultStr</span><span class="p">);</span>
+    <span class="n">WriteObject</span><span class="p">(</span><span class="n">doc</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="k">else</span>
+  <span class="p">{</span>
+    <span class="n">WriteObject</span><span class="p">(</span><span class="n">resultStr</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="na">[Parameter(Mandatory = true, Position = 1, ValueFromPipelineByPropertyName = true)]</span>
+<span class="k">public</span> <span class="kt">string</span> <span class="n">SearchTerm</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+
+<span class="na">[Parameter(Mandatory = false, ValueFromPipelineByPropertyName = true)]</span>
+<span class="k">public</span> <span class="n">SwitchParameter</span> <span class="n">AsXml</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</pre></div>
+
+
+<p>The parameters are defined via Attributes (as is the Cmdlet itself). 
+Important things to note in the code above:</p>
+<ul>
+<li>I’ve set “Position = 1” on the parameter SearchTerm, meaning you can
+    call “Get-BingWeb foo” and it will intuit that “foo” is SearchTerm,
+    saving you from having to supply –SearchTerm every time.</li>
+<li>I’ve set “ValueFromPipelineByPropertyName=true” on both parameters,
+    meaning that if incoming pipeline objects contain SearchTerm/AsXml
+    parameters, those will be used to fill parameters.  I should also
+    most likely set ValueFromPipeline=true on SearchTerm, allowing
+    incoming pipeline objects to be converted to strings for search
+    terms.</li>
+<li>The return type SwitchParameter on AsXml makes that parameter behave
+    as a switch/flag, turned on by its presence.</li>
+</ul>
+<p>Now that we’ve written the snapin, we can build, install, and run it! 
+So first, build the snapin dll.  I’ve built it as a 32-bit debug DLL –
+if you’ve built the 64-bit version instead, you’ll need to use the
+Framework64 version of installutil.exe below.</p>
+<p>Install your DLL:</p>
+<div class="highlight"><pre><span></span>C<span class="p">:</span><span class="nl">\windows\Microsoft.NET\Framework\v2.0.50727\InstallUtil.exe</span><span class="c1"> c:\path\to\dll</span>
+</pre></div>
+
+
+<p>And you should see output similar to the below:</p>
+<p><a href="http://blogs.msdn.com/blogfiles/milanz/WindowsLiveWriter/WritingaPowershellSnapinforBing_E4B7/image_2.png"><img alt="image" src="http://blogs.msdn.com/blogfiles/milanz/WindowsLiveWriter/WritingaPowershellSnapinforBing_E4B7/image_thumb.png" title="image" /></a></p>
+<p>Make sure your snapin was registered…</p>
+<div class="highlight"><pre><span></span><span class="n">PS</span><span class="p">&gt;</span> <span class="nb">get-pssnapin</span> <span class="err">–</span><span class="n">registered</span>
+</pre></div>
+
+
+<p><a href="http://blogs.msdn.com/blogfiles/milanz/WindowsLiveWriter/WritingaPowershellSnapinforBing_E4B7/image_4.png"><img alt="image" src="http://blogs.msdn.com/blogfiles/milanz/WindowsLiveWriter/WritingaPowershellSnapinforBing_E4B7/image_thumb_1.png" title="image" /></a></p>
+<p>And then add it and execute!</p>
+<div class="highlight"><pre><span></span><span class="n">PS</span><span class="p">&gt;</span> <span class="nb">add-pssnapin</span> <span class="n">BingCmdlets</span>
+<span class="n">PS</span><span class="p">&gt;</span> <span class="nb">get-bingweb</span> <span class="n">sushi</span>
+</pre></div>
+
+
+<p>The output should look roughly like the below:</p>
+<p><a href="http://blogs.msdn.com/blogfiles/milanz/WindowsLiveWriter/WritingaPowershellSnapinforBing_E4B7/image_6.png"><img alt="image" src="http://blogs.msdn.com/blogfiles/milanz/WindowsLiveWriter/WritingaPowershellSnapinforBing_E4B7/image_thumb_2.png" title="image" /></a></p>
+<p>Obviously this isn’t the format we’d want for the results, so we can run
+it again and get the result as XML.  At that point, we can use LINQ to
+extract the values we care about, and format them as CSV or whatever we
+want.  We need the “web:” namespace to prefix our XML values, so first I
+define that for future use….</p>
+<div class="highlight"><pre><span></span><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$webns</span> <span class="p">=</span> <span class="err">“</span><span class="p">{</span><span class="n">http</span><span class="err">:</span><span class="p">//</span><span class="n">schemas</span><span class="p">.</span><span class="n">microsoft</span><span class="p">.</span><span class="n">com</span><span class="p">/</span><span class="n">LiveSearch</span><span class="p">/</span><span class="n">2008</span><span class="p">/</span><span class="n">04</span><span class="p">/</span><span class="n">XML</span><span class="p">/</span><span class="n">web</span><span class="p">}</span><span class="err">”</span>
+<span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$doc</span> <span class="p">=</span> <span class="nb">get-bingweb</span> <span class="n">sushi</span> <span class="err">–</span><span class="n">asxml</span>
+<span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$results</span> <span class="p">=</span> <span class="nv">$doc</span><span class="p">.</span><span class="n">Descendants</span><span class="p">(</span><span class="nv">$webns</span> <span class="p">+</span> <span class="err">‘</span><span class="n">WebResult</span><span class="err">’</span><span class="p">)</span>
+<span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$results</span> <span class="p">|</span> <span class="p">%</span> <span class="p">{</span> <span class="nv">$_</span><span class="p">.</span><span class="n">Element</span><span class="p">(</span><span class="nv">$webns</span><span class="p">+</span><span class="s1">&#39;Title&#39;</span><span class="p">).</span><span class="n">value</span> <span class="p">+</span> <span class="s2">&quot;,&quot;</span> <span class="p">+</span> <span class="nv">$_</span><span class="p">.</span><span class="n">Element</span><span class="p">(</span><span class="nv">$webns</span><span class="p">+</span><span class="s1">&#39;Url&#39;</span><span class="p">).</span><span class="n">value</span> <span class="p">}</span>
+</pre></div>
+
+
+<p><a href="http://blogs.msdn.com/blogfiles/milanz/WindowsLiveWriter/WritingaPowershellSnapinforBing_BC02/image_2.png"><img alt="image" src="http://blogs.msdn.com/blogfiles/milanz/WindowsLiveWriter/WritingaPowershellSnapinforBing_BC02/image_thumb.png" title="image" /></a></p>
+<p>I hope this has given you an idea both of what’s possible within
+Powershell, and what’s possible via the Bing API.  Both are easy to use,
+and provide some incredible power.</p>
+<p>As a parting note, you could do all of these operations within
+Powershell itself – there’s no real need to write the cmdlets.  However,
+if you write the cmdlets and factor your utility classes well, your code
+will be cleaner and you’ll find yourself using the Bing API in your C#
+programs, your IronRuby scripts, or elsewhere.  And well-written cmdlets
+are easier to incorporate into others’ powershells than scripts, meaning
+your code will benefit others.</p>
+<p>[Update: 2009-June-09]</p>
+<p>I've published my example on codeplex (as a zip, not a tgz,
+sorry): <a href="http://bingable.codeplex.com/" title="http://bingable.codeplex.com/">http://bingable.codeplex.com/ </a></p>
+    </div><!-- /.entry-content -->
+
+  </article>
+</section>
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="https://blogs.technet.microsoft.com/machinelearning/">Cortana Analytics</a></li>
+                            <li><a href="http://www.kdnuggets.com/">KDNuggets</a></li>
+                            <li><a href="http://www.hanselman.com/blog/">Hanselman</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://twitter.com/noodlefrenzy">Twitter</a></li>
+                            <li><a href="https://www.linkedin.com/in/noodlefrenzy">LinkedIn</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-54597100-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'intelligentartifice';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'https://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+</html>

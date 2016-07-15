@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Using Project Oxford To Pull Entities From Images</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/noodlefrenzy">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="/">Intelligent Artifice </a></h1>
+                <nav><ul>
+                    <li><a href="/pages/about-me-and-this-blog.html">About Me And This Blog</a></li>
+                    <li><a href="/category/devops.html">DevOps</a></li>
+                    <li><a href="/category/meta.html">Meta</a></li>
+                    <li class="active"><a href="/category/software.html">Software</a></li>
+                    <li><a href="/category/uncategorized.html">Uncategorized</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="/using-project-oxford-to-pull-entities-from-images.html" rel="bookmark"
+           title="Permalink to Using Project Oxford To Pull Entities From Images">Using Project Oxford To Pull Entities From Images</a></h1>
+<a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="noodlefrenzy">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2015-05-14T11:06:00-07:00">
+                Published: Thu 14 May 2015
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/c.html">C#</a> <a href="/tag/entity-extraction.html">Entity Extraction</a> <a href="/tag/machine-learning.html">Machine Learning</a> <a href="/tag/ml.html">ML</a> <a href="/tag/msr.html">MSR</a> <a href="/tag/ocr.html">OCR</a> <a href="/tag/project-oxford.html">Project Oxford</a> </p>
+</footer><!-- /.post-info -->      <p>I love my job. Less than a week after watching the amazing announcements
+at <a href="http://www.buildwindows.com/">//Build2015</a>, I had a chance to try
+using some of them on a real project as part of a hackathon.
+Unfortunately, I can't share the actual problem they are trying to
+solve, but the work itself is another matter. Consider images containing
+some interesting, structured text and imagine turning them into a rich
+model of intent and the entities involved using OCR and Intent/Entity
+Extraction. I know I could build such a solution, but it would take me a
+long time. Finding the right OCR library and integrating it, and then
+finding/building an Entity Extractor and tuning it - it'd be a major
+nightmare.</p>
+<p><a href="https://www.projectoxford.ai/">Project Oxford</a>(<a href="http://channel9.msdn.com/Events/Build/2015/2-613">video
+here</a>) is a new suite
+of Machine Learning libraries from MSR exposed as Azure Marketplace
+APIs.  It differs from Azure ML in that these are pre-trained/pre-built
+libraries for specific but common ML tasks that are, in many cases,
+already part of various backend services in Microsoft (Bing, OneDrive,
+Cortana, etc.). Their <a href="https://www.projectoxford.ai/vision">Vision
+API</a>contains an OCR module exposed
+as a simple RESTful endpoint, and they have a system named
+<a href="https://www.projectoxford.ai/luis">LUIS</a>for training and deploying
+intent and entity recognition models that can be just as robust as
+Cortana. These two pieces turn this near impossible task (certainly
+impossible during a hackathon) into something achievable, so I thought
+I'd walk you through the code I wrote to do just that. All of the code
+in this post is <a href="https://github.com/noodlefrenzy/image-to-entities">published on
+GitHub</a>under MIT
+license, but probably not quite as terse (I've removed braces from
+single statements etc. to mitigate TL;DR syndrome).</p>
+<h2>The Input</h2>
+<p><img alt="Morpheus: What if I told you it was staring you right in the face?" src="/images/1wL61Ro1.jpg" /></p>
+<p>So what sort of input data should we use? It needs to be images with
+structured text, and the text should have both an overall
+intent/category as well as individual entities within it. Where could we
+find something like that...</p>
+<p>Ohhh, that's right! The internet is covered in the damn things! We could
+get a training set in the millions just by squatting on Reddit or 4chan.
+Settled - we'll try and pull text from memes and determine "intent"
+(which meme are we looking at?) and "entities" (what is Morpheus telling
+us?). How do we get started? We'll start out with the Morpheus image and
+go from there - first off by getting our marketplace accounts set up. Go
+and sign up for the <a href="http://azure.microsoft.com/en-us/marketplace/partners/visionapis/visionapis/">Vision
+API</a> and
+get on the waiting list for <a href="https://www.luis.ai/?ref=1699313">LUIS</a> -
+you'll need to wait until LUIS lets you in before you can get this code
+completely running, but the turnaround time has been pretty good.</p>
+<h2>Extracting Text</h2>
+<p>Let's use the Vision APIs to extract text from our memes. We could use
+the SDK that they provide, but since (a) they don't have a Nuget package
+and (b) I might want to rewrite in Node.js or Python later, let's stick
+with the raw REST API. I'll create an <code>ImageToText</code> class to keep track
+of the API key and the URI format, and build a method to fetch OCR
+results by passing in the image URI:</p>
+<div class="highlight"><pre><span></span><span class="k">public</span> <span class="nf">ImageToText</span><span class="p">(</span><span class="kt">string</span> <span class="n">apiKey</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="n">apiKey</span> <span class="p">=</span> <span class="n">apiKey</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">private</span> <span class="k">readonly</span> <span class="kt">string</span> <span class="n">apiKey</span><span class="p">;</span>
+<span class="k">private</span> <span class="k">const</span> <span class="kt">string</span> <span class="n">OCRURIFormat</span> <span class="p">=</span> <span class="s">&quot;https://api.projectoxford.ai/vision/v1/ocr?language={0}&amp;detectOrientation={1}&quot;</span><span class="p">;</span>
+<span class="k">private</span> <span class="k">const</span> <span class="kt">string</span> <span class="n">DefaultLanguage</span> <span class="p">=</span> <span class="s">&quot;unk&quot;</span><span class="p">;</span>
+<span class="k">private</span> <span class="k">const</span> <span class="kt">bool</span> <span class="n">DefaultDetectOrientation</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+<span class="k">private</span> <span class="k">const</span> <span class="kt">string</span> <span class="n">APIKeyHeader</span> <span class="p">=</span> <span class="s">&quot;Ocp-Apim-Subscription-Key&quot;</span><span class="p">;</span>
+
+<span class="k">public</span> <span class="k">async</span> <span class="n">Task</span><span class="p">&lt;</span><span class="n">JObject</span><span class="p">&gt;</span> <span class="n">ProcessImageToTextAsync</span><span class="p">(</span><span class="n">Uri</span> <span class="n">imageUri</span><span class="p">,</span> <span class="kt">string</span> <span class="n">language</span> <span class="p">=</span> <span class="n">DefaultLanguage</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">detectOrientation</span> <span class="p">=</span> <span class="n">DefaultDetectOrientation</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="kt">var</span> <span class="n">requestBody</span> <span class="p">=</span> <span class="k">new</span> <span class="n">JObject</span><span class="p">();</span>
+  <span class="n">requestBody</span><span class="p">[</span><span class="s">&quot;Url&quot;</span><span class="p">]</span> <span class="p">=</span> <span class="n">imageUri</span><span class="p">.</span><span class="n">ToString</span><span class="p">();</span>
+
+  <span class="kt">var</span> <span class="n">ocrUri</span> <span class="p">=</span> <span class="kt">string</span><span class="p">.</span><span class="n">Format</span><span class="p">(</span><span class="n">OCRURIFormat</span><span class="p">,</span> <span class="n">language</span><span class="p">,</span> <span class="n">detectOrientation</span><span class="p">);</span>
+  <span class="kt">var</span> <span class="n">request</span> <span class="p">=</span> <span class="n">WebRequest</span><span class="p">.</span><span class="n">Create</span><span class="p">(</span><span class="n">ocrUri</span><span class="p">);</span>
+  <span class="n">request</span><span class="p">.</span><span class="n">ContentType</span> <span class="p">=</span> <span class="s">&quot;application/json&quot;</span><span class="p">;</span>
+  <span class="n">request</span><span class="p">.</span><span class="n">Method</span> <span class="p">=</span> <span class="s">&quot;POST&quot;</span><span class="p">;</span>
+  <span class="n">request</span><span class="p">.</span><span class="n">Headers</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">APIKeyHeader</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="n">apiKey</span><span class="p">);</span>
+
+  <span class="k">using</span> <span class="p">(</span><span class="kt">var</span> <span class="n">requestStream</span> <span class="p">=</span> <span class="k">await</span> <span class="n">request</span><span class="p">.</span><span class="n">GetRequestStreamAsync</span><span class="p">().</span><span class="n">ConfigureAwait</span><span class="p">(</span><span class="k">false</span><span class="p">))</span>
+  <span class="p">{</span>
+    <span class="kt">var</span> <span class="n">bodyBytes</span> <span class="p">=</span> <span class="n">Encoding</span><span class="p">.</span><span class="n">UTF8</span><span class="p">.</span><span class="n">GetBytes</span><span class="p">(</span><span class="n">requestBody</span><span class="p">.</span><span class="n">ToString</span><span class="p">());</span>
+    <span class="k">await</span> <span class="n">requestStream</span><span class="p">.</span><span class="n">WriteAsync</span><span class="p">(</span><span class="n">bodyBytes</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="n">bodyBytes</span><span class="p">.</span><span class="n">Length</span><span class="p">).</span><span class="n">ConfigureAwait</span><span class="p">(</span><span class="k">false</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="c1">// Since errors from this API typically come back with a JSON payload describing the problem, trap WebExceptions and pull the response anyway.</span>
+  <span class="n">HttpWebResponse</span> <span class="n">response</span><span class="p">;</span>
+  <span class="k">try</span> <span class="p">{</span>
+    <span class="n">response</span> <span class="p">=</span> <span class="p">(</span><span class="n">HttpWebResponse</span><span class="p">)(</span><span class="k">await</span> <span class="n">request</span><span class="p">.</span><span class="n">GetResponseAsync</span><span class="p">().</span><span class="n">ConfigureAwait</span><span class="p">(</span><span class="k">false</span><span class="p">));</span>
+  <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="n">WebException</span> <span class="n">we</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">response</span> <span class="p">=</span> <span class="p">(</span><span class="n">HttpWebResponse</span><span class="p">)</span><span class="n">we</span><span class="p">.</span><span class="n">Response</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="n">JObject</span> <span class="n">responseJson</span><span class="p">;</span>
+  <span class="k">using</span> <span class="p">(</span><span class="kt">var</span> <span class="n">responseStream</span> <span class="p">=</span> <span class="k">new</span> <span class="n">StreamReader</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">GetResponseStream</span><span class="p">()))</span>
+  <span class="p">{</span>
+    <span class="kt">var</span> <span class="n">responseStr</span> <span class="p">=</span> <span class="k">await</span> <span class="n">responseStream</span><span class="p">.</span><span class="n">ReadToEndAsync</span><span class="p">().</span><span class="n">ConfigureAwait</span><span class="p">(</span><span class="k">false</span><span class="p">);</span>
+    <span class="n">responseJson</span> <span class="p">=</span> <span class="n">JObject</span><span class="p">.</span><span class="n">Parse</span><span class="p">(</span><span class="n">responseStr</span><span class="p">);</span> <span class="c1">// I&#39;m fine throwing a parse error here.</span>
+  <span class="p">}</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">StatusCode</span> <span class="p">==</span> <span class="n">HttpStatusCode</span><span class="p">.</span><span class="n">OK</span><span class="p">)</span> <span class="c1">// Could probably relax this to &quot;non-failing&quot; codes.</span>
+    <span class="k">return</span> <span class="n">responseJson</span><span class="p">;</span>
+  <span class="k">else</span>
+    <span class="k">throw</span> <span class="k">new</span> <span class="nf">Exception</span><span class="p">(</span><span class="kt">string</span><span class="p">.</span><span class="n">Format</span><span class="p">(</span><span class="s">&quot;Failed call: {0} failed to OCR - code {1} - details\n{2}&quot;</span><span class="p">,</span> 
+      <span class="n">imageUri</span><span class="p">,</span> <span class="n">response</span><span class="p">.</span><span class="n">StatusCode</span><span class="p">,</span> <span class="n">responseJson</span><span class="p">.</span><span class="n">ToString</span><span class="p">(</span><span class="n">Newtonsoft</span><span class="p">.</span><span class="n">Json</span><span class="p">.</span><span class="n">Formatting</span><span class="p">.</span><span class="n">Indented</span><span class="p">)));</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>That seems like a lot of code but much of it is just boilerplate HTTP
+request/response cycle - let's walk through it. The constructor takes
+and squirrels away the API key, and the class defines a few constants
+including the format of the REST URI, leaving the method by default just
+taking in a URI for the image and assuming that it should try and
+auto-detect language and orientation. The method itself builds a POST
+request containing the image Url in a JSON payload and funnels it off to
+the server, awaiting a response. When there's an error in the method
+invocation on the server side, it often sends back a JSON payload
+containing the error details, so we trap <code>WebException</code> and try to pull
+out those details. Finally, we read the response stream into a string
+and attempt to parse it as JSON, returning a <code>JObject</code> as a result. We
+could easily create a POCO to deserialize into, but ... I didn't want to
+bother. Note how all of the async calls end
+in <code>.ConfigureAwait(false)</code> - this is because we're in library code and
+want to allow this to be called from e.g. UI threads without
+self-deadlocking (a <a href="http://stackoverflow.com/questions/13489065/best-practice-to-call-configureawait-for-all-server-side-code">StackOverflow
+thread</a>
+and <a href="http://www.tugberkugurlu.com/archive/the-perfect-recipe-to-shoot-yourself-in-the-foot-ending-up-with-a-deadlock-using-the-c-sharp-5-0-asynchronous-language-features">great
+post</a>on
+the issue, for those unfamiliar).</p>
+<h2>Parsing Words Into Lines</h2>
+<p>The <code>JObject</code> we give back from the call contains a hierarchy of
+information (outlined in <a href="https://dev.projectoxford.ai/docs/services/54ef139a49c3f70a50e79b7d/operations/5527970549c3f723cc5363e4">the
+docs</a>)
+with <code>regions</code> containing one or more <code>lines</code> containing one or
+more <code>words</code>. Our goal for meme text is to pull all of the text into a
+single string, which I do using the following:</p>
+<div class="highlight"><pre><span></span><span class="k">public</span> <span class="k">static</span> <span class="kt">string</span> <span class="nf">ExtractTextFromResponse</span><span class="p">(</span><span class="n">JObject</span> <span class="n">responseJson</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">return</span> <span class="kt">string</span><span class="p">.</span><span class="n">Join</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span> <span class="k">from</span> <span class="n">r</span> <span class="k">in</span> <span class="n">responseJson</span><span class="p">[</span><span class="s">&quot;regions&quot;</span><span class="p">]</span>
+                          <span class="k">from</span> <span class="n">l</span> <span class="k">in</span> <span class="n">r</span><span class="p">[</span><span class="s">&quot;lines&quot;</span><span class="p">]</span>
+                          <span class="k">from</span> <span class="n">w</span> <span class="k">in</span> <span class="n">l</span><span class="p">[</span><span class="s">&quot;words&quot;</span><span class="p">]</span>
+                          <span class="k">select</span> <span class="p">(</span><span class="kt">string</span><span class="p">)</span><span class="n">w</span><span class="p">[</span><span class="s">&quot;text&quot;</span><span class="p">]);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Joining all of the words' text together for all lines in all
+regions. Let's take a look at the results.</p>
+<h2>Results... and a Realization</h2>
+<p><img alt="Stuff" src="/images/5ocZvsW1.jpg" /></p>
+<p>So running the OCR on our example image above, I notice a problem - it's
+missed a chunk of text and returned "what if it was staring you right in
+the face?". Crap, well at least the text it did find it got right.
+Boromir is right - of course Oxford trolls me and pulls "one <em>does</em>
+simply ocr text from an image"!</p>
+<p>In retrospect, I should have expected a problem - we're using technology
+meant to pull words from objects in the image, to pull words that have
+been overlaid on an existing image. It's a whole different training
+base, and the words in memes appear totally different than the words in
+reality. Perhaps we can transform them in some way to pull text
+correctly - maybe pull a single color channel or invert.</p>
+<p>I've tried a bunch of different examples of simple filters, and so far
+pulling out the blue channel or bumping gamma to \~2.5 seems to work
+reasonably well. I'll publish a future post with some of the work I did
+here - if you're curious now, see <a href="https://github.com/noodlefrenzy/image-to-entities">the GitHub
+repository</a>. There's
+more work that can be done here - for instance, I believe a pre-filter
+doing edge detection would work well - but let's move on to LUIS.</p>
+<h2>Training an Entity Extractor</h2>
+<p>Now we can work with LUIS from Project Oxford to train a model for
+recognizing the type of meme and the contents within. We first log into
+LUIS (you did request an invite earlier, right?) and create a new
+application. We can then create a few intents and entities, and start
+adding "utterances" - for each utterance you pick an intent and then
+label any entities within it. You can then re-train the model with the
+button in the bottom left and see how it did - here's a shot of what my
+model looks like after a few training utterances have been added:</p>
+<p><a href="/images/luis_training.png"><img alt="LUIS_Training" src="/images/luis_training.png" /></a></p>
+<p>Now that it's trained, you can go back to your application list and hit
+"Publish":</p>
+<p><a href="/images/LUIS_Publish.png"><img alt="LUIS_Publish" src="/images/LUIS_Publish.png" /></a></p>
+<p>Once it's published, you can just invoke it with the given URL and the
+utterance you want it to try and tag. For the Boromir example above,
+I've run it through the single-channel filter (blue) and then passed it
+into the model:</p>
+<div class="highlight"><pre><span></span><span class="kt">var</span> <span class="n">mordorImage</span> <span class="p">=</span> <span class="s">&quot;http://i.imgur.com/5ocZvsW.jpg&quot;</span><span class="p">;</span>
+<span class="kt">var</span> <span class="n">imageToText</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ImageToText</span><span class="p">(</span><span class="n">visionApiKey</span><span class="p">);</span>
+<span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="k">await</span> <span class="n">imageToText</span><span class="p">.</span><span class="n">ProcessImageToTextAsync</span><span class="p">(</span><span class="k">await</span> <span class="n">ImageUtilities</span><span class="p">.</span><span class="n">SingleChannelAsync</span><span class="p">(</span><span class="k">new</span> <span class="n">Uri</span><span class="p">(</span><span class="n">mordorImage</span><span class="p">),</span> <span class="n">ImageUtilities</span><span class="p">.</span><span class="n">Channel</span><span class="p">.</span><span class="n">Blue</span><span class="p">));</span>
+<span class="kt">var</span> <span class="n">lines</span> <span class="p">=</span> <span class="n">ImageToText</span><span class="p">.</span><span class="n">ExtractLinesFromResponse</span><span class="p">(</span><span class="n">result</span><span class="p">).</span><span class="n">ToList</span><span class="p">();</span>
+<span class="n">lines</span><span class="p">.</span><span class="n">RemoveAt</span><span class="p">(</span><span class="n">lines</span><span class="p">.</span><span class="n">Count</span> <span class="p">-</span> <span class="m">1</span><span class="p">);</span> <span class="c1">// Remove memegenerator.net line.</span>
+<span class="kt">var</span> <span class="n">text</span> <span class="p">=</span> <span class="kt">string</span><span class="p">.</span><span class="n">Join</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span> <span class="n">lines</span><span class="p">);</span>
+
+<span class="kt">var</span> <span class="n">luis</span> <span class="p">=</span> <span class="k">new</span> <span class="n">TextToEntitiesAndIntent</span><span class="p">(</span><span class="n">luisApp</span><span class="p">,</span> <span class="n">luisApiKey</span><span class="p">);</span>
+<span class="kt">var</span> <span class="n">luisResult</span> <span class="p">=</span> <span class="k">await</span> <span class="n">luis</span><span class="p">.</span><span class="n">DetectEntitiesAndIntentFromText</span><span class="p">(</span><span class="n">text</span><span class="p">);</span>
+<span class="n">Trace</span><span class="p">.</span><span class="n">TraceInformation</span><span class="p">(</span><span class="n">luisResult</span><span class="p">.</span><span class="n">ToString</span><span class="p">(</span><span class="n">Newtonsoft</span><span class="p">.</span><span class="n">Json</span><span class="p">.</span><span class="n">Formatting</span><span class="p">.</span><span class="n">Indented</span><span class="p">));</span>
+</pre></div>
+
+
+<p>When I do, it comes out with</p>
+<div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;entities&quot;</span><span class="o">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;entity&quot;</span><span class="o">:</span> <span class="s2">&quot;ocr some text from an image&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;Subject1&quot;</span>
+    <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="s2">&quot;intents&quot;</span><span class="o">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;intent&quot;</span><span class="o">:</span> <span class="s2">&quot;Mordor&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;score&quot;</span><span class="o">:</span> <span class="mf">0.9998174</span>
+    <span class="p">},</span>
+    <span class="p">...</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>As you can see, it pulled the right meme type <em>and</em> entity from the meme
+text. Not too surprising since I've over-fit the model, but it gives you
+some ideas of how you can string Oxford, LUIS, and some simple image
+processing together to build a pipeline. Once again, all of this code is
+<a href="https://github.com/noodlefrenzy/image-to-entities">on GitHub</a> under and
+MIT license, so feel free to use it as you see fit.</p>
+    </div><!-- /.entry-content -->
+
+  </article>
+</section>
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="https://blogs.technet.microsoft.com/machinelearning/">Cortana Analytics</a></li>
+                            <li><a href="http://www.kdnuggets.com/">KDNuggets</a></li>
+                            <li><a href="http://www.hanselman.com/blog/">Hanselman</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://twitter.com/noodlefrenzy">Twitter</a></li>
+                            <li><a href="https://www.linkedin.com/in/noodlefrenzy">LinkedIn</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-54597100-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'intelligentartifice';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'https://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+</html>

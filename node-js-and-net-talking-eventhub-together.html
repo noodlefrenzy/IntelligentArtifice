@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Node.js and .NET Talking EventHub, Together</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/noodlefrenzy">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="/">Intelligent Artifice </a></h1>
+                <nav><ul>
+                    <li><a href="/pages/about-me-and-this-blog.html">About Me And This Blog</a></li>
+                    <li><a href="/category/devops.html">DevOps</a></li>
+                    <li><a href="/category/meta.html">Meta</a></li>
+                    <li class="active"><a href="/category/software.html">Software</a></li>
+                    <li><a href="/category/uncategorized.html">Uncategorized</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="/node-js-and-net-talking-eventhub-together.html" rel="bookmark"
+           title="Permalink to Node.js and .NET Talking EventHub, Together">Node.js and .NET Talking EventHub, Together</a></h1>
+<a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="noodlefrenzy">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2015-01-28T13:48:00-08:00">
+                Published: Wed 28 January 2015
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/net.html">.NET</a> <a href="/tag/amqp.html">AMQP</a> <a href="/tag/azure.html">Azure</a> <a href="/tag/c.html">C#</a> <a href="/tag/eventhub.html">EventHub</a> <a href="/tag/node.html">Node</a> </p>
+</footer><!-- /.post-info -->      <p>Over the past few months, I've been working on <a href="https://github.com/noodlefrenzy/node-amqp10">a Node.js client for
+AMQP 1.0</a> - the <em>lingua
+franca</em> of Azure's EventHub and ServiceBus.  Well, the EventHub support
+is just about complete, and ServiceBus Topics and Queues should follow
+shortly thereafter (it's just me working on it, so it's slow
+going - *hint* PR's are welcome *hint*), so it seemed like a good
+time to try to determine what it would take to interoperate between
+Node.js and .NET using EventHub.  Turns out it's actually pretty simple.</p>
+<h2>AMQP Messaging Basics</h2>
+<p>In order to understand the details, it's helpful if you understand how a
+message is transmitted using AMQP first.  The message is sent using
+a <code>Transfer</code> frame, with the body containing both the message payload as
+well as any annotations.  In AMQP-speak, the body can be one of three
+types:</p>
+<ul>
+<li><code>amqp-sequence</code>- a list of AMQP-encoded values</li>
+<li><code>amqp-value</code> - a single AMQP-encoded value</li>
+<li><code>data</code> - a blob of binary data in whatever format your little heart
+    desires</li>
+</ul>
+<p>Message annotations, if any, prefix the payload and are an AMQP map with
+Symbol (<code>0xA3/0xB3</code> if you're speaking hex) or ulong keys and arbitrary
+AMQP-encoded values.</p>
+<h2>Messages in EventHub</h2>
+<p>When using EventHub in .NET with the <code>EventHubClient</code>, you encode data
+by passing in an instance of an <code>XmlObjectSerializer</code> into <code>EventData</code>.
+ It uses this to convert your payload object into a binary blob and pass
+it using the <code>data</code> payload type I mentioned above.
+ Now <code>XmlObjectSerializer</code> is a terribly named serializer interface, one
+implementation of which is <code>DataContractJsonSerializer</code> (are you
+beginning to see why the name is bad?).  This led me to believe that I
+could use this on the .NET side to encode a <code>DataContract</code> object into
+JSON and then decode it on the Node.js side easily - an assumption that
+turns out to be true.  Symmetrically, I believed I could encode a JSON
+string into a binary UTF8 buffer on the Node side and pass it to .NET
+where it would then be easy to decode - that also turned out to be true.</p>
+<p>EventHub also includes a few annotations with every message, letting
+receivers know what the message's offset is, its timestamp and a few
+other details, as well as accepting a partition-key annotation for
+incoming messages.  I've altered my API to ensure I can support those
+easily, without sacrificing generality for broader AMQP server cases.</p>
+<h2>Sending a Message from .NET</h2>
+<p>You can send a message from .NET by using the <code>EventData</code> type and
+passing it to an <code>EventHubClient</code> instance's <code>Send</code> method.  To send a
+JSON-based payload as I described above, you first need to define
+a <code>DataContract</code> object like my <code>BasicData</code> here:</p>
+<div class="highlight"><pre><span></span><span class="na">[DataContract]</span>
+<span class="k">public</span> <span class="k">class</span> <span class="nc">BasicData</span>
+<span class="p">{</span>
+<span class="na">    [DataMember]</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">DataString</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+
+<span class="na">    [DataMember]</span>
+    <span class="k">public</span> <span class="kt">int</span> <span class="n">DataValue</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Then send it through your <code>EventHubClient</code> using
+a <code>DataContractJsonSerializer</code> as my <code>Sender</code> class below illustrates:</p>
+<div class="highlight"><pre><span></span><span class="k">public</span> <span class="k">class</span> <span class="nc">Sender</span>
+<span class="p">{</span>
+    <span class="k">private</span> <span class="n">EventHubClient</span> <span class="n">eventHubClient</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="nf">Sender</span><span class="p">(</span><span class="kt">string</span> <span class="n">connectionString</span><span class="p">,</span> <span class="kt">string</span> <span class="n">eventHubPath</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">eventHubClient</span> <span class="p">=</span> <span class="n">EventHubClient</span><span class="p">.</span><span class="n">CreateFromConnectionString</span><span class="p">(</span><span class="n">connectionString</span><span class="p">,</span> <span class="n">eventHubPath</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Send</span><span class="p">(</span><span class="n">BasicData</span> <span class="n">payload</span><span class="p">,</span> <span class="kt">string</span> <span class="n">partitionKey</span> <span class="p">=</span> <span class="k">null</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="kt">var</span> <span class="n">serializer</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DataContractJsonSerializer</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">BasicData</span><span class="p">));</span>
+        <span class="kt">var</span> <span class="n">data</span> <span class="p">=</span> <span class="k">new</span> <span class="n">EventData</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">serializer</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">partitionKey</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">data</span><span class="p">.</span><span class="n">PartitionKey</span> <span class="p">=</span> <span class="n">partitionKey</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">this</span><span class="p">.</span><span class="n">eventHubClient</span><span class="p">.</span><span class="n">Send</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>The connection string you use above should be the SAS connection string
+from your Event Hub - one with Send permission.</p>
+<h2>Receiving a Message from Node</h2>
+<p>To receive the message you just sent, you'll need to do more than
+just say "connect" - EventHub doles messages out to different partitions
+to do load balancing, and you need to read from each one in order to
+find the message you just sent.  The PartitionKey you set above is a
+proxy key that gets hashed into an actual partition, allowing you to
+control load-balancing and group deliveries without having to see how
+the sausage is made.  On .NET, this process is taken care of for you
+(see below), but in Node you'll need to know how many partitions up
+front and connect to them all.  My colleague and I are trying to change
+that with <a href="https://github.com/jmspring/node-sbus">our node-sbus module</a>,
+but it's not quite there yet.</p>
+<p>So, using my <code>amqp10</code> module, how would you connect to a 16-partition
+EventHub to read the message you just sent?  Well, the following code
+snippet (taken mostly from <code>simple_eventhub_test.js</code> in that module)
+demonstrates:</p>
+<div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">AMQPClient</span>  <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;amqp10&#39;</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">uri</span> <span class="o">=</span> <span class="s1">&#39;amqps://&#39;</span> <span class="o">+</span> <span class="nb">encodeURIComponent</span><span class="p">(</span><span class="nx">sasName</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span> <span class="o">+</span> <span class="nb">encodeURIComponent</span><span class="p">(</span><span class="nx">sasKey</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;@&#39;</span> <span class="o">+</span> <span class="nx">serviceBusHost</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">sendAddr</span> <span class="o">=</span> <span class="nx">eventHubName</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">recvAddr</span> <span class="o">=</span> <span class="nx">eventHubName</span> <span class="o">+</span> <span class="s1">&#39;/ConsumerGroups/$default/Partitions/&#39;</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AMQPClient</span><span class="p">(</span><span class="nx">AMQPClient</span><span class="p">.</span><span class="nx">policies</span><span class="p">.</span><span class="nx">EventHubPolicy</span><span class="p">);</span>
+<span class="nx">client</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="nx">uri</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">idx</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">idx</span> <span class="o">&lt;</span> <span class="nx">numPartitions</span><span class="p">;</span> <span class="o">++</span><span class="nx">idx</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">curIdx</span> <span class="o">=</span> <span class="nx">idx</span><span class="p">;</span>
+        <span class="kd">var</span> <span class="nx">curRcvAddr</span> <span class="o">=</span> <span class="nx">recvAddr</span> <span class="o">+</span> <span class="nx">curIdx</span><span class="p">;</span>
+        <span class="nx">client</span><span class="p">.</span><span class="nx">receive</span><span class="p">(</span><span class="nx">curRcvAddr</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">payload</span><span class="p">,</span> <span class="nx">annotations</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;ERROR: &#39;</span><span class="p">);</span>
+                <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Recv(&#39;</span> <span class="o">+</span> <span class="nx">curIdx</span> <span class="o">+</span> <span class="s1">&#39;): &#39;</span><span class="p">);</span>
+                <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">payload</span><span class="p">);</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">annotations</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Annotations:&#39;</span><span class="p">);</span>
+                    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">annotations</span><span class="p">);</span>
+                <span class="p">}</span>
+                <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">});</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+</pre></div>
+
+
+<p>So you'll see the resulting message:</p>
+<div class="highlight"><pre><span></span><span class="nx">Recv</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span><span class="o">:</span>
+<span class="p">{</span> <span class="nx">DataString</span><span class="o">:</span> <span class="s1">&#39;From .NET&#39;</span><span class="p">,</span> <span class="nx">DataValue</span><span class="o">:</span> <span class="mi">16</span> <span class="p">}</span>
+<span class="nx">Annotations</span><span class="o">:</span>
+<span class="p">{</span> <span class="nx">descriptor</span><span class="o">:</span> <span class="p">[</span><span class="nx">Int64</span> <span class="nx">value</span><span class="o">:</span><span class="mi">114</span> <span class="nx">octets</span><span class="o">:</span><span class="mi">00</span> <span class="mi">00</span> <span class="mi">00</span> <span class="mi">00</span> <span class="mi">00</span> <span class="mi">00</span> <span class="mi">00</span> <span class="mi">72</span><span class="p">],</span>
+  <span class="nx">value</span><span class="o">:</span>
+   <span class="p">{</span> <span class="s1">&#39;x-opt-sequence-number&#39;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+     <span class="s1">&#39;x-opt-offset&#39;</span><span class="o">:</span> <span class="s1">&#39;120&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;x-opt-enqueued-time&#39;</span><span class="o">:</span> <span class="p">[</span><span class="nx">Int64</span> <span class="nx">value</span><span class="o">:</span><span class="mi">1421795188160</span> <span class="nx">octets</span><span class="o">:</span><span class="mi">00</span> <span class="mi">00</span> <span class="mi">01</span> <span class="mi">4</span><span class="nx">b</span> <span class="mi">09</span> <span class="mi">98</span> <span class="nx">dd</span> <span class="nx">c0</span><span class="p">],</span>
+     <span class="s1">&#39;x-opt-partition-key&#39;</span><span class="o">:</span> <span class="s1">&#39;PK5&#39;</span> <span class="p">}</span> <span class="p">}</span>
+</pre></div>
+
+
+<p>(Note the annotations - I'm using the
+<a href="https://github.com/broofa/node-int64">node-int64</a> module to ensure the
+full fidelity timestamp is preserved.)</p>
+<p>In the code above, you'll notice that I've automatically parsed the
+UTF8-encoded JSON payload in the binary stream, by using a smart decoder
+in the <code>AMQPClient.policies.EventHubPolicy</code> that you provided when you
+instantiated the AMQPClient.  I mention this because you could write
+your own encoders and decoders to do whatever processing you need to do.</p>
+<div class="highlight"><pre><span></span><span class="nx">receiverLinkPolicy</span><span class="o">:</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+    <span class="nx">decoder</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">bodyStr</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">body</span> <span class="k">instanceof</span> <span class="nx">Buffer</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">bodyStr</span> <span class="o">=</span> <span class="nx">body</span><span class="p">.</span><span class="nx">toString</span><span class="p">();</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">body</span> <span class="o">===</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">bodyStr</span> <span class="o">=</span> <span class="nx">body</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">body</span><span class="p">;</span> <span class="c1">// No clue.</span>
+        <span class="p">}</span>
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">bodyStr</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">bodyStr</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<h2>Sending from Node</h2>
+<p>Now to reverse the process!  Sending from Node is easier than sending
+from .NET, primarily because of the work I've done on making sure that
+the encode/decode logic is set up to make the process easy, as part of
+the <code>AMQPClient.policies.EventHubPolicy</code>:</p>
+<div class="highlight"><pre><span></span><span class="nx">senderLinkPolicy</span><span class="o">:</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+    <span class="nx">encoder</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">bodyStr</span> <span class="o">=</span> <span class="nx">body</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">body</span> <span class="o">!==</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">bodyStr</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">body</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nx">Buffer</span><span class="p">(</span><span class="nx">bodyStr</span><span class="p">,</span> <span class="s1">&#39;utf8&#39;</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>So in order to send, you just connect and then send a JSON object:</p>
+<div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AMQPClient</span><span class="p">(</span><span class="nx">AMQPClient</span><span class="p">.</span><span class="nx">policies</span><span class="p">.</span><span class="nx">EventHubPolicy</span><span class="p">);</span>
+<span class="nx">client</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="nx">uri</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">client</span><span class="p">.</span><span class="nx">send</span><span class="p">({</span> <span class="s2">&quot;DataString&quot;</span><span class="o">:</span> <span class="s2">&quot;From Node&quot;</span><span class="p">,</span> <span class="s2">&quot;DataValue&quot;</span><span class="o">:</span> <span class="nx">msgVal</span> <span class="p">},</span> <span class="nx">sendAddr</span><span class="p">,</span> 
+                <span class="p">{</span> <span class="s1">&#39;x-opt-partition-key&#39;</span> <span class="o">:</span> <span class="s1">&#39;pk1&#39;</span> <span class="p">},</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="p">...</span>
+</pre></div>
+
+
+<p>Setting the partition key isn't quite as simple as in .NET, but it's
+pretty easy - you just set the appropriate value in the annotations
+map.  EventHub uses an AMQP message annotation with the symbol
+key <code>x-opt-partition-key</code> to delineate the partition key - my API does
+the hard work of turning your object into that AMQP gunk.</p>
+<h2>Receiving Messages from .NET</h2>
+<p>To receive these messages on the .NET side, we're using the
+EventProcessorHost - the oddly named processor library that not only
+reads from all EventHub partitions, but stores offset data into blob
+storage so it can pick up where it left off (or collaborate across
+hosts).  The logic here is more complex than in the sending case,
+because we have to implement an instance of <code>IEventProcessor</code> to process
+incoming messages.  I've done a rather simple implementation that just
+logs to the console and occasionally writes a checkpoint snapshot of the
+offsets to blob storage:</p>
+<div class="highlight"><pre><span></span><span class="k">public</span> <span class="k">class</span> <span class="nc">SimpleEventProcessor</span> <span class="p">:</span> <span class="n">IEventProcessor</span>
+<span class="p">{</span>
+    <span class="k">private</span> <span class="k">static</span> <span class="k">readonly</span> <span class="n">TimeSpan</span> <span class="n">TimeBetweenSnapshots</span> <span class="p">=</span> <span class="n">TimeSpan</span><span class="p">.</span><span class="n">FromMinutes</span><span class="p">(</span><span class="m">5</span><span class="p">);</span>
+
+    <span class="k">private</span> <span class="n">PartitionContext</span> <span class="n">partitionContext</span><span class="p">;</span>
+    <span class="k">private</span> <span class="n">Stopwatch</span> <span class="n">checkpointStopwatch</span><span class="p">;</span>
+    <span class="k">private</span> <span class="n">SemaphoreSlim</span> <span class="n">checkpointLock</span> <span class="p">=</span> <span class="k">new</span> <span class="n">SemaphoreSlim</span><span class="p">(</span><span class="m">1</span><span class="p">);</span>
+
+    <span class="k">public</span> <span class="k">async</span> <span class="n">Task</span> <span class="nf">CloseAsync</span><span class="p">(</span><span class="n">PartitionContext</span> <span class="n">context</span><span class="p">,</span> <span class="n">CloseReason</span> <span class="n">reason</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;Processor closing.  Partition &#39;{0}&#39;, {1}.&quot;</span><span class="p">,</span> <span class="n">context</span><span class="p">.</span><span class="n">Lease</span><span class="p">.</span><span class="n">PartitionId</span><span class="p">,</span> <span class="n">reason</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">reason</span> <span class="p">==</span> <span class="n">CloseReason</span><span class="p">.</span><span class="n">Shutdown</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">await</span> <span class="n">context</span><span class="p">.</span><span class="n">CheckpointAsync</span><span class="p">();</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="n">Task</span> <span class="nf">OpenAsync</span><span class="p">(</span><span class="n">PartitionContext</span> <span class="n">context</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;Processor opening.  Partition &#39;{0}&#39;, Offset &#39;{1}&#39;.&quot;</span><span class="p">,</span> <span class="n">context</span><span class="p">.</span><span class="n">Lease</span><span class="p">.</span><span class="n">PartitionId</span><span class="p">,</span> <span class="n">context</span><span class="p">.</span><span class="n">Lease</span><span class="p">.</span><span class="n">Offset</span><span class="p">);</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">partitionContext</span> <span class="p">=</span> <span class="n">context</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">checkpointStopwatch</span> <span class="p">=</span> <span class="n">Stopwatch</span><span class="p">.</span><span class="n">StartNew</span><span class="p">();</span>
+        <span class="k">return</span> <span class="n">Task</span><span class="p">.</span><span class="n">FromResult</span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">async</span> <span class="n">Task</span> <span class="nf">ProcessEventsAsync</span><span class="p">(</span><span class="n">PartitionContext</span> <span class="n">context</span><span class="p">,</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">EventData</span><span class="p">&gt;</span> <span class="n">messages</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="kt">var</span> <span class="n">serializer</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DataContractJsonSerializer</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">BasicData</span><span class="p">));</span>
+        <span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">eventData</span> <span class="k">in</span> <span class="n">messages</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="kt">var</span> <span class="n">key</span> <span class="p">=</span> <span class="n">eventData</span><span class="p">.</span><span class="n">PartitionKey</span><span class="p">;</span>
+            <span class="kt">var</span> <span class="n">payload</span> <span class="p">=</span> <span class="n">eventData</span><span class="p">.</span><span class="n">GetBody</span><span class="p">&lt;</span><span class="n">BasicData</span><span class="p">&gt;(</span><span class="n">serializer</span><span class="p">);</span>
+
+            <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;Partition &#39;{0}&#39;: Received PK: {1}, DataString: &#39;{2}&#39;, DataValue: {3}.&quot;</span><span class="p">,</span>
+                <span class="n">context</span><span class="p">.</span><span class="n">Lease</span><span class="p">.</span><span class="n">PartitionId</span><span class="p">,</span> <span class="n">eventData</span><span class="p">.</span><span class="n">PartitionKey</span><span class="p">,</span> <span class="n">payload</span><span class="p">.</span><span class="n">DataString</span><span class="p">,</span> <span class="n">payload</span><span class="p">.</span><span class="n">DataValue</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="k">await</span> <span class="k">this</span><span class="p">.</span><span class="n">checkpointLock</span><span class="p">.</span><span class="n">WaitAsync</span><span class="p">();</span>
+        <span class="k">try</span>
+        <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">checkpointStopwatch</span><span class="p">.</span><span class="n">Elapsed</span> <span class="p">&gt;</span> <span class="n">TimeBetweenSnapshots</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="k">await</span> <span class="n">context</span><span class="p">.</span><span class="n">CheckpointAsync</span><span class="p">();</span>
+                <span class="k">this</span><span class="p">.</span><span class="n">checkpointStopwatch</span><span class="p">.</span><span class="n">Reset</span><span class="p">();</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">finally</span>
+        <span class="p">{</span>
+            <span class="k">this</span><span class="p">.</span><span class="n">checkpointLock</span><span class="p">.</span><span class="n">Release</span><span class="p">();</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>I use the <code>SemaphoreSlim</code> to allow me to gatekeep access to the
+stopwatch without forcing a synchronous lock.  Using this processor, I
+then just register it for a given hub and consumer group:</p>
+<div class="highlight"><pre><span></span><span class="k">public</span> <span class="k">class</span> <span class="nc">Receiver</span> <span class="p">:</span> <span class="n">IDisposable</span>
+<span class="p">{</span>
+    <span class="k">private</span> <span class="kt">string</span> <span class="n">blobConnectionString</span><span class="p">;</span>
+    <span class="k">private</span> <span class="kt">string</span> <span class="n">serviceBusConnectionString</span><span class="p">;</span>
+    <span class="k">private</span> <span class="n">EventHubClient</span> <span class="n">eventHubClient</span><span class="p">;</span>
+    <span class="k">private</span> <span class="n">EventProcessorHost</span> <span class="n">eventProcessorHost</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="nf">Receiver</span><span class="p">(</span><span class="kt">string</span> <span class="n">blobConnectionString</span><span class="p">,</span> <span class="kt">string</span> <span class="n">serviceBusConnectionString</span><span class="p">,</span> <span class="kt">string</span> <span class="n">eventHubPath</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">blobConnectionString</span> <span class="p">=</span> <span class="n">blobConnectionString</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">serviceBusConnectionString</span> <span class="p">=</span> <span class="n">serviceBusConnectionString</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">eventHubClient</span> <span class="p">=</span> <span class="n">EventHubClient</span><span class="p">.</span><span class="n">CreateFromConnectionString</span><span class="p">(</span><span class="n">serviceBusConnectionString</span><span class="p">,</span> <span class="n">eventHubPath</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">async</span> <span class="n">Task</span> <span class="nf">Receive</span><span class="p">(</span><span class="kt">string</span> <span class="n">receiverName</span><span class="p">,</span> <span class="kt">string</span> <span class="n">consumerGroupName</span> <span class="p">=</span> <span class="k">null</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="kt">var</span> <span class="n">consumerGroup</span> <span class="p">=</span> <span class="n">consumerGroupName</span> <span class="p">==</span> <span class="k">null</span> <span class="p">?</span>
+            <span class="k">this</span><span class="p">.</span><span class="n">eventHubClient</span><span class="p">.</span><span class="n">GetDefaultConsumerGroup</span><span class="p">()</span> <span class="p">:</span>
+            <span class="k">this</span><span class="p">.</span><span class="n">eventHubClient</span><span class="p">.</span><span class="n">GetConsumerGroup</span><span class="p">(</span><span class="n">consumerGroupName</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">eventProcessorHost</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">await</span> <span class="k">this</span><span class="p">.</span><span class="n">eventProcessorHost</span><span class="p">.</span><span class="n">UnregisterEventProcessorAsync</span><span class="p">();</span>
+        <span class="p">}</span>
+
+        <span class="k">this</span><span class="p">.</span><span class="n">eventProcessorHost</span> <span class="p">=</span> <span class="k">new</span> <span class="n">EventProcessorHost</span><span class="p">(</span><span class="n">receiverName</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="n">eventHubClient</span><span class="p">.</span><span class="n">Path</span><span class="p">,</span> <span class="n">consumerGroup</span><span class="p">.</span><span class="n">GroupName</span><span class="p">,</span> 
+            <span class="k">this</span><span class="p">.</span><span class="n">serviceBusConnectionString</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="n">blobConnectionString</span><span class="p">);</span>
+        <span class="k">await</span> <span class="k">this</span><span class="p">.</span><span class="n">eventProcessorHost</span><span class="p">.</span><span class="n">RegisterEventProcessorAsync</span><span class="p">&lt;</span><span class="n">SimpleEventProcessor</span><span class="p">&gt;();</span>
+    <span class="p">}</span>
+
+    <span class="cp">#region IDisposable Support</span>
+    <span class="k">private</span> <span class="kt">bool</span> <span class="n">disposedValue</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span> <span class="c1">// To detect redundant calls</span>
+
+    <span class="k">protected</span> <span class="k">virtual</span> <span class="k">void</span> <span class="nf">Dispose</span><span class="p">(</span><span class="kt">bool</span> <span class="n">disposing</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(!</span><span class="n">disposedValue</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">disposing</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">eventProcessorHost</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="k">this</span><span class="p">.</span><span class="n">eventProcessorHost</span><span class="p">.</span><span class="n">UnregisterEventProcessorAsync</span><span class="p">().</span><span class="n">Wait</span><span class="p">();</span>
+                    <span class="k">this</span><span class="p">.</span><span class="n">eventProcessorHost</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+
+            <span class="n">disposedValue</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Dispose</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">Dispose</span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="cp">#endregion</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>This will receive all messages sent since the last time the code was
+run, storing information about the offsets for the different partitions
+in blob storage.</p>
+<h2>Conclusion</h2>
+<p>I realize there is a lot of code in this post, but there's not a lot of
+boilerplate, and it's pretty easy to follow.  Getting .NET and Node
+to interoperate and exchange data via EventHub, at high scale, is pretty
+easy and opens up some great possibilities in the area of IoT, with
+small Node-capable devices or hubs writing to EventHub and C# or
+F#-based workers processing EventHub data-streams computing aggregates,
+doing predictive analytics, or driving future work.  I hope I've fired
+up some of you to play around with EventHub - I'd love people to use my
+module, and if you have any feedback please let me know, either through
+comments here or through pull requests :)  Happy eventing!</p>
+    </div><!-- /.entry-content -->
+
+  </article>
+</section>
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="https://blogs.technet.microsoft.com/machinelearning/">Cortana Analytics</a></li>
+                            <li><a href="http://www.kdnuggets.com/">KDNuggets</a></li>
+                            <li><a href="http://www.hanselman.com/blog/">Hanselman</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://twitter.com/noodlefrenzy">Twitter</a></li>
+                            <li><a href="https://www.linkedin.com/in/noodlefrenzy">LinkedIn</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-54597100-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'intelligentartifice';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'https://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+</html>

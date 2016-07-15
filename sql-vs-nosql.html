@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>SQL vs. NoSQL</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/noodlefrenzy">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="/">Intelligent Artifice </a></h1>
+                <nav><ul>
+                    <li><a href="/pages/about-me-and-this-blog.html">About Me And This Blog</a></li>
+                    <li><a href="/category/devops.html">DevOps</a></li>
+                    <li><a href="/category/meta.html">Meta</a></li>
+                    <li class="active"><a href="/category/software.html">Software</a></li>
+                    <li><a href="/category/uncategorized.html">Uncategorized</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="/sql-vs-nosql.html" rel="bookmark"
+           title="Permalink to SQL vs. NoSQL">SQL vs. NoSQL</a></h1>
+<a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="noodlefrenzy">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-08-01T17:11:00-07:00">
+                Published: Fri 01 August 2014
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/distributed-systems.html">Distributed Systems</a> <a href="/tag/nosql.html">NoSQL</a> </p>
+</footer><!-- /.post-info -->      <p>I was recently asked by a colleague of mine why anyone is even using
+NoSQL solutions at all, and not just sticking with SQL.  After telling
+them that people use them because they're
+<a href="https://www.youtube.com/watch?v=b2F-DItXtZs">web-scale</a>, I did some
+thinking about when you should use NoSQL vs. just sticking with good old
+SQL DBs.  If you look at the <a href="http://s3.amazonaws.com/AllThingsDistributed/sosp/amazon-dynamo-sosp2007.pdf">original Dynamo
+paper</a>, it's quite clear that their goal was high scalability for workloads
+while maintaining "high nines" availability.  Having worked at Amazon
+(and been kept up all night with the sounds of pagers in my ears due to
+Oracle alarms), I can understand their concerns.  For a case like their
+shopping carts - hundreds of millions of highly-churned objects, no
+connections between them, easily GET/PUT compatible - this makes perfect
+sense, and it worked fantastically well.  Thus, the NoSQL revolution was
+born, and everyone decided they needed to jump on the NoSQL train.</p>
+<p><img alt="I should use NoSQL" src="http://noodlefrenzy-wp.azurewebsites.net/wp-content/uploads/2014/08/nosql_cat.png" /></p>
+<p>The biggest problem with moving to NoSQL is the amount of functionality
+you lose over regular RDBMSs - little things like "transactions",
+"joins", "queries", "aggregation", "ACID guarantees" and "secondary
+indexes" just to name a few.  These are big, important features, as is
+obvious by how much
+<a href="http://static.googleusercontent.com/media/research.google.com/en/us/archive/spanner-osdi2012.pdf">Google</a>and
+<a href="http://www.mpi-sws.org/~druschel/courses/ds/papers/cooper-pnuts.pdf">others</a>spend
+trying to <a href="http://docs.mongodb.org/manual/indexes/">add</a>them back to
+their existing NoSQL solutions.  If you need the scale and reliability
+and can do without these features, then a NoSQL Key/Value store might be
+the right answer for you.  NoSQL Document Stores (think MongoDB) give
+you some of these features back (secondary indexing, queryability,
+aggregates), but you're still transaction- and join-less.  Other more
+arcane "NoSQL-ish" stores like Graph DBs can give you incredible
+processing powers for particular types of data, and might suit your
+needs (have you ever tried to write a graph query in SQL?).</p>
+<p>However, the issue in adopting a NoSQL store goes deeper than deciding
+what features you can live without - you need to know what happens to
+your data.  When you commit a transaction in SQL, that data is committed
+to disk, durable against reboots, and likely quickly spooled to a
+secondary server - the fault patterns are well-known, and the behavior
+of the various RDBMSs well and accurately documented.  With NoSQL,
+you'll need to know about the <a href="http://en.wikipedia.org/wiki/CAP_theorem">CAP
+Theorem</a>, where your chosen
+store says it lies in the CAP triangle, and whether they're telling the
+truth.</p>
+<p>Kyle Kingsbury has a fantastic <a href="http://aphyr.com/tags/jepsen">series of blog
+posts</a> evaluating various stores on their
+claims, and mostly finding them wanting - recommended reading if you're
+thinking of adopting one for your own project. I'm not telling you to
+avoid NoSQL stores - I've used my share, and written one (internal to
+MS), and know how useful they can be.  Anyone considering NoSQL, though,
+should go into it with eyes open, and consider whether SQL might work
+better for their case.  With Azure, it's easy to spool up a SQL Server
+instance <em>and</em> an instance of MongoDB, try both, and see which one you
+like.</p>
+    </div><!-- /.entry-content -->
+
+  </article>
+</section>
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="https://blogs.technet.microsoft.com/machinelearning/">Cortana Analytics</a></li>
+                            <li><a href="http://www.kdnuggets.com/">KDNuggets</a></li>
+                            <li><a href="http://www.hanselman.com/blog/">Hanselman</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://twitter.com/noodlefrenzy">Twitter</a></li>
+                            <li><a href="https://www.linkedin.com/in/noodlefrenzy">LinkedIn</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-54597100-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'intelligentartifice';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'https://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+</html>

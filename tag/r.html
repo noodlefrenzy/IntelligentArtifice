@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Intelligent Artifice - R</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/noodlefrenzy">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="/">Intelligent Artifice </a></h1>
+                <nav><ul>
+                    <li><a href="/pages/about-me-and-this-blog.html">About Me And This Blog</a></li>
+                    <li><a href="/category/devops.html">DevOps</a></li>
+                    <li><a href="/category/meta.html">Meta</a></li>
+                    <li><a href="/category/software.html">Software</a></li>
+                    <li><a href="/category/uncategorized.html">Uncategorized</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="/data-cleaning-with-azureml-and-r-dates.html">Data Cleaning with AzureML and R: Dates</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2015-01-19T17:42:00-08:00">
+                Published: Mon 19 January 2015
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/azure.html">Azure</a> <a href="/tag/azureml.html">AzureML</a> <a href="/tag/ml.html">ML</a> <a href="/tag/r.html">R</a> </p>
+</footer><!-- /.post-info --><p>I've been working with
+<a href="http://azure.microsoft.com/en-us/services/machine-learning/" title="Azure Machine Learning">AzureML</a>for
+a while now, and it's fantastic.  Having done ML in a few other
+platforms over the years, the ease with which I can put together a few
+regression models, do parameter-sweeps, and compare results is just
+groundbreaking.</p>
+<p>However, one area where it isn't quite as groundbreaking is data
+cleaning.  Right now, there are only a few options, and a lot of the
+time you wind up resorting to using the "Execute R Script" module.  This
+is the first in a many-part series on data processing, cleaning, and
+filtering using Azure ML - this one focused on a problem I just ran into
+with date processing.  When you use the "Execute R Script" module it
+attempts to map the incoming data sets into R data types, and then
+attempts to map the outgoing data-frame (must be a data frame) into data
+types for downstream modules.  This mapping is often where the problem
+begins - sometimes it fails to convert incoming data to the types you
+expect, and on output only a limited set of R types are supported.</p>
+<p>Recently, I had a data-set with a column of date-times in the following
+format: "<code>2014:01:21 17:02:00</code>".  This is obviously a date to our eyes,
+but the system might not see it that way since it's not in a standard
+format.  Once I send it into R, how can I figure out what the data-type
+converter has done?  The easiest way is to send the classes of your
+incoming data to the R output, using the following code:</p>
+<div class="highlight"><pre><span></span>dataset1 <span class="o">&lt;-</span> maml.mapInputPort<span class="p">(</span><span class="m">1</span><span class="p">);</span>
+
+data.set <span class="o">=</span> <span class="kp">as.data.frame</span><span class="p">(</span><span class="kp">lapply</span><span class="p">(</span>dataset1<span class="p">,</span> <span class="kp">class</span><span class="p">));</span>
+
+maml.mapOutputPort<span class="p">(</span><span class="s">&quot;data.set&quot;</span><span class="p">);</span>
+</pre></div>
+
+
+<p>I did this, and saw that my date was actually of type <code>character</code> - if
+it had been in a standard format, it would've been auto-converted
+to <code>POSIXct</code>.  So it fell to me to convert it - I wanted to convert it
+to a date, and then pull out some potential features (date (minus time),
+day of week, hour of day), so I wrote the following (the column is
+<code>weirdDateTime</code>):</p>
+<div class="highlight"><pre><span></span>data.set<span class="o">$</span>asDateTime <span class="o">=</span> <span class="kp">strptime</span><span class="p">(</span>data.set<span class="o">$</span>weirdDateTime<span class="p">,</span> <span class="s">&quot;%Y:%m:%d %H:%M:%S&quot;</span><span class="p">);</span>
+data.set<span class="o">$</span>asDate <span class="o">=</span> <span class="kp">as.Date</span><span class="p">(</span>data.set<span class="o">$</span>asDateTime<span class="p">);</span>
+data.set<span class="o">$</span>dayOfWeek <span class="o">=</span> <span class="kp">weekdays</span><span class="p">(</span>data.set<span class="o">$</span>asDate<span class="p">);</span>
+data.set<span class="o">$</span>hourOfDay <span class="o">=</span> data.set<span class="o">$</span>asDateTime<span class="o">$</span>hour<span class="p">;</span>
+</pre></div>
+
+
+<p>I ran this through RStudio to make sure it worked (always a wise move,
+don't waste your compute cycles until you need them), and it worked
+fine, so I sent it through AzureML... BOOM!  The R module failed, and
+gave me a bunch of output, with the important pieces right here:</p>
+<div class="highlight"><pre><span></span><span class="x">[ModuleOutput] Warning messages:</span>
+<span class="x">[ModuleOutput] </span>
+<span class="x">[ModuleOutput] 1: In strptime(data.set</span><span class="p">$</span><span class="nv">weirdDateTime</span><span class="x">, &quot;%Y:%m:%d %H:%M:%S&quot;) :</span>
+<span class="x">[ModuleOutput] </span>
+<span class="x">[ModuleOutput]   unable to identify current timezone &#39;C&#39;:</span>
+<span class="x">[ModuleOutput] </span>
+<span class="x">[ModuleOutput] please set environment variable &#39;TZ&#39;</span>
+<span class="x">[ModuleOutput] </span>
+<span class="x">[ModuleOutput] 2: In strptime(data.set</span><span class="p">$</span><span class="nv">weirdDateTime</span><span class="x">, &quot;%Y:%m:%d %H:%M:%S&quot;) :</span>
+<span class="x">[ModuleOutput] </span>
+<span class="x">[ModuleOutput]   unknown timezone &#39;localtime&#39;</span>
+<span class="x">[ModuleOutput] </span>
+<span class="x">[ModuleOutput] DllModuleHost Stop: 1 : DllModuleMethod::Execute. Duration: 00:00:04.6139721</span>
+<span class="x">[ModuleOutput] DllModuleHost Error: 1 : Program::Main encountered fatal exception: Microsoft.Analytics.Exceptions.ErrorMapping+ModuleException: Error 1000: RPackage library exception: Failed to convert RObject to DataSet ---&gt; Microsoft.Analytics.Modules.R.ErrorHandling.RException: Failed to convert RObject to DataSet ---&gt; Microsoft.Analytics.Modules.R.ErrorHandling.RNotImplementedException: Parser is not implemented for the Microsoft.MetaAnalytics.RDataSupport.RObject`1[Microsoft.MetaAnalytics.RDataSupport.RObject] type or data is invalid</span>
+</pre></div>
+
+
+<p>I'll be honest - I burned some cycles on those warning messages - they
+seem so bad, and I assumed the data coming back from <code>strptime</code> was
+garbage.  I tried setting the timezone using a parameter to strptime
+(<code>strptime(data.set$weirdDateTime, "%Y:%m:%d %H:%M:%S", tz="GMT")</code>) - no
+change.  I tried setting the TZ environment variable manually
+using <code>Sys.setenv(TZ="GMT")</code> - no dice.  So I ran the same code, but
+used my other "what class is this?" code to tell me what garbage it
+might be generating:</p>
+<p><img alt="r_type_conversions" src="/images/r_type_conversions.png" /></p>
+<p>Hmm, these types look fine.  I spent some time looking around, trying
+different things, and finally asked the people on the Azure ML team.
+ They told me that they don't yet support the POSIXlt data type on
+output, only POSIXct.  It's possible the POSIXlt type will make it into
+the GA release, but it's unlikely and it's definitely not there now.  So
+what can we do now?  Well, we're almost there - we just need to convert
+our POSIXlt to POSIXct before sending it to the output stream and we're
+all done - so here's the final script:</p>
+<div class="highlight"><pre><span></span>data.set <span class="o">=</span> dataset1<span class="p">;</span>
+data.set<span class="o">$</span>asDateTime <span class="o">=</span> <span class="kp">strptime</span><span class="p">(</span>data.set<span class="o">$</span>weirdDateTime<span class="p">,</span> <span class="s">&quot;%Y:%m:%d %H:%M:%S&quot;</span><span class="p">);</span>
+data.set<span class="o">$</span>asDate <span class="o">=</span> <span class="kp">as.Date</span><span class="p">(</span>data.set<span class="o">$</span>asDateTime<span class="p">);</span>
+data.set<span class="o">$</span>dayOfWeek <span class="o">=</span> <span class="kp">weekdays</span><span class="p">(</span>data.set<span class="o">$</span>asDate<span class="p">);</span>
+data.set<span class="o">$</span>hourOfDay <span class="o">=</span> data.set<span class="o">$</span>asDateTime<span class="o">$</span>hour<span class="p">;</span>
+data.set<span class="o">$</span>asDateTime <span class="o">=</span> <span class="kp">as.POSIXct</span><span class="p">(</span>data.set<span class="o">$</span>asDateTime<span class="p">);</span>
+</pre></div>
+
+
+<p>Hopefully this simple example gives you some insight into how to
+diagnose issues with Azure ML's R module, and some insight into what it
+provides and fails to provide.  There's much more to come.</p><p>There are <a href="/data-cleaning-with-azureml-and-r-dates.html#disqus_thread">comments</a>.</p>                </article>
+            </aside><!-- /#featured -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="https://blogs.technet.microsoft.com/machinelearning/">Cortana Analytics</a></li>
+                            <li><a href="http://www.kdnuggets.com/">KDNuggets</a></li>
+                            <li><a href="http://www.hanselman.com/blog/">Hanselman</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://twitter.com/noodlefrenzy">Twitter</a></li>
+                            <li><a href="https://www.linkedin.com/in/noodlefrenzy">LinkedIn</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-54597100-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'intelligentartifice';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'https://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+</html>

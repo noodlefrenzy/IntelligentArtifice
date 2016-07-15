@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Python List Comprehensions Gone Crazy</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/noodlefrenzy">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="/">Intelligent Artifice </a></h1>
+                <nav><ul>
+                    <li><a href="/pages/about-me-and-this-blog.html">About Me And This Blog</a></li>
+                    <li><a href="/category/devops.html">DevOps</a></li>
+                    <li><a href="/category/meta.html">Meta</a></li>
+                    <li class="active"><a href="/category/software.html">Software</a></li>
+                    <li><a href="/category/uncategorized.html">Uncategorized</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="/python-list-comprehensions-gone-crazy.html" rel="bookmark"
+           title="Permalink to Python List Comprehensions Gone Crazy">Python List Comprehensions Gone Crazy</a></h1>
+<a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="noodlefrenzy">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2016-01-27T15:48:00-08:00">
+                Published: Wed 27 January 2016
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/python.html">Python</a> </p>
+</footer><!-- /.post-info -->      <p>Recently, I was messing around with some image recognition tasks in
+Python, and wanted to take a look at some of the images in my training
+set. At first, I was tempted to go open file explorer and walk around
+the directory tree spot-checking a few, but then I remembered that it
+was easy to display images in an <a href="http://ipython.org/">IPython</a> notebook
+using `IPython.display`.</p>
+<p>Perhaps I could write some code to walk the tree and show a few random
+images from each directory. Surely it couldn't be that hard. I wrote a
+simple method to do so:</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Image</span>
+
+<span class="k">def</span> <span class="nf">select_rand</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">dirname</span><span class="p">,</span> <span class="n">filenames</span><span class="p">):</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="nb">file</span> <span class="k">for</span> <span class="nb">file</span> <span class="ow">in</span> <span class="n">filenames</span> <span class="k">if</span> <span class="nb">file</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s1">&#39;.jpg&#39;</span><span class="p">,</span><span class="s1">&#39;.png&#39;</span><span class="p">))]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Found &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39; files in &#39;</span> <span class="o">+</span> <span class="n">dirname</span><span class="p">)</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">),</span> <span class="n">num</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+            <span class="n">display</span><span class="p">(</span><span class="n">Image</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirname</span><span class="p">,</span> <span class="n">filename</span><span class="p">)))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Found no files for &#39;</span> <span class="o">+</span> <span class="n">dirname</span><span class="p">)</span>
+
+<span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="n">select_rand</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Probably not the most efficient in the world, but it did exactly what I
+wanted. Of course, at this point I was basically procrastinating from
+what I was actually supposed to be doing, so decided to take it further.</p>
+<p>Could I reduce this whole shebang to a single list comprehension? Is
+this good programming? Nope, definitely not, but it's a fun way to test
+your understanding of a language, so let's do it.</p>
+<p>First, let's find a method that returns all of the files in a directory
+tree, walking the tree like `os.path.walk` but returning the results
+instead of visiting them - `os.walk` should do the trick. Why is
+`os.path.walk` a visitor pattern and `os.walk` a generator? No clue,
+let's move on.</p>
+<div class="highlight"><pre><span></span><span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">root_dir</span><span class="p">)]</span>
+</pre></div>
+
+
+<p>Second, we'll filter the files to images only:</p>
+<div class="highlight"><pre><span></span><span class="p">[</span><span class="n">img</span>
+ <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">root_dir</span><span class="p">)</span>
+ <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">if</span> <span class="n">img</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s1">&#39;.png&#39;</span><span class="p">,</span> <span class="s1">&#39;.jpg&#39;</span><span class="p">))]</span>
+</pre></div>
+
+
+<p>Now let's turn these into actual Image objects by replacing `img` with
+`Image(os.path.join(t[0], img))`. Okay, we now have Image objects for
+<em>all</em> images, but that's too many to display in our notebook. We should
+limit to three random ones from each directory:</p>
+<div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Image</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">img</span><span class="p">))</span>
+ <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">root_dir</span><span class="p">)</span> 
+ <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">([</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s1">&#39;.png&#39;</span><span class="p">,</span><span class="s1">&#39;.jpg&#39;</span><span class="p">))],</span> <span class="mi">3</span><span class="p">)]</span>
+</pre></div>
+
+
+<p>We replace our `t[2]` with a random sample based on an inner
+comprehension, and move our "is it an image" test into that
+comprehension. This, however, explodes in my example with</p>
+<div class="highlight"><pre><span></span><span class="n">ValueError</span><span class="o">:</span> <span class="n">sample</span> <span class="n">larger</span> <span class="n">than</span> <span class="n">population</span>
+</pre></div>
+
+
+<p>Boom! I apparently have some subdirectory in there with only one or two
+images. Rather than try for some even crazier nested inner lambda, I'll
+just define a simple specialization of `sample` that's protected
+against too few results, and replace `random.sample` with that. We
+then `map` each result to the `display` method to show it in the
+notebook:</p>
+<div class="highlight"><pre><span></span><span class="n">sample</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">l</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="n">l</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="k">else</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+<span class="nb">map</span><span class="p">(</span><span class="n">display</span><span class="p">,</span> <span class="p">[</span><span class="n">Image</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">img</span><span class="p">))</span>
+ <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">root_dir</span><span class="p">)</span> 
+ <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">sample</span><span class="p">([</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s1">&#39;.png&#39;</span><span class="p">,</span><span class="s1">&#39;.jpg&#39;</span><span class="p">))],</span> <span class="mi">3</span><span class="p">)])</span>
+</pre></div>
+    </div><!-- /.entry-content -->
+
+  </article>
+</section>
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="https://blogs.technet.microsoft.com/machinelearning/">Cortana Analytics</a></li>
+                            <li><a href="http://www.kdnuggets.com/">KDNuggets</a></li>
+                            <li><a href="http://www.hanselman.com/blog/">Hanselman</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://twitter.com/noodlefrenzy">Twitter</a></li>
+                            <li><a href="https://www.linkedin.com/in/noodlefrenzy">LinkedIn</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-54597100-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'intelligentartifice';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'https://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+</html>

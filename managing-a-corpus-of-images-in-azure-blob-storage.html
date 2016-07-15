@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Managing a Corpus of Images in Azure Blob Storage</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/noodlefrenzy">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="/">Intelligent Artifice </a></h1>
+                <nav><ul>
+                    <li><a href="/pages/about-me-and-this-blog.html">About Me And This Blog</a></li>
+                    <li><a href="/category/devops.html">DevOps</a></li>
+                    <li><a href="/category/meta.html">Meta</a></li>
+                    <li class="active"><a href="/category/software.html">Software</a></li>
+                    <li><a href="/category/uncategorized.html">Uncategorized</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="/managing-a-corpus-of-images-in-azure-blob-storage.html" rel="bookmark"
+           title="Permalink to Managing a Corpus of Images in Azure Blob Storage">Managing a Corpus of Images in Azure Blob Storage</a></h1>
+<a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="noodlefrenzy">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2015-11-12T09:10:00-08:00">
+                Published: Thu 12 November 2015
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/azure.html">Azure</a> <a href="/tag/azure-blob.html">Azure Blob</a> </p>
+</footer><!-- /.post-info -->      <p>As mentioned in <a href="http://www.mikelanzetta.com/2015/09/image-stream-processing-to-blob-storage/">my previous
+post</a> I
+was recently working on a project training <a href="http://www.readcube.com/articles/10.1038%2Fnature14539?shared_access_token=DaxW8O-3gQoqte9kXFFUANRgN0jAjWel9jnR3ZoTv0PU8PImtLRceRBJ32CtadUBIC1dchyTLE3_1-FCJeTkHXnB0vI4SmupYf4v2t_dG6HjI9FdSJMFDQ6iWCA7T6tcte2-dAp-SzhLtuCkfPvhI6x--H5W98_7bqOVwSnqt1Vqo6bzZ5ZM7lCIPdavoThMMSXBgYmSjKSk0CrGtb5KUw%3D%3D">Deep
+ConvNets</a>
+for image recognition. As with any Machine Learning project one of the
+primary things you need to make it successful is large amounts of data -
+quality labeled data. With image-based convnets, though, the data are
+images and metadata about those images, and in this post I'll go through
+some of the design challenges I faced managing a large corpus of images
+and how I solved them. As always the <a href="https://github.com/noodlefrenzy/blob-collection-manager">code is up on
+GitHub</a>.</p>
+<h2>What Storage Do We Need?</h2>
+<p>When training a domain-specific classifier (as I was) we need on the
+order of hundreds of thousands to millions of images. In order to track
+where they came from, whether we've transformed them in some way
+(cropping, filtering, etc.), what models they've trained, and other
+details we need some sort of metadata store.</p>
+<p>For storing the images themselves Azure Blob Storage seemed like a
+no-brainer. After all it's built for storing binary data like that,
+gives us built-in fault tolerance and geo-replication, can easily be
+fronted with a CDN - and when I screw things up I can easily delete the
+container and start again.</p>
+<p>Each "domain" would have its own container. The number of images and the
+rate of change were sufficiently small that we didn't run into any
+container-level throttling. In choosing the paths within the container,
+I felt it was important to track three things: the suffix of the
+original path, the "version" of the image, and whether this was the
+original image or a transformed version. These choices have no impact on
+the Blob Storage itself, but have a significant impact on how you think
+about the images, so choose wisely. I wanted to keep all original images
+"cloistered" so put <code>/original/</code> at the root of the path - you might
+make a different call.</p>
+<p>Choosing the metadata store is a bit more difficult as I have several
+constraints to consider:</p>
+<ul>
+<li>Fault-tolerance: We can't tolerate data loss, we can tolerate small
+    outages but not significant downtime (so, roughly, CP on the <a href="https://en.wikipedia.org/wiki/CAP_theorem">CAP
+    triangle</a>).</li>
+<li>Scale: We need to be able to scale to millions/tens-of-millions of
+    records without significant performance degradation.</li>
+<li>Queryability (yes, I know that's not a word): We're going to want to
+    ask questions like "which images trained this model?" and "how many
+    images with this label have been cropped"?</li>
+<li>Flexibility: This is somewhat less important, but since when I
+    started I wasn't quite sure what the metadata would look like it was
+    important to be able to easily evolve and migrate the data.</li>
+</ul>
+<p>Queryability rules out Azure Table Storage and other KV stores but that
+still leaves a host of possible solutions. In the end I chose <a href="https://azure.microsoft.com/en-us/services/sql-database/">SQL
+Azure</a> with
+<a href="http://weblogs.asp.net/scottgu/code-first-development-with-entity-framework-4">code-first Entity
+Framework</a>.
+This gave me the ability to quickly get up and running in both local
+testing and production, the flexibility to change my model and have the
+data come with me (via migrations), easy fault-tolerance, and a
+reasonable approximation of scale. Scale was my biggest worry, but we
+performed well even without query tuning or index-building - although if
+I was taking this beyond the proof-of-concept level I'd have more
+concrete numbers here and probably a few custom-built indexes to speed
+things along.</p>
+<h2>Constructing the Metadata Model</h2>
+<p>Coming up with what we wanted to track in the metadata was an iterative
+process which made the <a href="https://msdn.microsoft.com/en-us/data/jj591621.aspx">EF's
+migration</a> ability
+quite useful. The way I typically design (and then evolve) a data model
+is to start with the goals. What does it need to know? What questions
+does it need to answer? In our case, we needed to:</p>
+<ul>
+<li>Store the locations of the images in blob storage</li>
+<li>Version those images (so, e.g., we could get a new revision of the
+    same library and still retain the existing revision if we'd already
+    trained models on it)</li>
+<li>Store information about a given image transform (pipeline) - the
+    name, version, and in our case the command line</li>
+</ul>
+<p>Equally important though was what we <em>did not need</em>:</p>
+<ul>
+<li>We didn't care about individual images, only "sets" of them. This
+    saved us tons of real-estate as tens of thousands of individual
+    "<code>Image</code>" records could be condensed to a single "<code>ImageSet</code>".</li>
+<li>We didn't care about parentage/inheritance. We originally had a
+    model where an <code>Image</code> could be transformed via an
+    <code>ImageTransform</code> and the resulting <code>Image</code> would store a link back
+    to its parent. When switching to <code>ImageSets</code> we determined that we
+    never actually used that information.</li>
+</ul>
+<p>I've elided several elements of our actual data-model related to
+tracking how images get combined into training sets then coupled with
+neural nets to form trained neural nets. They are immaterial to the task
+of managing corpora of images but might show up in a subsequent post.</p>
+<p>The resulting model is actually simple enough to store in <strong>Azure Table
+Storage</strong> since we don't really need the queryability, so the code up on
+GitHub uses <code>TableEntities</code> to track the data rather than code-first. I
+felt this would make it easier for people to adopt since they now just
+need a single Azure Storage stamp instead of having to stand up a SQL
+Azure instance. If and when I do a subsequent post with NN-specific
+details the EF code will come with it.</p>
+<p>The resulting data model is simply (note the string math for creating
+the blob path as described above):</p>
+<div class="highlight"><pre><span></span><span class="k">public</span> <span class="k">class</span> <span class="nc">ImageSet</span> <span class="p">:</span> <span class="n">TableEntity</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="nf">ImageSet</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+
+    <span class="c1">/// &lt;summary&gt;</span>
+    <span class="c1">/// Set of (possibly transformed) images.</span>
+    <span class="c1">/// &lt;/summary&gt;</span>
+    <span class="c1">/// &lt;remarks&gt;</span>
+    <span class="c1">/// Blob path is original/_dir_/_image version_, or if transformed it&#39;s transform/_transform name_/_transform version_/_dir_/_image version_</span>
+    <span class="c1">/// &lt;/remarks&gt;</span>
+    <span class="k">public</span> <span class="nf">ImageSet</span><span class="p">(</span><span class="kt">string</span> <span class="n">pathSuffix</span><span class="p">,</span> <span class="kt">string</span> <span class="n">version</span><span class="p">,</span> <span class="n">ImageTransform</span> <span class="n">transform</span> <span class="p">=</span> <span class="k">null</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">pathSuffix</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">ArgumentNullException</span><span class="p">(</span><span class="s">&quot;pathSuffix&quot;</span><span class="p">);</span>
+        <span class="kt">var</span> <span class="n">prefix</span> <span class="p">=</span> <span class="n">transform</span> <span class="p">==</span> <span class="k">null</span> <span class="p">?</span> <span class="s">&quot;original/&quot;</span> <span class="p">:</span> <span class="kt">string</span><span class="p">.</span><span class="n">Format</span><span class="p">(</span><span class="s">&quot;transform/{0}/{1}/&quot;</span><span class="p">,</span> <span class="n">transform</span><span class="p">.</span><span class="n">Name</span><span class="p">,</span> <span class="n">transform</span><span class="p">.</span><span class="n">Version</span><span class="p">);</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">BlobPath</span> <span class="p">=</span> <span class="n">prefix</span> <span class="p">+</span> <span class="n">pathSuffix</span><span class="p">.</span><span class="n">Replace</span><span class="p">(</span><span class="sc">&#39;\\&#39;</span><span class="p">,</span> <span class="sc">&#39;/&#39;</span><span class="p">)</span> <span class="p">+</span> <span class="s">&quot;/&quot;</span> <span class="p">+</span> <span class="n">version</span><span class="p">;</span>
+
+        <span class="k">this</span><span class="p">.</span><span class="n">Path</span> <span class="p">=</span> <span class="n">pathSuffix</span> <span class="p">==</span> <span class="s">&quot;&quot;</span> <span class="p">?</span> <span class="s">&quot;&lt;root&gt;&quot;</span> <span class="p">:</span> <span class="n">pathSuffix</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">Version</span> <span class="p">=</span> <span class="n">version</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">Tags</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;();</span>
+
+        <span class="k">this</span><span class="p">.</span><span class="n">PartitionKey</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">CleanPartitionKey</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">Path</span><span class="p">);</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">RowKey</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">CleanRowKey</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">Version</span><span class="p">);</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">transform</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">this</span><span class="p">.</span><span class="n">TransformPartitionKey</span> <span class="p">=</span> <span class="n">transform</span><span class="p">.</span><span class="n">PartitionKey</span><span class="p">;</span>
+            <span class="k">this</span><span class="p">.</span><span class="n">TransformRowKey</span> <span class="p">=</span> <span class="n">transform</span><span class="p">.</span><span class="n">RowKey</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">Path</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">Version</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+
+    <span class="k">public</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">Tags</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">BlobPath</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+
+    <span class="c1">/// &lt;summary&gt;</span>
+    <span class="c1">/// If the images have been transformed, store the PK/RK of the transform pipeline.</span>
+    <span class="c1">/// &lt;/summary&gt;</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">TransformPartitionKey</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">TransformRowKey</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">ImageTransform</span> <span class="p">:</span> <span class="n">TableEntity</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="nf">ImageTransform</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+
+    <span class="k">public</span> <span class="nf">ImageTransform</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="p">,</span> <span class="kt">string</span> <span class="n">version</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">Name</span> <span class="p">=</span> <span class="n">name</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">Version</span> <span class="p">=</span> <span class="n">version</span><span class="p">;</span>
+
+        <span class="k">this</span><span class="p">.</span><span class="n">PartitionKey</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">CleanPartitionKey</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">Name</span><span class="p">);</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">RowKey</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">CleanRowKey</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">Version</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">Version</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">CommandLineArguments</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<h2>Uploading Local Image Libraries</h2>
+<p>One of the hurdles we faced was in uploading large sets of images to
+blob storage. We would get "drops" of tens of thousands of images and
+would need to upload them to blob storage, where we could then fire up
+servers to transform, slice and dice them to the millions we needed.
+This upload process, however infrequent, was a bottleneck, so we spent a
+bit of time trying to improve it.</p>
+<p>My goal was to make sure that we could upload multiple images
+concurrently, but that we were able to throttle this upload process to
+prevent over-saturating network bandwidth or triggering any quota issues
+on the Azure (unlikely) or Comcast (much more likely) side.</p>
+<p>Often, the libraries we were given were a collection of directories like
+"<code>red/angry/robin</code>" where each component of the directory could be
+considered a "tag". For ML purposes, we would later combine those tags
+into individual labels for training. First, I needed to find all of the
+images in each subdirectory of the root to the library I'd been given.
+Assuming <code>this.Extensions</code> contains a list of image extensions I'm
+looking for:</p>
+<div class="highlight"><pre><span></span><span class="c1">// Give me all of the images...</span>
+<span class="kt">var</span> <span class="n">images</span> <span class="p">=</span> <span class="k">from</span> <span class="n">file</span> <span class="k">in</span> <span class="n">Directory</span><span class="p">.</span><span class="n">EnumerateFiles</span><span class="p">(</span><span class="n">rootDirectory</span><span class="p">,</span> <span class="s">&quot;*.*&quot;</span><span class="p">,</span> <span class="n">SearchOption</span><span class="p">.</span><span class="n">AllDirectories</span><span class="p">).</span><span class="n">Select</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="k">new</span> <span class="n">FileInfo</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+             <span class="k">where</span> <span class="k">this</span><span class="p">.</span><span class="n">Extensions</span><span class="p">.</span><span class="n">Contains</span><span class="p">(</span><span class="n">file</span><span class="p">.</span><span class="n">Extension</span><span class="p">)</span>
+             <span class="k">select</span> <span class="n">file</span><span class="p">;</span>
+
+<span class="c1">// Grouped by directory</span>
+<span class="kt">var</span> <span class="n">byDirectory</span> <span class="p">=</span> <span class="k">from</span> <span class="n">img</span> <span class="k">in</span> <span class="n">images</span>
+                  <span class="k">group</span> <span class="n">img</span> <span class="k">by</span> <span class="n">img</span><span class="p">.</span><span class="n">DirectoryName</span><span class="p">;</span>
+</pre></div>
+
+
+<p>will give us all images by directory as lazily instantiated lists.
+Turning the <code>EnumerateFiles</code> results into <code>FileInfo</code> classes not only
+allows us to easily filter on extension and group by directory, but
+makes building blob paths easier later on.</p>
+<p>We can then walk the directories, turning their paths into lists of
+tags, uploading the images inside and storing the <code>ImageSet</code> metadata:</p>
+<div class="highlight"><pre><span></span><span class="kt">var</span> <span class="n">uploadTasks</span> <span class="p">=</span> <span class="n">Enumerable</span><span class="p">.</span><span class="n">Empty</span><span class="p">&lt;</span><span class="n">Tuple</span><span class="p">&lt;</span><span class="n">FileInfo</span><span class="p">,</span> <span class="n">Task</span><span class="p">&gt;&gt;();</span>
+<span class="kt">var</span> <span class="n">imgSets</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">ImageSet</span><span class="p">&gt;();</span>
+<span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">dir</span> <span class="k">in</span> <span class="n">byDirectory</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">var</span> <span class="n">suffix</span> <span class="p">=</span> <span class="n">dir</span><span class="p">.</span><span class="n">Key</span><span class="p">.</span><span class="n">Length</span> <span class="p">==</span> <span class="n">rootDirectory</span><span class="p">.</span><span class="n">Length</span> <span class="p">?</span> <span class="s">&quot;&quot;</span> <span class="p">:</span> <span class="n">dir</span><span class="p">.</span><span class="n">Key</span><span class="p">.</span><span class="n">Substring</span><span class="p">(</span><span class="n">rootDirectory</span><span class="p">.</span><span class="n">Length</span> <span class="p">+</span> <span class="m">1</span><span class="p">);</span>
+    <span class="n">suffix</span> <span class="p">=</span> <span class="n">suffix</span><span class="p">.</span><span class="n">Trim</span><span class="p">();</span>
+    <span class="kt">var</span> <span class="n">imgSet</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ImageSet</span><span class="p">(</span><span class="n">suffix</span><span class="p">,</span> <span class="n">imagesVersion</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">Tags</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">TagExtractor</span><span class="p">(</span><span class="n">suffix</span><span class="p">).</span><span class="n">Select</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Trim</span><span class="p">()).</span><span class="n">Where</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="p">!</span><span class="kt">string</span><span class="p">.</span><span class="n">IsNullOrEmpty</span><span class="p">(</span><span class="n">x</span><span class="p">)).</span><span class="n">ToList</span><span class="p">()</span>
+    <span class="p">};</span>
+
+    <span class="n">uploadTasks</span> <span class="p">=</span> <span class="n">uploadTasks</span><span class="p">.</span><span class="n">Concat</span><span class="p">(</span><span class="n">dir</span><span class="p">.</span><span class="n">Select</span><span class="p">(</span><span class="n">file</span> <span class="p">=&gt;</span> 
+        <span class="n">Tuple</span><span class="p">.</span><span class="n">Create</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="n">BlobUploader</span><span class="p">(</span><span class="n">file</span><span class="p">.</span><span class="n">FullName</span><span class="p">,</span> <span class="n">imgSet</span><span class="p">.</span><span class="n">BlobPath</span><span class="p">))));</span>
+    <span class="n">imgSets</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">imgSet</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Note the mix of LINQ and regular imperative loops (e.g. foreach) here.
+My goal is clarity, not "Haskell-ness", and a foreach loop made the
+"what are we doing for each directory" code much cleaner. I store each
+upload task with the associated file as a Tuple, allowing me to easily
+track failures back to the file that failed.</p>
+<p>The most important piece of the code above, however, is that the
+uploadTasks is an enumerable based on <code>Concat'd</code> <code>Selects</code> so is lazily
+evaluated. This allows the following code:</p>
+<div class="highlight"><pre><span></span><span class="kt">var</span> <span class="n">failedUpserts</span> <span class="p">=</span> <span class="k">await</span> <span class="n">Utilities</span><span class="p">.</span><span class="n">ThrottleWork</span><span class="p">(</span><span class="n">MaxParallelUpserts</span><span class="p">,</span> <span class="n">imgSets</span><span class="p">.</span><span class="n">Select</span><span class="p">(</span><span class="n">imgSet</span> <span class="p">=&gt;</span> <span class="k">this</span><span class="p">.</span><span class="n">ImageSetUpserter</span><span class="p">(</span><span class="n">imgSet</span><span class="p">)));</span>
+<span class="kt">var</span> <span class="n">failedUploads</span> <span class="p">=</span> <span class="k">await</span> <span class="n">Utilities</span><span class="p">.</span><span class="n">ThrottleWork</span><span class="p">(</span><span class="n">MaxParallelUploads</span><span class="p">,</span> <span class="n">uploadTasks</span><span class="p">.</span><span class="n">Select</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Item2</span><span class="p">));</span>
+</pre></div>
+
+
+<p>to effectively throttle the number of concurrent operations.
+<code>ThrottleWork</code> takes a number of tasks to run concurrently and an
+enumerable of those tasks and ensures that the next task is not
+"comprehended" until a previous one has finished. Failing tasks are
+tracked and returned once all tasks complete.</p>
+<div class="highlight"><pre><span></span><span class="k">public</span> <span class="k">static</span> <span class="k">async</span> <span class="n">Task</span><span class="p">&lt;</span><span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Task</span><span class="p">&gt;&gt;</span> <span class="n">ThrottleWork</span><span class="p">(</span><span class="kt">int</span> <span class="n">maxWork</span><span class="p">,</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Task</span><span class="p">&gt;</span> <span class="n">tasks</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">var</span> <span class="n">working</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Task</span><span class="p">&gt;(</span><span class="n">maxWork</span><span class="p">);</span>
+    <span class="kt">var</span> <span class="n">failures</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Task</span><span class="p">&gt;();</span>
+    <span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">task</span> <span class="k">in</span> <span class="n">tasks</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">working</span><span class="p">.</span><span class="n">Count</span> <span class="p">==</span> <span class="n">maxWork</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="kt">var</span> <span class="n">completed</span> <span class="p">=</span> <span class="k">await</span> <span class="n">Task</span><span class="p">.</span><span class="n">WhenAny</span><span class="p">(</span><span class="n">working</span><span class="p">);</span>
+            <span class="n">working</span><span class="p">.</span><span class="n">Remove</span><span class="p">(</span><span class="n">completed</span><span class="p">);</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">completed</span><span class="p">.</span><span class="n">Status</span> <span class="p">!=</span> <span class="n">TaskStatus</span><span class="p">.</span><span class="n">RanToCompletion</span><span class="p">)</span>
+                <span class="n">failures</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">completed</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="n">working</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">task</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">await</span> <span class="n">Task</span><span class="p">.</span><span class="n">WhenAll</span><span class="p">(</span><span class="n">working</span><span class="p">);</span>
+    <span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">task</span> <span class="k">in</span> <span class="n">working</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">task</span><span class="p">.</span><span class="n">IsFaulted</span><span class="p">)</span> <span class="n">failures</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">task</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">failures</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>The actual <a href="https://github.com/noodlefrenzy/blob-collection-manager/blob/master/ImageBlobData/Utilities.cs#L63">uploading of
+blobs</a>
+and
+<a href="https://github.com/noodlefrenzy/blob-collection-manager/blob/master/BlobCollectionManager/Program.cs#L51">upserting</a>of
+<code>ImageSets</code> are fairly simple and are in the code on GitHub.</p>
+<h2>Conclusion</h2>
+<p>Hopefully this outlined some of the challenges with working with large
+binary datasets. I've tried to cover how I made decisions on where to
+store information and how to build data models for it. I've also tried
+to outline how one would throttle existing workloads to avoid
+over-saturating restricted resources using simple C# LINQ-based
+solutions. I didn't cover the <a href="https://github.com/noodlefrenzy/blob-collection-manager/blob/master/BlobCollectionManager/ImageDirectoryCrawler.cs#L95">transformation
+pipeline</a>
+as that was simply using ImageMagick and forking processes - there are
+much better ways of doing that work and nothing there was innovative
+enough for calling out, but once again the code is on GitHub.</p>
+<p>I'd love any comments, suggestions, or improvements - either on this
+post or via
+<a href="https://github.com/noodlefrenzy/blob-collection-manager">GitHub</a>.
+Committers are always welcome as are questions and issues. I'll try and
+follow this up with additional work in this area so you can see the
+Entity Framework version but let me know if there are other aspects
+you'd like to see.</p>
+    </div><!-- /.entry-content -->
+
+  </article>
+</section>
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="https://blogs.technet.microsoft.com/machinelearning/">Cortana Analytics</a></li>
+                            <li><a href="http://www.kdnuggets.com/">KDNuggets</a></li>
+                            <li><a href="http://www.hanselman.com/blog/">Hanselman</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://twitter.com/noodlefrenzy">Twitter</a></li>
+                            <li><a href="https://www.linkedin.com/in/noodlefrenzy">LinkedIn</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-54597100-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'intelligentartifice';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'https://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+</html>

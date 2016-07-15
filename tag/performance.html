@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Intelligent Artifice - performance</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/noodlefrenzy">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="/">Intelligent Artifice </a></h1>
+                <nav><ul>
+                    <li><a href="/pages/about-me-and-this-blog.html">About Me And This Blog</a></li>
+                    <li><a href="/category/devops.html">DevOps</a></li>
+                    <li><a href="/category/meta.html">Meta</a></li>
+                    <li><a href="/category/software.html">Software</a></li>
+                    <li><a href="/category/uncategorized.html">Uncategorized</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="/you-cant-use-that-its-not-performant.html">“You can’t use that, it’s not performant”</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2009-04-08T12:54:00-07:00">
+                Published: Wed 08 April 2009
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/performance.html">performance</a> </p>
+</footer><!-- /.post-info --><p>I can’t tell you how many times I’ve heard this - from PMs, dev leads,
+and colleagues.  Other than the use of the “word” performant, what bugs
+me about this is that usually they don’t have any data (or current data)
+to back it up.  Coming from the Java world, I’ve probably heard it more
+than most of my .NET colleagues, since Java is still accused of being
+slower than X-Windows over a 300baud modem.</p>
+<p>However, in the .NET world, this is increasingly used as an excuse to
+hamstring new development and prevent the use of new features.  Luckily,
+Vance Morrison has provided folks in the .NET world a way to verify
+these claims, with his great MeasureIt tool, described in (and available
+from) <a href="http://blogs.msdn.com/vancem/archive/2009/02/06/measureit-update-tool-for-doing-microbenchmarks.aspx">this blog post of
+his.</a></p>
+<p>I recently ran into one of these situations when I was told that I
+couldn’t use the standard .NET XML Serializer and had to use the
+XmlReader/Writer classes, because the serializer wasn’t “performant”
+enough.  This could be a valid concern, but I didn’t believe it – mostly
+because I didn’t want to write and maintain all of that reader/writer
+code.  So I grabbed MeasureIt and went to work – I coded up four
+different tests reading different size XML files with the schema I
+needed: XmlReader, Xml Serializer, XPath, and LINQ to XML.  These tests
+were not measuring how well these technologies worked in the general
+case, but in my specific case, on my specific problem, and with my
+specific coding irregularities.  I had the tests reviewed by some folks
+on my team who knew a bit more about .NET + XML than I did, and then
+went to town.</p>
+<p>The graph below measures the time (in normalized time units, on the
+left) to read different size XML files (on the bottom – the number of
+high-level objects in the files).</p>
+<p><a href="http://blogs.msdn.com/blogfiles/milanz/WindowsLiveWriter/Youcantusethatitsnotperformant_DB47/image_2.png"><img alt="image" src="http://blogs.msdn.com/blogfiles/milanz/WindowsLiveWriter/Youcantusethatitsnotperformant_DB47/image_thumb.png" title="image" /></a></p>
+<p>Looking at the results, the XmlReader and Serializer implementation look
+like they perform and scale pretty close to identically.  That’s pretty
+impressive, and makes me wonder if the Serializer implementation uses
+XmlReader/Writer under the hood.  I asked around, and it looks like
+currently that is the way things are done (I’m not on the .NET library
+team, so I could be wrong), and using sgen.exe with /k I took a look at
+the generated serialization code and it looks terse.  These results
+allowed me to justify my use of the serializer – making my code much
+shorter and easier to test and maintain, at the cost of a very small
+performance hit.</p>
+<p>Performance is important, but it should be viewed as an overall part of
+the design and development process.  Worrying about performance without
+having concrete performance goals is a recipe for pain – MeasureIt is a
+tool to allow you to start these sorts of performance conversations,
+turning vague performance worries into concrete results that can be
+discussed practically.  Once you start having these sorts of
+conversations, you can advance to the point where you have concrete,
+user-focused and testable performance goals – much easier to satisfy
+than a vague sense of dread.</p><p>There are <a href="/you-cant-use-that-its-not-performant.html#disqus_thread">comments</a>.</p>                </article>
+            </aside><!-- /#featured -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="https://blogs.technet.microsoft.com/machinelearning/">Cortana Analytics</a></li>
+                            <li><a href="http://www.kdnuggets.com/">KDNuggets</a></li>
+                            <li><a href="http://www.hanselman.com/blog/">Hanselman</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://twitter.com/noodlefrenzy">Twitter</a></li>
+                            <li><a href="https://www.linkedin.com/in/noodlefrenzy">LinkedIn</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-54597100-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'intelligentartifice';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'https://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+</html>

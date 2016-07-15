@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Duck Typing in C# 4.0</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/noodlefrenzy">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="/">Intelligent Artifice </a></h1>
+                <nav><ul>
+                    <li><a href="/pages/about-me-and-this-blog.html">About Me And This Blog</a></li>
+                    <li><a href="/category/devops.html">DevOps</a></li>
+                    <li><a href="/category/meta.html">Meta</a></li>
+                    <li class="active"><a href="/category/software.html">Software</a></li>
+                    <li><a href="/category/uncategorized.html">Uncategorized</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="/duck-typing-in-c-4-0.html" rel="bookmark"
+           title="Permalink to Duck Typing in C# 4.0">Duck Typing in C# 4.0</a></h1>
+<a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="noodlefrenzy">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2010-05-01T16:04:00-07:00">
+                Published: Sat 01 May 2010
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/net.html">.NET</a> <a href="/tag/c.html">C#</a> </p>
+</footer><!-- /.post-info -->      <p>One of my favorite new features in C# 4.0 is the <span
+style="font-family: Consolas;"><span
+style="font-size: small;">dynamic</span> </span>keyword.  Not only does
+it allow you to do freaky things with interactions between C# and
+scripting languages like IronRuby, but it opens up one of my favorite
+features from that language – <em>Duck Typing</em>.</p>
+<p><em>Duck typing</em> is like an interface without the rigor – a client just
+assumes the class it’s calling has the method/property it expects, with
+the semantics it hopes for.  For someone living in the world of
+compile-time type safety, it can be a scary proposition, but it has its
+benefits.</p>
+<p>A trivial example, but one which suggests the power and uses of <em>duck
+typing</em>, is below.  Three classes – all with different implementations
+of IndexOf, adhering to no common interface – can be used without any
+special casting, new delegate declarations, or other coercion.  This is
+possible only through the ninja magic of <span
+style="font-family: Consolas; font-size: small;">dynamic</span>.</p>
+<p>First, we declare a class with a custom IndexOf method:</p>
+<div class="highlight"><pre><span></span><span class="k">public</span> <span class="k">class</span> <span class="nc">BarContainer</span>
+<span class="p">{</span>
+  <span class="k">public</span> <span class="kt">int</span> <span class="nf">IndexOf</span><span class="p">(</span><span class="kt">string</span> <span class="n">str</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="k">return</span> <span class="s">&quot;bar&quot;</span><span class="p">.</span><span class="n">Equals</span><span class="p">(</span><span class="n">str</span><span class="p">)</span> <span class="p">?</span> <span class="m">1</span> <span class="p">:</span> <span class="p">-</span><span class="m">1</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Next, in our main class we declare a method that uses our new class, as
+well as a list and a string, and invokes the IndexOf method on each by
+running them through <span
+style="font-family: Consolas; font-size: small;">dynamic</span>:</p>
+<div class="highlight"><pre><span></span><span class="k">static</span> <span class="k">void</span> <span class="nf">DuckTyping</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="kt">string</span> <span class="n">str</span> <span class="p">=</span> <span class="s">&quot;foo, bar&quot;</span><span class="p">;</span>
+  <span class="n">BarContainer</span> <span class="n">fake</span> <span class="p">=</span> <span class="k">new</span> <span class="n">BarContainer</span><span class="p">();</span>
+  <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">list</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;(</span><span class="n">array</span><span class="p">);</span>
+  <span class="k">foreach</span> <span class="p">(</span><span class="kt">dynamic</span> <span class="n">item</span> <span class="k">in</span> <span class="k">new</span> <span class="kt">object</span><span class="p">[]</span> <span class="p">{</span> <span class="n">str</span><span class="p">,</span> <span class="n">fake</span><span class="p">,</span> <span class="n">list</span><span class="p">})</span>
+  <span class="p">{</span>
+    <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;Item &quot;</span> <span class="p">+</span> <span class="n">item</span><span class="p">.</span><span class="n">GetType</span><span class="p">()</span> <span class="p">+</span> <span class="s">&quot; has &#39;bar&#39; at position &quot;</span> <span class="p">+</span> <span class="n">item</span><span class="p">.</span><span class="n">IndexOf</span><span class="p">(</span><span class="s">&quot;bar&quot;</span><span class="p">));</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>However, <span
+style="font-family: cons; font-size: small;">dynamic</span> has some
+limitations – sometimes surprising ones – that can limit its
+usefulness.  The one that bites me the most is the lack of support for
+extension methods.  Extension methods are a useful addition from C# 3.0
+that adds an almost <em>Mixin</em>-like functionality to the language, but due
+to the way they are implemented (as static methods that work in
+conjunction with a type, rather than as additions to the type itself),
+they won’t work with<span
+style="font-family: Consolas; font-size: small;">dynamic</span>.  Thus
+the following code fails:</p>
+<div class="highlight"><pre><span></span><span class="k">public</span> <span class="k">static</span> <span class="k">class</span> <span class="nc">Extensions</span>
+<span class="p">{</span>
+  <span class="k">public</span> <span class="k">static</span> <span class="kt">int</span> <span class="nf">IndexOf</span><span class="p">(</span><span class="k">this</span> <span class="n">Array</span> <span class="n">arr</span><span class="p">,</span> <span class="kt">string</span> <span class="n">toFind</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">idx</span><span class="p">=</span><span class="m">0</span><span class="p">;</span> <span class="n">idx</span> <span class="p">&lt;</span> <span class="n">arr</span><span class="p">.</span><span class="n">Length</span><span class="p">;</span> <span class="n">idx</span><span class="p">++)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">toFind</span><span class="p">.</span><span class="n">Equals</span><span class="p">(</span><span class="n">arr</span><span class="p">.</span><span class="n">GetValue</span><span class="p">(</span><span class="n">idx</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">idx</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="p">-</span><span class="m">1</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="k">void</span> <span class="nf">DuckTyping</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="kt">string</span> <span class="n">str</span> <span class="p">=</span> <span class="s">&quot;foo, bar&quot;</span><span class="p">;</span>
+  <span class="kt">string</span><span class="p">[]</span> <span class="n">array</span> <span class="p">=</span> <span class="k">new</span> <span class="kt">string</span><span class="p">[]</span> <span class="p">{</span> <span class="s">&quot;foo&quot;</span><span class="p">,</span> <span class="s">&quot;bar&quot;</span> <span class="p">};</span>
+  <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;See, extension method works here: {0}.&quot;</span><span class="p">,</span> <span class="n">array</span><span class="p">.</span><span class="n">IndexOf</span><span class="p">(</span><span class="s">&quot;bar&quot;</span><span class="p">));</span>
+  <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">list</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;(</span><span class="n">array</span><span class="p">);</span>
+  <span class="k">foreach</span> <span class="p">(</span><span class="kt">dynamic</span> <span class="n">item</span> <span class="k">in</span> <span class="k">new</span> <span class="kt">object</span><span class="p">[]</span> <span class="p">{</span> <span class="n">str</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">list</span><span class="p">})</span>
+  <span class="p">{</span>
+    <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;Item &quot;</span> <span class="p">+</span> <span class="n">item</span><span class="p">.</span><span class="n">GetType</span><span class="p">()</span> <span class="p">+</span> <span class="s">&quot; has &#39;bar&#39; at position &quot;</span> <span class="p">+</span> <span class="n">item</span><span class="p">.</span><span class="n">IndexOf</span><span class="p">(</span><span class="s">&quot;bar&quot;</span><span class="p">));</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>This code is able to invoke IndexOf statically, but through the DLR it
+fails with a <span
+style="font-family: Consolas; font-size: small;">RuntimeBindingException</span>.</p>
+<p>I think <span
+style="font-family: Consolas; font-size: small;">dynamic</span> is a
+fantastic and powerful addition to the language, but with great power…. 
+As long as we’re careful with the types we use with it, and we
+understand the limits imposed on us, I’m really looking forward to the
+exciting future of static/dynamic hybrid code before us.</p>
+    </div><!-- /.entry-content -->
+
+  </article>
+</section>
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="https://blogs.technet.microsoft.com/machinelearning/">Cortana Analytics</a></li>
+                            <li><a href="http://www.kdnuggets.com/">KDNuggets</a></li>
+                            <li><a href="http://www.hanselman.com/blog/">Hanselman</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://twitter.com/noodlefrenzy">Twitter</a></li>
+                            <li><a href="https://www.linkedin.com/in/noodlefrenzy">LinkedIn</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-54597100-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'intelligentartifice';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'https://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+</html>

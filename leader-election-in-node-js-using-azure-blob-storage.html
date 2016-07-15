@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Leader Election in Node.js Using Azure Blob Storage</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/noodlefrenzy">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="/">Intelligent Artifice </a></h1>
+                <nav><ul>
+                    <li><a href="/pages/about-me-and-this-blog.html">About Me And This Blog</a></li>
+                    <li><a href="/category/devops.html">DevOps</a></li>
+                    <li><a href="/category/meta.html">Meta</a></li>
+                    <li class="active"><a href="/category/software.html">Software</a></li>
+                    <li><a href="/category/uncategorized.html">Uncategorized</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="/leader-election-in-node-js-using-azure-blob-storage.html" rel="bookmark"
+           title="Permalink to Leader Election in Node.js Using Azure Blob Storage">Leader Election in Node.js Using Azure Blob Storage</a></h1>
+<a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="noodlefrenzy">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2015-11-18T15:58:00-08:00">
+                Published: Wed 18 November 2015
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/azure.html">Azure</a> <a href="/tag/azure-blob.html">Azure Blob</a> <a href="/tag/distributed-systems.html">Distributed Systems</a> <a href="/tag/node.html">Node</a> </p>
+</footer><!-- /.post-info -->      <p><a href="https://en.wikipedia.org/wiki/Leader_election">Leader Election</a> is a
+mechanism for designating one instance of a group as the primary (or
+leader) and the others as secondaries (or followers), and is typically
+used for coordination amongst groups of machines in a distributed
+system. I first learned of leader election back in the olden times of
+managing DBs, with hard-coded primary/secondary failover. Later with
+coursework and practice in distributed systems, I learned various
+algorithms for leader election - from
+<a href="https://en.wikipedia.org/wiki/Paxos_(computer_science)">Paxos</a>'
+"¯\_(ツ)_/¯" (whoever gets their proposal accepted is the leader for
+that round) to
+<a href="https://ramcloud.stanford.edu/wiki/download/attachments/11370504/raft.pdf">Raft's</a>stronger
+notions. They all have one thing in common - if you don't <em>have</em> to
+implement them yourself, don't do it! Distributed algorithms are
+error-prone and hard.</p>
+<p>Implementing distributed algorithms can be made somewhat easier by using
+immutable-rich functional languages like Clojure or F#, or languages
+built for systems programming like <a href="https://www.rust-lang.org/">Rust</a>,
+but what if you're stuck in something like Node.js, with all of the
+type-safety of JavaScript and all of the garbage collection of C? Sure
+it'd be a fun exercise, but not when you're up against a deadline.</p>
+<h2>The Goal of Leader Election</h2>
+<p>The goal of having a leader election is to ensure that for any given
+resource only one instance is allowed to "control" it. With Paxos for
+instance, any given round's result is "controlled" by the leader.</p>
+<p><img alt="Paxos algorithm
+flow" src="/images/paxos1_sm.png" /></p>
+<p>With database failover the leader controls all writes and forwards them to
+all followers. In the event of a leader failure that control should
+lapse to another instance after a certain amount of time has elapsed.
+Effectively, a leader is "leasing" control for a certain timeout period
+and as long as they renew that lease they can remain in control.</p>
+<h2>Azure Blob Concurrency Control</h2>
+<p>Naturally this led me to think of Azure Blob Storage. Blobs have two
+modes of concurrency control for writes - optimistic concurrency via
+<a href="https://en.wikipedia.org/wiki/HTTP_ETag">etags</a>and
+<a href="https://msdn.microsoft.com/en-us/library/azure/ee691972.aspx">lease-based</a>
+concurrency. The <a href="https://github.com/Azure/azure-storage-node">Node SDK for Azure
+Storage</a> exposes blob lease
+primitives via a few simple API calls - <a href="https://github.com/Azure/azure-storage-node/blob/master/lib/services/blob/blobservice.js#L1066">grabbing a
+lease</a>,
+<a href="https://github.com/Azure/azure-storage-node/blob/master/lib/services/blob/blobservice.js#L1107">renewing
+it</a>,
+and <a href="https://github.com/Azure/azure-storage-node/blob/master/lib/services/blob/blobservice.js#L1185">releasing
+it</a>
+(plus a few others less relevant to this discussion). Once you have a
+lease you can then mutate the blob to your heart's content by including
+the lease ID in the options - at least until that lease lapses. Leases
+by default are infinite (which makes <em>no</em> sense), but you can specify a
+<code>leaseDuration</code> option of between 15 to 60 seconds to scope the
+lease-hold time.</p>
+<p>One of the things I didn't like about the Azure Node.js SDK, however,
+was how hard it was to use for actually managing leases. You had to trap
+return codes and look for already-held errors vs. other errors, it was
+all callback-based, and there was a separation between the blob service
+and the lease you were holding (i.e. you had to track the service
+object <em>as well as</em> the lease ID in order to do anything useful). For
+re-upping the lease you needed to register timeouts or intervals to
+renew, and if those lapsed without successful renewal you somehow needed
+to know that your lease ID was no longer valid (or trap that error the
+next time you used it). It seemed like a collection of operations that
+could be pulled up into their own class.</p>
+<h2>Cerulean Is Born</h2>
+<p>I created <a href="https://github.com/noodlefrenzy/node-cerulean">node-cerulean</a>
+as a module (named because cerulean is quite close to azure) to factor
+out helper methods, classes, and utilities that would make using Azure
+easier from within Node.js. Making Blob Leases easier to use would be
+the first goal of this new module but more are guaranteed to follow -
+and if you have any ideas do not hesitate to open
+<a href="https://github.com/noodlefrenzy/node-cerulean/issues">issues</a>or PRs.</p>
+<h4>Easier Leases</h4>
+<p>First off I needed to create a new <code>Lease</code> class for managing blob
+leases that would have the following functionality:</p>
+<ul>
+<li>Acquire a lease and make it easy to know when that succeeds or fails</li>
+<li>Easily renew the lease</li>
+<li>Release the lease when desired</li>
+<li>Get the contents of the blob involved</li>
+<li>Store new contents using the lease ID to manage access</li>
+</ul>
+<p>I chose to use <a href="https://github.com/petkaantonov/bluebird">Bluebird</a>to
+promisify all of the operations to make it quite easy to trap
+success/failure conditions for each without resorting to callback soup.</p>
+<p>Looking at <code>Lease.acquire</code> you can see how I've just wrapped the
+existing API so that I trap return values, store off the lease ID, and
+invoke resolve/reject appropriately on the returned promise:</p>
+<div class="highlight"><pre><span></span><span class="nx">Lease</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">acquire</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+    <span class="k">return</span> <span class="nx">self</span><span class="p">.</span><span class="nx">ensureContainerExists</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">self</span><span class="p">.</span><span class="nx">ensureBlobExists</span><span class="p">();</span>
+    <span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span>
+    <span class="p">{</span>
+       <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="p">{</span>
+           <span class="nx">self</span><span class="p">.</span><span class="nx">blobService</span><span class="p">.</span><span class="nx">acquireLease</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">container</span><span class="p">,</span> <span class="nx">self</span><span class="p">.</span><span class="nx">blob</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">result</span><span class="p">,</span> <span class="nx">response</span><span class="p">){</span>
+               <span class="k">if</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+                   <span class="nx">reject</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+               <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                   <span class="nx">self</span><span class="p">.</span><span class="nx">leaseId</span> <span class="o">=</span> <span class="nx">result</span><span class="p">.</span><span class="nx">id</span><span class="p">;</span>
+                   <span class="nx">resolve</span><span class="p">(</span><span class="nx">self</span><span class="p">);</span>
+               <span class="p">}</span>
+           <span class="p">});</span>
+       <span class="p">});</span>
+    <span class="p">});</span>
+<span class="p">};</span>
+</pre></div>
+
+
+<p>Also note that before I attempt to acquire the lease I ensure that the
+blob exists. Right now I do this each time, but I could easily tune this
+to early-out that method if I've already checked or bypass it entirely
+(e.g. based on a constructor flag that tells me it exists). It's also
+possible to invert this and trap "does not exist" errors and only ensure
+the blob exists if that happens.</p>
+<p>The renew and release methods are implemented similarly, while the blob
+get/update methods use the stored lease ID during access:</p>
+<div class="highlight"><pre><span></span><span class="nx">Lease</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">updateContents</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">text</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="p">{</span>
+       <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">self</span><span class="p">.</span><span class="nx">leaseId</span><span class="p">)</span> <span class="p">{</span>
+           <span class="nx">reject</span><span class="p">(</span><span class="nx">Lease</span><span class="p">.</span><span class="nx">NotHeldError</span><span class="p">);</span>
+       <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+           <span class="kd">var</span> <span class="nx">opts</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">defaults</span><span class="p">({</span> <span class="nx">leaseId</span><span class="o">:</span> <span class="nx">self</span><span class="p">.</span><span class="nx">leaseId</span> <span class="p">},</span> <span class="nx">options</span> <span class="o">||</span> <span class="p">{});</span>
+           <span class="nx">self</span><span class="p">.</span><span class="nx">blobService</span><span class="p">.</span><span class="nx">createBlockBlobFromText</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">container</span><span class="p">,</span> <span class="nx">self</span><span class="p">.</span><span class="nx">blob</span><span class="p">,</span> <span class="nx">text</span><span class="p">,</span> <span class="nx">opts</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">result</span><span class="p">,</span> <span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+              <span class="k">if</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+                  <span class="nx">reject</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+              <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                  <span class="nx">resolve</span><span class="p">(</span><span class="nx">self</span><span class="p">);</span>
+              <span class="p">}</span>
+           <span class="p">});</span>
+       <span class="p">}</span>
+    <span class="p">});</span>
+<span class="p">};</span>
+</pre></div>
+
+
+<h4>Managing Lease Acquisition and Loss</h4>
+<p>This makes leases much easier to manage, but it's still non-trivial to
+implement leader election on this primitive and I wanted to make it as
+easy as possible. To that end I've implemented a <code>LeaseManager</code> class
+that given a lease will attempt to acquire it and renew it
+automatically, and will warn you when it loses it.</p>
+<p>This uses an eventing model rather than promises since it's a living
+manager, where a lease can be acquired and lost multiple times and the
+manager can manage multiple leases. It uses a stored interval per lease
+to control whether it's in the "attempt to acquire" or the "attempt to
+renew" phase, and it both aggressively renews and aggressively fails. It
+renews every 15 seconds on a 60-second lease and reports lease loss when
+the lease expiry period would fall outside the next renewal (rather than
+waiting for a renewal to fail due to lease-loss error).</p>
+<p>Let's take a look at the <code>manageLease</code> method which starts the process
+and the <code>_acquire</code> method to which it delegates the majority of its
+work:</p>
+<div class="highlight"><pre><span></span><span class="nx">LeaseManager</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">manageLease</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">lease</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">leases</span><span class="p">[</span><span class="nx">lease</span><span class="p">.</span><span class="nx">fullUri</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">lease</span><span class="o">:</span> <span class="nx">lease</span> <span class="p">};</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">_acquire</span><span class="p">(</span><span class="nx">lease</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="nx">LeaseManager</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">_acquire</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">lease</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">acquireLease</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">lease</span><span class="p">.</span><span class="nx">acquire</span><span class="p">({</span><span class="nx">leaseDuration</span><span class="o">:</span> <span class="nx">LeaseManager</span><span class="p">.</span><span class="nx">DefaultLeaseDuration</span><span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+            <span class="nx">self</span><span class="p">.</span><span class="nx">_unmanage</span><span class="p">(</span><span class="nx">lease</span><span class="p">);</span>
+            <span class="nx">self</span><span class="p">.</span><span class="nx">leases</span><span class="p">[</span><span class="nx">lease</span><span class="p">.</span><span class="nx">fullUri</span><span class="p">].</span><span class="nx">expires</span> <span class="o">=</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">()</span> <span class="o">+</span> <span class="p">(</span><span class="nx">LeaseManager</span><span class="p">.</span><span class="nx">DefaultLeaseDuration</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">);</span>
+            <span class="nx">self</span><span class="p">.</span><span class="nx">_maintain</span><span class="p">(</span><span class="nx">lease</span><span class="p">);</span>
+            <span class="nx">self</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="nx">LeaseManager</span><span class="p">.</span><span class="nx">Acquired</span><span class="p">,</span> <span class="nx">lease</span><span class="p">);</span>
+        <span class="p">}).</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">debug</span><span class="p">(</span><span class="s1">&#39;Failed to acquire lease for &quot;&#39;</span> <span class="o">+</span> <span class="nx">lease</span><span class="p">.</span><span class="nx">fullUri</span> <span class="o">+</span> <span class="s1">&#39;&quot;: &#39;</span> <span class="o">+</span> <span class="nx">error</span> <span class="o">+</span> <span class="s1">&#39;. Will retry.&#39;</span><span class="p">);</span>
+        <span class="p">});</span>
+    <span class="p">};</span>
+    <span class="nx">self</span><span class="p">.</span><span class="nx">leases</span><span class="p">[</span><span class="nx">lease</span><span class="p">.</span><span class="nx">fullUri</span><span class="p">].</span><span class="nx">interval</span> <span class="o">=</span> <span class="nx">setInterval</span><span class="p">(</span><span class="nx">acquireLease</span><span class="p">,</span> <span class="nx">LeaseManager</span><span class="p">.</span><span class="nx">DefaultLeaseDuration</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">);</span>
+    <span class="nx">acquireLease</span><span class="p">();</span> <span class="c1">// Best-case scenario, it acquires immediately and clears the interval.</span>
+<span class="p">};</span>
+</pre></div>
+
+
+<p>Notice how I trap the lease in the <code>acquireLease</code> closure and call
+<code>acquireLease</code> at the end - this is just because <code>setInterval</code> doesn't
+have any sort of "invoke immediately" flag (or initial/repeat interval
+params). The idea is that we immediately try and acquire the lease - if
+that succeeds we move on to maintenance but otherwise we keep trying to
+acquire. When we <code>unmanageLease</code> we can just clear the interval and
+release the lease if we have it held.</p>
+<p>Once we acquire the lease we emit a <code>LeaseManager.Acquired</code> event with
+the lease we've grabbed and we keep track of the expiry timestamp. Every
+time we renew the lease we update this expiry timestamp. If we fail to
+renew we don't worry about it until the next renewal request would fall
+outside the expiry period - at that point we immediately emit a
+<code>LeaseManager.Lost</code> event and go back into acquire mode.</p>
+<p>By "losing" the lease early we make a conscious choice that a longer
+leaderless period is a better option than a possible
+multi-head/multi-leader situation. However we're relying on two
+assumptions of the Node.js framework that could be violated and my code
+doesn't yet trap/error on these, so <em>caveat emptor</em> for now:</p>
+<ol>
+<li>Intervals execute roughly when we expect them to (e.g. no delays
+    longer than hundreds of milliseconds)</li>
+<li>Callbacks are invoked roughly when the call succeeds, and latency
+    between grabbing the lease and reporting success is relatively small</li>
+</ol>
+<p>If either of these assumptions is violated our expiry time could be off
+or our renewal could be delayed. Given the long lease time (60 seconds,
+15-second renewal) this should not be an issue in practice but it is
+something to be aware of, especially in a quasi-single-threaded
+environment like Node.js.</p>
+<h2>Using the Lease Manager for Leader Election</h2>
+<p>Now that we have a <code>LeaseManager</code> we can use it to do leader election
+automagically quite easily. All we need to do is have multiple clients
+attempt to manage the same <code>Lease</code> - whoever acquires it is the leader
+(and is notified via the <code>LeaseManager.Acquired</code> event), and remains the
+leader until they either <code>unmanageLease</code> or they receive the
+<code>LeaseManager.Lost</code> event. Once they lose the lease all clients will
+still be attempting to acquire the lease still, so one of them should
+take over as leader as soon as the lease lapses.</p>
+<p>You can see this in action in a simple integration test in the
+<code>node-cerulean</code> module:</p>
+<div class="highlight"><pre><span></span><span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should allow lease takeover&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">done</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">blobName</span> <span class="o">=</span> <span class="nx">uuid</span><span class="p">.</span><span class="nx">v4</span><span class="p">();</span>
+    <span class="kd">var</span> <span class="nx">lease</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Lease</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">accountName</span><span class="p">,</span> <span class="nx">config</span><span class="p">.</span><span class="nx">accountKey</span><span class="p">,</span> <span class="nx">config</span><span class="p">.</span><span class="nx">containerName</span><span class="p">,</span> <span class="nx">blobName</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">m1</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">LeaseManager</span><span class="p">({</span> <span class="nx">leaseDuration</span><span class="o">:</span> <span class="mi">15</span> <span class="p">});</span>
+    <span class="kd">var</span> <span class="nx">managedByM1</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="nx">m1</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="nx">LeaseManager</span><span class="p">.</span><span class="nx">Acquired</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+       <span class="nx">managedByM1</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+       <span class="nx">m1</span><span class="p">.</span><span class="nx">unmanageLease</span><span class="p">(</span><span class="nx">lease</span><span class="p">);</span>
+    <span class="p">});</span>
+    <span class="kd">var</span> <span class="nx">m2</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">LeaseManager</span><span class="p">({</span> <span class="nx">leaseDuration</span><span class="o">:</span> <span class="mi">15</span> <span class="p">});</span>
+    <span class="nx">m2</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="nx">LeaseManager</span><span class="p">.</span><span class="nx">Acquired</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">m2</span><span class="p">.</span><span class="nx">unmanageLease</span><span class="p">(</span><span class="nx">lease</span><span class="p">);</span>
+    <span class="p">});</span>
+    <span class="nx">m2</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="nx">LeaseManager</span><span class="p">.</span><span class="nx">Released</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">expect</span><span class="p">(</span><span class="nx">managedByM1</span><span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">be</span><span class="p">.</span><span class="kc">true</span><span class="p">;</span>
+        <span class="nx">done</span><span class="p">();</span>
+    <span class="p">});</span>
+    <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">m2</span><span class="p">.</span><span class="nx">manageLease</span><span class="p">(</span><span class="nx">lease</span><span class="p">);</span>
+    <span class="p">},</span> <span class="mi">2000</span><span class="p">);</span>
+    <span class="nx">m1</span><span class="p">.</span><span class="nx">manageLease</span><span class="p">(</span><span class="nx">lease</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+
+
+<p>This test creates two clients (<code>m1</code> and <code>m2</code>) and attempts to manage the
+same lease with both (with a 2 second delay on <code>m2</code>'s attempt, so it
+"loses the race"). Once <code>m1</code> acquires the lease it is now the leader
+(and records that fact). It then un-manages it (releasing it and
+stopping itself from trying to re-acquire). As soon as <code>m2</code> re-tries to
+acquire it will succeed, and at that point it has become the leader and
+the test can succeed.</p>
+<p>A more concrete and specific <a href="https://github.com/noodlefrenzy/node-cerulean/blob/master/examples/leader_followers.js">example for leader
+election</a>
+can be seen in the <a href="https://github.com/noodlefrenzy/node-cerulean/tree/master/examples">examples
+directory</a>.
+You can take this example and run with it, creating your own
+leader-based concurrent algorithms with confidence. I'll be using it as
+the basis for V2 of my <code>node-sbus-amqp10</code> module allowing me to write
+code that can seamlessly interoperate with the
+<a href="https://www.nuget.org/packages/Microsoft.Azure.ServiceBus.EventProcessorHost"><code>EventProcessorHost</code></a>used
+to manage Event Hub subscriptions in .NET (which I'll document in a
+future post).</p>
+<p>Once again, all of the code above lives on GitHub in my <a href="https://github.com/noodlefrenzy/node-cerulean">node-cerulean
+module</a> with the
+permissive MIT license, and is published as npm module <code>cerulean</code>.</p>
+    </div><!-- /.entry-content -->
+
+  </article>
+</section>
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="https://blogs.technet.microsoft.com/machinelearning/">Cortana Analytics</a></li>
+                            <li><a href="http://www.kdnuggets.com/">KDNuggets</a></li>
+                            <li><a href="http://www.hanselman.com/blog/">Hanselman</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://twitter.com/noodlefrenzy">Twitter</a></li>
+                            <li><a href="https://www.linkedin.com/in/noodlefrenzy">LinkedIn</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-54597100-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'intelligentartifice';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'https://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+</html>

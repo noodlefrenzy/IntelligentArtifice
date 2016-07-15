@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Azure Storage: Architecture Troubleshooting</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/noodlefrenzy">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="/">Intelligent Artifice </a></h1>
+                <nav><ul>
+                    <li><a href="/pages/about-me-and-this-blog.html">About Me And This Blog</a></li>
+                    <li><a href="/category/devops.html">DevOps</a></li>
+                    <li><a href="/category/meta.html">Meta</a></li>
+                    <li class="active"><a href="/category/software.html">Software</a></li>
+                    <li><a href="/category/uncategorized.html">Uncategorized</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="/azure-storage-architecture-troubleshooting.html" rel="bookmark"
+           title="Permalink to Azure Storage: Architecture Troubleshooting">Azure Storage: Architecture  Troubleshooting</a></h1>
+<a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="noodlefrenzy">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-09-16T10:12:00-07:00">
+                Published: Tue 16 September 2014
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/azure.html">Azure</a> </p>
+</footer><!-- /.post-info -->      <p>I've been dealing with Azure Storage for years now, and while most of
+the time it's rock solid, on occasion you can get hit with networking
+issues or other "brownout" drops in availability that can make you
+question your sanity.  I find it helpful to know what's going on behind
+the scenes in situations like that - mostly because I'm curious,
+especially about how very large scale NoSQL stores are built, but also
+because it can help you make sense of what might be happening.  The
+Azure folks have written a <a href="http://sigops.org/sosp/sosp11/current/2011-Cascais/printable/11-calder.pdf">great
+paper</a>
+on how their system is built, and why it "violates the CAP theorem"
+(spoiler alert: it doesn't).  There's also <a href="https://www.youtube.com/watch?v=QnYdbQO0yj4">a
+video</a> of their talk that's
+worth watching if you're into that sort of thing.</p>
+<p>You might ask why I'm publishing a post on a 3-year-old paper as if it's
+news.  Well, it was preamble for an incredibly thorough new guide on
+<a href="http://azure.microsoft.com/en-us/documentation/articles/storage-monitoring-diagnosing-troubleshooting/">monitoring and diagnosing Azure
+Storage</a>
+that the team just published.  This guide is quite detailed, giving
+guidance on how to correlate client and server data, how to ensure
+storage monitoring is enabled at the right level of granularity,
+what spikes in different metrics mean in isolation or combination, and
+appendices on setting up your favorite network monitoring tool to watch
+storage traffic - I didn't even realize I wasn't supposed to be using
+Netmon anymore :-\.</p>
+<p>Both the paper and the guide are worth a look - the guide is worth
+reading <em>now</em> if you do any storage-related work, if only to make sure
+you're gathering the right metrics for when you need them, and the paper
+can wait for when you have some free time and want something a bit more
+detailed.  Enjoy!</p>
+    </div><!-- /.entry-content -->
+
+  </article>
+</section>
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="https://blogs.technet.microsoft.com/machinelearning/">Cortana Analytics</a></li>
+                            <li><a href="http://www.kdnuggets.com/">KDNuggets</a></li>
+                            <li><a href="http://www.hanselman.com/blog/">Hanselman</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://twitter.com/noodlefrenzy">Twitter</a></li>
+                            <li><a href="https://www.linkedin.com/in/noodlefrenzy">LinkedIn</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-54597100-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'intelligentartifice';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'https://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Intelligent Artifice - GitHub</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/noodlefrenzy">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="/">Intelligent Artifice </a></h1>
+                <nav><ul>
+                    <li><a href="/pages/about-me-and-this-blog.html">About Me And This Blog</a></li>
+                    <li><a href="/category/devops.html">DevOps</a></li>
+                    <li><a href="/category/meta.html">Meta</a></li>
+                    <li><a href="/category/software.html">Software</a></li>
+                    <li><a href="/category/uncategorized.html">Uncategorized</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="/collaboration-on-open-source-node-projects.html">Collaboration on Open-Source Node Projects</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2015-02-11T11:38:00-08:00">
+                Published: Wed 11 February 2015
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/github.html">GitHub</a> <a href="/tag/node.html">Node</a> <a href="/tag/npm.html">NPM</a> </p>
+</footer><!-- /.post-info --><p>I've been working on a <a href="https://github.com/noodlefrenzy/node-amqp-1-0">Node-based AMQP
+1.0</a> library and
+<a href="https://github.com/noodlefrenzy/node-sbus-amqp10">wrappers</a> that allow
+it to talk ServiceBus and EventHub easily with a colleague of mine at
+work, and it's taught me many things about doing Node.js
+development, collaborating on GitHub, and publishing on npmjs.  The
+documentation is mostly out there but it's a bit scattered, so I wanted
+to gather it together into a common place to allow myself and others to
+find it easily.</p>
+<h2>Starting a Project</h2>
+<p>There are a few different ways to start, but all involve getting GitHub,
+Node, and npm installed on your machine.  For me, as a Windows user,
+this means using <a href="https://chocolatey.org/" title="Get Chocolatey">Chocolatey</a>:</p>
+<div class="highlight"><pre><span></span>C<span class="p">:</span><span class="nl">\</span><span class="c1">&gt; choco install git</span>
+C<span class="p">:</span><span class="nl">\</span><span class="c1">&gt; choco install nodejs</span>
+C<span class="p">:</span><span class="nl">\</span><span class="c1">&gt; choco install npm</span>
+</pre></div>
+
+
+<p>However, if you're not a Windows user, install git <a href="http://git-scm.com/book/en/v2/Getting-Started-Installing-Git">using the directions
+on
+git-scm</a>,
+and <a href="https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager">node/npm
+using apt-get</a>or
+your package manager of choice.</p>
+<p>Some people choose to create their projects by using <code>npm init</code>, but I
+prefer to <a href="https://help.github.com/articles/create-a-repo/" title="Create a Repository">create my new project on GitHub
+first</a>,
+then go to where I want it on my local box and <code>git clone</code> it there.
+ This makes it easy to automatically include an appropriate .gitignore,
+README.md, and LICENSE file.  Now that you have your local copy, you
+can <code>npm init</code> to get a <code>package.json</code> set up.</p>
+<p>As a side note - you should consider adopting a coding standard for your
+project.  It'll make it far easier for others to contribute in a common
+style, and it'll keep your code looking clean and consistent.  One way
+to codify this is to include an <code>.editorconfig</code> file - this
+quasi-standard is a <a href="http://editorconfig.org/">simple configuration
+format</a> for codifying much of the standard
+coding style choices you make, and with plugins for <a href="https://github.com/editorconfig/editorconfig-visualstudio#readme">Visual
+Studio</a>
+and
+<a href="https://github.com/JetBrains/intellij-community/tree/master/plugins/editorconfig">WebStorm/IntelliJ</a>,
+makes keeping code consistent fairly simple.</p>
+<h2>Developing Your Node Module</h2>
+<p><em>This is left as an exercise to the reader.</em></p>
+<h2>Setting Up Continuous Integration</h2>
+<p>Obviously, in the step above, you developed a robust suite of unit
+tests, likely using <a href="http://mochajs.org/">Mocha</a>and
+<a href="https://github.com/shouldjs/should.js">Should</a>.  Now you should turn
+those tests into a continuous integration step via
+<a href="http://travis-ci.org/">Travis</a>(free for OSS projects).  Simply <a href="http://travis-ci.org/">go
+there</a>and sign in via GitHub - your repositories
+will show up and you'll be able to turn on the ones you want.  You can
+easily set up a <code>.travis.yml</code> file in your repository to guide the CI
+build - here's a simple one for my project that uses the <code>npm test</code> step
+to perform the linting and testing:</p>
+<div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">language</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">node_js</span>
+
+<span class="l l-Scalar l-Scalar-Plain">node_js</span><span class="p p-Indicator">:</span>
+  <span class="p p-Indicator">-</span> <span class="s">&quot;0.12&quot;</span>
+  <span class="p p-Indicator">-</span> <span class="s">&quot;0.10&quot;</span>
+
+<span class="l l-Scalar l-Scalar-Plain">cache</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">directories</span><span class="p p-Indicator">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">node_modules</span>
+
+<span class="l l-Scalar l-Scalar-Plain">script</span><span class="p p-Indicator">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">npm test</span>
+</pre></div>
+
+
+<p>Since this was a simple module, npm was adequate for my build/test needs
+and I didn't need to resort to gulp or grunt (Keith Cirkel <a href="http://blog.keithcirkel.co.uk/how-to-use-npm-as-a-build-tool/">has some
+info</a>on
+the how's and why's for that decision - I'm not totally bought-in, but
+for simple projects it makes sense).  My package.json to make that
+happen looks like:</p>
+<div class="highlight"><pre><span></span><span class="p">...</span>
+  <span class="s2">&quot;devDependencies&quot;</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">&quot;jshint&quot;</span><span class="o">:</span> <span class="s2">&quot;^2.5.11&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mocha&quot;</span><span class="o">:</span> <span class="s2">&quot;^1.21.4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;should&quot;</span><span class="o">:</span> <span class="s2">&quot;^4.0.4&quot;</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;scripts&quot;</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">&quot;pretest&quot;</span><span class="o">:</span> <span class="s2">&quot;jshint lib&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;test&quot;</span><span class="o">:</span> <span class="s2">&quot;mocha test&quot;</span>
+  <span class="p">}</span>
+<span class="p">...</span>
+</pre></div>
+
+
+<p>Now you can rest assured that Travis is building your code on every
+push, and you can advertise that fact in your readme.  I also use the
+<a href="https://david-dm.org/">David dependency manager</a> to ensure that my
+dependencies don't swing too far out of date, and advertise that as
+well.  Adding these to your README.md is as simple as (replacing <em>user</em>
+and <em>module</em> as appropriate):</p>
+<div class="highlight"><pre><span></span><span class="p">[</span><span class="o">!</span><span class="p">[</span><span class="n">Build</span> <span class="n">Status</span><span class="p">](</span><span class="nl">https</span><span class="p">:</span><span class="c1">//secure.travis-ci.org/user/module.png?branch=master)](https://travis-ci.org/user/module)</span>
+<span class="p">[</span><span class="o">!</span><span class="p">[</span><span class="n">Dependency</span> <span class="n">Status</span><span class="p">](</span><span class="nl">https</span><span class="p">:</span><span class="c1">//david-dm.org/user/module.png)](https://david-dm.org/user/module)</span>
+</pre></div>
+
+
+<h2>Publishing to NPM</h2>
+<p>Once you've developed your amazing Node.js module, you'll want to
+publish it for all the world to see.  To do so, you use <code>npm publish</code>,
+but beware.  Read<a href="https://docs.npmjs.com/misc/developers" title="NPM Developer Guide">their developer
+guide</a>,
+and be careful to note <em>this phrase</em>:</p>
+<blockquote>
+<p>Note that pretty much <strong>everything in that folder will be exposed</strong> by
+default.</p>
+</blockquote>
+<p>When I first published my module, I failed to note that phrase, and
+published log files, the .idea folder, and a bunch of other garbage.
+ Since I'm paranoid, the way I manage this now is to have a shadow
+directory side-by-side with my development folder called "publish" - I
+<code>git clone/git pull</code> into that when I'm ready to publish, bump the
+versions from there, and <code>npm publish</code> with confidence.</p>
+<h2>Working With Others</h2>
+<p>You've forked someone's project, worked on it, and now want to ensure
+that you're up to date with their branch.  GitHub has some <a href="https://help.github.com/articles/syncing-a-fork/" title="Syncing a Fork on GitHub">great
+documentation</a>
+on how to make sure you've merged their latest changes - basically you
+need to ensure you've mapped the upstream remote, and then fetch it and
+merge it:</p>
+<div class="highlight"><pre><span></span>git remote add upstream https://github.com/my/clone/uri
+git fetch upstream
+git merge upstream/master
+git push
+</pre></div>
+
+
+<p>If you run into any merge issues, <a href="http://stackoverflow.com/questions/161813/fix-merge-conflicts-in-git" title="Fixing Merge Conflicts">this StackOverflow
+post</a>
+has some advice, and there are some decent merge tools out there.  I
+recommend Beyond Compare if you have the scratch, but otherwise
+<a href="http://kdiff3.sourceforge.net/">kdiff3</a>runs on just about everything.</p>
+<p>When others submit pull requests to your module, you'll get notified by
+GitHub and can then go deal with the PRs.  For example, I've submitted
+this change to <code>node-sbus</code> from my fork to the originator.  Since I'm a
+contributor on the upstream repo, the view I see when I go to the Pull
+Requests tab on that repo looks like:</p>
+<p><img alt="merge_pr" src="/images/merge_pr.png" /></p>
+<p>Note that I can automatically merge this PR, but since I have Travis set
+up it's telling me that it hasn't yet passed the build.  I should wait
+until I get a green light on that before considering accepting the PR -
+in the meantime I can click on the one change to go to a diff view and
+review it:</p>
+<p><img alt="pr_diff" src="/images/pr_diff_sm.png" /></p>
+<p>Looks good to me, and the Travis build has now passed (not strictly
+necessary since this was just a content change), so I accept the PR.</p>
+<h2>Multiple Owners, Multiple Publishers</h2>
+<p>Now someone has forked your module, proved themselves, and you want to
+add them as a collaborator.  You'll need to add them in both GitHub and
+NPM in order to make them a full peer for pushing/handling PRs and
+publishing.  For GitHub, you'll add them as a collaborator to your
+project using Settings->Collaborators:</p>
+<p><img alt="github_collaborators" src="/images/github_collaborators.png" /></p>
+<p>And for NPM you'll need to <a href="https://docs.npmjs.com/cli/owner" title="NPM Owner">add the user as an
+owner</a>.  This should allow
+both of you to push changes, integrate pull requests, and publish new
+versions.</p>
+<p>Hopefully this has been helpful - let me know if I've missed any basics,
+and if you have any other suggestions or ideas for collaborating on OSS
+projects.</p><p>There are <a href="/collaboration-on-open-source-node-projects.html#disqus_thread">comments</a>.</p>                </article>
+            </aside><!-- /#featured -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="https://blogs.technet.microsoft.com/machinelearning/">Cortana Analytics</a></li>
+                            <li><a href="http://www.kdnuggets.com/">KDNuggets</a></li>
+                            <li><a href="http://www.hanselman.com/blog/">Hanselman</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://twitter.com/noodlefrenzy">Twitter</a></li>
+                            <li><a href="https://www.linkedin.com/in/noodlefrenzy">LinkedIn</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-54597100-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'intelligentartifice';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'https://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+</html>
