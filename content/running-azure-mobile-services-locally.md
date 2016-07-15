@@ -23,9 +23,7 @@ will cause an auto-deployment. This works great, but the problem is that
 you can't run *or *test those changes locally before deployment,
 and that's not the kind of test-in-production workflow I'm into.
 
-![I don't always test my code, but when I do, I do it
-in
-production.](http://www.mikelanzetta.com/wp-content/uploads/2014/08/test_in_production-239x300.jpg)
+![I don't always test my code, but when I do, I do it in production.]({filename}/images/test_in_production.jpg)
 
 I talked with the Azure Mobile Services team about their testing story,
 and was told that they'd been focusing on improving the .NET-backed

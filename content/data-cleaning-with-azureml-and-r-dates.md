@@ -85,7 +85,7 @@ using `Sys.setenv(TZ="GMT")` - no dice.  So I ran the same code, but
 used my other "what class is this?" code to tell me what garbage it
 might be generating:
 
-[![r\_type\_conversions](http://www.mikelanzetta.com/wp-content/uploads/2015/01/r_type_conversions-300x144.png)](http://www.mikelanzetta.com/wp-content/uploads/2015/01/r_type_conversions.png)
+![r\_type\_conversions]({filename}/images/r_type_conversions.png)
 
 Hmm, these types look fine.  I spent some time looking around, trying
 different things, and finally asked the people on the Azure ML team.

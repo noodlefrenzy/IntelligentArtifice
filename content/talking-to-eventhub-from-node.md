@@ -62,7 +62,7 @@ sending using the portal:
 
 [![Creating
 Alternate SAS
-Keys](http://www.mikelanzetta.com/wp-content/uploads/2014/09/eventhub_saskeys.png)](http://www.mikelanzetta.com/wp-content/uploads/2014/09/eventhub_saskeys.png)
+Keys]({filename}/images/eventhub_saskeys.png)]({filename}/images/eventhub_saskeys.png)
 
 used my new code to build a token from them:
 

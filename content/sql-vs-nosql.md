@@ -21,7 +21,7 @@ connections between them, easily GET/PUT compatible - this makes perfect
 sense, and it worked fantastically well.  Thus, the NoSQL revolution was
 born, and everyone decided they needed to jump on the NoSQL train.
 
-![I should use NoSQL](http://noodlefrenzy-wp.azurewebsites.net/wp-content/uploads/2014/08/nosql_cat-300x217.png)
+![I should use NoSQL](http://noodlefrenzy-wp.azurewebsites.net/wp-content/uploads/2014/08/nosql_cat.png)
 
 The biggest problem with moving to NoSQL is the amount of functionality
 you lose over regular RDBMSs - little things like "transactions",

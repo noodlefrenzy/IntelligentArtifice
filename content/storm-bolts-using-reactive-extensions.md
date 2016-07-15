@@ -29,7 +29,7 @@ from EventHubs. Programming note: all of the code in this post is
 Into the Storm
 --------------
 
-[![topology[1]](http://www.mikelanzetta.com/wp-content/uploads/2015/04/topology1-300x176.png)](http://www.mikelanzetta.com/wp-content/uploads/2015/04/topology1.png)
+![topology]({filename}/images/topology1.png)
 
 Like any other data processing pipeline, Apache Storm consists of a way to
 get data into the system followed by a series of processing
@@ -58,8 +58,7 @@ started.  You'll notice a host of new project types specifically for
 working with HDInsight once you've installed it and restarted VS - we
 want "Storm Application".
 
-[![HDInsight =\> Storm
-Application](http://www.mikelanzetta.com/wp-content/uploads/2015/04/create_storm_project-300x194.png)](http://www.mikelanzetta.com/wp-content/uploads/2015/04/create_storm_project.png)
+![HDInsight -> Storm Application]({filename}/images/create_storm_project.png)
 
 When you create the project, you'll wind up with a C\# Class Library
 project with a few files you can use as templates to build out your

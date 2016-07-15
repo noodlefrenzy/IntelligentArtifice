@@ -171,7 +171,7 @@ this change to `node-sbus` from my fork to the originator.  Since I'm a
 contributor on the upstream repo, the view I see when I go to the Pull
 Requests tab on that repo looks like:
 
-[![merge\_pr](http://www.mikelanzetta.com/wp-content/uploads/2015/02/merge_pr.png)](http://www.mikelanzetta.com/wp-content/uploads/2015/02/merge_pr.png)
+![merge\_pr]({filename}/images/merge_pr.png)
 
 Note that I can automatically merge this PR, but since I have Travis set
 up it's telling me that it hasn't yet passed the build.  I should wait
@@ -179,7 +179,7 @@ until I get a green light on that before considering accepting the PR -
 in the meantime I can click on the one change to go to a diff view and
 review it:
 
-[![pr\_diff](http://www.mikelanzetta.com/wp-content/uploads/2015/02/pr_diff-1024x330.png)](http://www.mikelanzetta.com/wp-content/uploads/2015/02/pr_diff.png)
+![pr\_diff]({filename}/images/pr_diff_sm.png)
 
 Looks good to me, and the Travis build has now passed (not strictly
 necessary since this was just a content change), so I accept the PR.
@@ -193,7 +193,7 @@ NPM in order to make them a full peer for pushing/handling PRs and
 publishing.  For GitHub, you'll add them as a collaborator to your
 project using Settings-\>Collaborators:
 
-[![github\_collaborators](http://www.mikelanzetta.com/wp-content/uploads/2015/02/github_collaborators-300x145.png)](http://www.mikelanzetta.com/wp-content/uploads/2015/02/github_collaborators.png)
+![github\_collaborators]({filename}/images/github_collaborators.png)
 
 And for NPM you'll need to [add the user as an
 owner](https://docs.npmjs.com/cli/owner "NPM Owner").  This should allow

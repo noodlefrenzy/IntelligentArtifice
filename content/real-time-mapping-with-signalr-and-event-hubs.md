@@ -15,7 +15,7 @@ lat/long coordinates and timestamps just doesn't tell you a story like
 seeing things play out on the
 map.
 
-[![route\_animation](http://www.mikelanzetta.com/wp-content/uploads/2015/08/route_animation.gif)](http://www.mikelanzetta.com/wp-content/uploads/2015/08/route_animation.gif)
+[![route\_animation]({filename}/images/route_animation.gif)]({filename}/images/route_animation.gif)
 
 So what if you have large amounts of geo data coming in from different
 users, say via a high-scale queuing mechanism like Event Hubs? What if

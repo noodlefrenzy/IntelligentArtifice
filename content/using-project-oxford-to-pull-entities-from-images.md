@@ -40,7 +40,7 @@ single statements etc. to mitigate TL;DR syndrome).
 The Input
 ---------
 
-![Morpheus: What if I told you it was staring you right in the face?](http://www.mikelanzetta.com/wp-content/uploads/2015/05/1wL61Ro1-300x271.jpg)
+![Morpheus: What if I told you it was staring you right in the face?]({filename}/images/1wL61Ro1.jpg)
 
 So what sort of input data should we use? It needs to be images with
 structured text, and the text should have both an overall
@@ -169,7 +169,7 @@ regions. Let's take a look at the results.
 Results... and a Realization
 ----------------------------
 
-[![5ocZvsW[1]](http://www.mikelanzetta.com/wp-content/uploads/2015/05/5ocZvsW1-300x300.jpg)](http://www.mikelanzetta.com/wp-content/uploads/2015/05/5ocZvsW1.jpg)
+![Stuff]({filename}/images/5ocZvsW1.jpg)
 
 So running the OCR on our example image above, I notice a problem - it's
 missed a chunk of text and returned "what if it was staring you right in
@@ -204,12 +204,12 @@ label any entities within it. You can then re-train the model with the
 button in the bottom left and see how it did - here's a shot of what my
 model looks like after a few training utterances have been added:
 
-[![LUIS\_Training](http://www.mikelanzetta.com/wp-content/uploads/2015/05/luis_training.png)](http://www.mikelanzetta.com/wp-content/uploads/2015/05/luis_training.png)
+[![LUIS\_Training]({filename}/images/luis_training.png)]({filename}/images/luis_training.png)
 
 Now that it's trained, you can go back to your application list and hit
 "Publish":
 
-[![LUIS\_Publish](http://www.mikelanzetta.com/wp-content/uploads/2015/05/LUIS_Publish.png)](http://www.mikelanzetta.com/wp-content/uploads/2015/05/LUIS_Publish.png)
+[![LUIS\_Publish]({filename}/images/LUIS_Publish.png)]({filename}/images/LUIS_Publish.png)
 
 Once it's published, you can just invoke it with the given URL and the
 utterance you want it to try and tag. For the Boromir example above,

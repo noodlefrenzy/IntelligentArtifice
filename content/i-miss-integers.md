@@ -60,5 +60,5 @@ So, imagine my surprise when I ran this code...
 alert((Math.pow(2,31) & Math.pow(2, 31)) === Math.pow(2, 31))
 ```
 
-[![divide-by-zero-blog-safe[1]](http://www.mikelanzetta.com/wp-content/uploads/2015/01/divide-by-zero-blog-safe1-300x252.jpg)](http://www.mikelanzetta.com/wp-content/uploads/2015/01/divide-by-zero-blog-safe1.jpg)
+![Divide By Zero]({filename}/images/divide-by-zero-blog-safe1.jpg)
 

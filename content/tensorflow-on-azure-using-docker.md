@@ -48,15 +48,16 @@ Docker came to Azure last year in a big way, and now it's easier than
 ever to fire up a new VM running a Docker engine. Using the now-GA "new"
 portal, just search for "Docker on Ubuntu":
 
-[![Search for docker on ubuntu
-server](http://www.mikelanzetta.com/wp-content/uploads/2015/12/New_Docker.png)](http://www.mikelanzetta.com/wp-content/uploads/2015/12/New_Docker.png)
+![Search for docker on ubuntu
+server]({filename}/images/New_Docker.png)
 
 Once you select "Docker on Ubuntu Server" you'll be guided through the
 creation process:
 
-[![Docker VM Creation
-Process](http://www.mikelanzetta.com/wp-content/uploads/2015/12/Docker_VM_Create-1024x459.png)](http://www.mikelanzetta.com/wp-content/uploads/2015/12/Docker_VM_Create.png)Upon
-completion, your VM will start up, and you can then SSH into it and
+![Docker VM Creation
+Process]({filename}/images/Docker_VM_Create.png)
+
+Upon completion, your VM will start up, and you can then SSH into it and
 execute whatever Docker commands you wish.
 
 Installing TensorFlow
@@ -80,8 +81,8 @@ VM, but we need to port-forward from the VM externally. To do so, we
 simple expose that port via the Azure portal by adding a new endpoint
 mapping 8888 to whichever external port you choose:
 
-[![Exposing the Jupyter notebook
-endpoint](http://www.mikelanzetta.com/wp-content/uploads/2015/12/Expose_VM_Endpoint-1024x398.png)](http://www.mikelanzetta.com/wp-content/uploads/2015/12/Expose_VM_Endpoint.png)
+![Exposing the Jupyter notebook
+endpoint]({filename}/images/Expose_VM_Endpoint.png)
 
 Now that you've exposed the endpoint from Azure, you can fire up the
 Docker container by using the command:

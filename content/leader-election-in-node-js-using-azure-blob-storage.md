@@ -35,9 +35,11 @@ The Goal of Leader Election
 The goal of having a leader election is to ensure that for any given
 resource only one instance is allowed to "control" it. With Paxos for
 instance, any given round's result is "controlled" by the leader.
-[![Paxos algorithm
-flow](http://www.mikelanzetta.com/wp-content/uploads/2015/11/paxos1-300x233.png)](http://www.mikelanzetta.com/wp-content/uploads/2015/11/paxos1.png)With
-database failover the leader controls all writes and forwards them to
+
+![Paxos algorithm
+flow]({filename}/images/paxos1_sm.png)
+
+With database failover the leader controls all writes and forwards them to
 all followers. In the event of a leader failure that control should
 lapse to another instance after a certain amount of time has elapsed.
 Effectively, a leader is "leasing" control for a certain timeout period

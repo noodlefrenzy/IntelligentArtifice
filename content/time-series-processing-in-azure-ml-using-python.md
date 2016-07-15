@@ -25,7 +25,7 @@ time-series](http://pandas.pydata.org/pandas-docs/stable/timeseries.html)
 data manipulation.  The ability to normalize dates, roll up into
 aggregates, and easily slice ranges is phenomenal.
 
-[![execute\_python](http://www.mikelanzetta.com/wp-content/uploads/2015/03/execute_python-300x145.png)](http://www.mikelanzetta.com/wp-content/uploads/2015/03/execute_python.png)
+![execute\_python]({filename}/images/execute_python.png)
 
  
 
@@ -42,7 +42,7 @@ data as a CSV with a header row, leading to the final Reader
 configuration
 below.
 
-[![ichart\_reader\_config](http://www.mikelanzetta.com/wp-content/uploads/2015/03/ichart_reader_config-300x210.png)](http://www.mikelanzetta.com/wp-content/uploads/2015/03/ichart_reader_config.png)
+![ichart\_reader\_config]({filename}/images/ichart_reader_config.png)
 
 Once we have the data coming in, it's time to do something fun with it.
  Let's take a first crack at it - we'll take the input and turn it into
@@ -138,7 +138,7 @@ def azureml_main(dataframe1 = None, dataframe2 = None):
     return dfMonthly,
 ```
 
-[![orig\_output](http://www.mikelanzetta.com/wp-content/uploads/2015/03/orig_output-300x117.png)](http://www.mikelanzetta.com/wp-content/uploads/2015/03/orig_output.png) 
+![orig\_output]({filename}/images/orig_output.png) 
 
 This worked!  However, looking at the output there is no Date column - so I'm
 guessing that in the same way the input data didn't pull the first

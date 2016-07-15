@@ -33,21 +33,27 @@ others from even farther afield.
 
 The conference was held at the [Semiahmoo
 Resort](http://www.semiahmoo.com/), which was actually quite
-beautiful. [![Sunset at Semiahmoo
-Resort](http://www.mikelanzetta.com/wp-content/uploads/2015/08/20150710_203724-300x169.jpg)](http://www.mikelanzetta.com/wp-content/uploads/2015/08/20150710_203724.jpg)
+beautiful. 
+
+![Sunset at Semiahmoo Resort]({filename}/images/semiahmoo_sunset_sm.jpg)
 
 The grounds were large, it was surrounded by water, had a spa and a
 pool - honestly I had no idea there was any place this nice between
-Seattle and Canada. [![Semiahmoo Resort coastal pic during the
-day](http://www.mikelanzetta.com/wp-content/uploads/2015/08/semiahmoo_coast-300x169.jpg)](http://www.mikelanzetta.com/wp-content/uploads/2015/08/semiahmoo_coast.jpg)The
-lines to get in on the first day were long - it seemed like if they'd
+Seattle and Canada. 
+
+![Semiahmoo Resort coastal pic during the day]({filename}/images/semiahmoo_coast_sm.jpg)
+
+The lines to get in on the first day were long - it seemed like if they'd
 let people check in the night before, they could have prevented some
 initial headaches.
-[![cascadia\_line](http://www.mikelanzetta.com/wp-content/uploads/2015/08/cascadia_line-300x156.jpg)](http://www.mikelanzetta.com/wp-content/uploads/2015/08/cascadia_line.jpg)But
-once that initial hurdle was passed, the rest of the conference was
+
+![CascadiaFest Line]({filename}/images/cascadia_line_sm.jpg)
+
+But once that initial hurdle was passed, the rest of the conference was
 incredibly well run. The conference badges were far beyond any I've ever
-received[![Cascadia Speaker
-Badge](http://www.mikelanzetta.com/wp-content/uploads/2015/08/cascadia_badge-188x300.jpg)](http://www.mikelanzetta.com/wp-content/uploads/2015/08/cascadia_badge.jpg)
+received
+
+![Cascadia Speaker Badge]({filename}/images/cascadia_badge_sm.jpg)
 
 - solid laser-etched wood, definitely one to be kept. There was some
 other swag, including a great CascadiaFest hoodie, but the badge was a
@@ -64,7 +70,7 @@ The conference was broken thematically into three days, with a single
 track of talks each day in a large room holding \~400 people. All talks
 were uploaded to Youtube and auto-captioned.
 
-https://www.youtube.com/embed?listType=playlist&width=474&height=266&list=PLLiioAbFTbKNpjG\_yNpNfhAmQ9KsxFzX7&plindex=0&layout=gallery
+<iframe width="560" height="315" src="https://www.youtube.com/embed/videoseries?list=PLLiioAbFTbKNpjG_yNpNfhAmQ9KsxFzX7" frameborder="0" allowfullscreen></iframe>
 
 ### Day One - CSS Day
 
@@ -76,14 +82,14 @@ Alan Mooiman had a solid start to the conference with a talk on the
 history and future of CSS, and why the cycle of birth and death in
 preprocessors is a good thing.
 
-https://www.youtube.com/watch?v=jWDZP8twWDg
+<iframe width="560" height="315" src="https://www.youtube.com/embed/jWDZP8twWDg" frameborder="0" allowfullscreen></iframe>
 
 Amy Lynn Taylor's talk started out slow, but had some great insights on
 how to make a distributed team cohere and have a common culture. As
 someone who works from home / remotely much of the time, it was relevant
 to my interests.
 
-https://www.youtube.com/watch?v=\_NPLqrVMHFw
+<iframe width="560" height="315" src="https://www.youtube.com/embed/\_NPLqrVMHFw" frameborder="0" allowfullscreen></iframe>
 
 ### Day Two - Client-side Javascript Day
 
@@ -91,13 +97,13 @@ There was a great talk on JSON Web Tokens (vs. Cookies) by Martin
 Gontovnikas with some easy examples to follow and motivating reasons to
 use them.
 
-https://www.youtube.com/watch?v=mvS4oxHFXxM
+<iframe width="560" height="315" src="https://www.youtube.com/embed/mvS4oxHFXxM" frameborder="0" allowfullscreen></iframe>
 
 My colleague David Catuhe had a great talk on his Babylon.js library for
 developing 3D games in Javascript. I can't wait to try it out, and with
 easy importing from Unity it's much more likely I might actually do so.
 
-https://www.youtube.com/watch?v=ZE-HRoaN4YE
+<iframe width="560" height="315" src="https://www.youtube.com/embed/ZE-HRoaN4YE" frameborder="0" allowfullscreen></iframe>
 
 Myles Borins had a great talk with a deceptive title - "On the
 fallibility of large systems" made me think it was going to be about
@@ -105,14 +111,14 @@ distributed systems and fault-tolerance, but instead it was on how our
 easy use of large dependency-chains can cause exciting failures you'd
 never expect. A useful reminder for anyone using npm and Bower.
 
-https://www.youtube.com/watch?v=47XMs6pcf7w
+<iframe width="560" height="315" src="https://www.youtube.com/embed/47XMs6pcf7w" frameborder="0" allowfullscreen></iframe>
 
 Andrei Kashcha's talk on visualization of huge graphs was fantastic. His
 delivery was charming and his enthusiasm was infectious, and the
 insights he was able to pull from these large graphs of package manager
 dependencies like npm were illuminating.
 
-https://www.youtube.com/watch?v=vZ6Yhlxv7Os
+<iframe width="560" height="315" src="https://www.youtube.com/embed/vZ6Yhlxv7Os" frameborder="0" allowfullscreen></iframe>
 
 Ashley Williams had a talk on ES6 that was both great and somewhat
 depressing. Depressing mostly because I'm not a huge fan of the JS
@@ -128,7 +134,7 @@ performance measurement that had some great details on how to integrate
 that into your development process, and how to avoid pitfalls in the
 process.
 
-https://www.youtube.com/watch?v=86LwhTD\_rkM
+<iframe width="560" height="315" src="https://www.youtube.com/embed/86LwhTD\_rkM" frameborder="0" allowfullscreen></iframe>
 
 And finally my talk on the [Nitrogen](http://nitrogen.io/) framework and
 the development of my [AMQP messaging
@@ -138,7 +144,7 @@ client](https://github.com/noodlefrenzy/node-amqp10). I used
 GitHub](https://github.com/noodlefrenzy/Cascadia2015-NitrogenPres/tree/gh-pages),
 using gh-pages for [hosting them](http://aka.ms/cascadia).
 
-https://www.youtube.com/watch?v=99zXI6CZNGM
+<iframe width="560" height="315" src="https://www.youtube.com/embed/99zXI6CZNGM" frameborder="0" allowfullscreen></iframe>
 
 Final Thoughts
 --------------
@@ -153,6 +159,3 @@ I'd also like to give a shout-out to [Tougo
 Coffee](http://www.tougocoffee.com/) for keeping me wired throughout the
 entire three-day period, and whatever genius on the CascadiaFest team
 who decided to bring them up to Semiahmoo.
-
- 
-
