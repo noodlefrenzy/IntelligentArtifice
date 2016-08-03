@@ -96,7 +96,7 @@ And this would turn
 
 into
 
-![Ninjacat, dreamy edition]()
+[![Ninjacat, dreamy edition](../content/images/ninjadream_small.png)](../content/images/ninjadream_large.png)
 
 If you run into errors, it could be due to changes in the way Keras or Theano works or how they integrate with CUDA or CUdnn - they are all in _very_ active development. If so, please take a look at [the _official_ `deep_dream.py` example](https://github.com/fchollet/keras/blob/master/examples/deep_dream.py) from Keras - my copy just has enhanced argument handling and has factored a few things to make it easier to play around with.
 
@@ -104,5 +104,18 @@ If you run into errors, it could be due to changes in the way Keras or Theano wo
 
 Neural Artistry first surfaced with a [paper from Germany](https://arxiv.org/pdf/1508.06576v2.pdf) and has since become another big showcase example for the power of Deep Learning. The basic way it works is to take an existing trained Convolutional Neural Network and use it to convolve two images together, by joining the outputs of different convolutional layers from each image. Assuming (again) that you've installed the VGG16 pre-trained weights in `C:\dev\data` and are running against `C:\dev\images\ninjacat.png` in the style of, say, "The Scream" (which you have at `C:\dev\images\thescream.png`), your command would look like:
 
+    > python neural_style_transfer.py --weights_root c:\dev\data c:\dev\images\ninjacat.png c:\dev\images\thescream.png ninjascream
 
-## Conclusion
+And that'd turn
+
+[![Ninjacat](../content/images/ninjacat_small.png)](../content/images/ninjacat_large.png)
+
+into
+
+[![Ninjacat, screamy edition](../content/images/ninjascream_small.png)](../content/images/ninjascream_large.png)
+
+Once again, if you hit errors, please try [the _official_ `neural_style_transfer.py` example](https://github.com/fchollet/keras/blob/master/examples/neural_style_transfer.py) - my copy just factors out argument handling and lets you play around with which layers you use for transfer.
+
+## Conclusion and Future Work
+
+Setting up deep learning toolkits on Windows is fairly easy, and they've made it quite easy to experiment with them even if you have no background in the field. TensorFlow for Windows [is coming](https://github.com/tensorflow/tensorflow/issues/17) but is gated on Bazel support - once it happens, I'll create a follow-up post on [my blog](http://www.intelligent-artifice.net/) and go through a similar set of examples, but until then there is nothing stopping you from joining the Deep Learning revolution on your Windows machine.
