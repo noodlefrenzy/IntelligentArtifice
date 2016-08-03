@@ -84,8 +84,25 @@ Now that you've enabled GPU support, try running the MNIST example again (`pytho
 
 ## Deep Dreaming
 
+I have to hand it to Google, their posts from the DeepMind team have been some of the most interesting in the field, not least [their post](https://research.googleblog.com/2015/06/inceptionism-going-deeper-into-neural.html) introducing "Deep Dream" and "Neural Artwork". We can replicate similar results using Keras, with the `deep_dream.py` example from my repo. This program uses the convolutional layers of the VGG16 network (from the [Visual Geometry Group](http://www.robots.ox.ac.uk/~vgg/research/very_deep/)) with pre-trained weights ([converted from Caffe](https://gist.github.com/baraldilorenzo/07d7802847aaad0a35d3)). VGG16 was a top model in the ImageNet competition (ILSVRC) of 2014, and is considered a great playground because it performs quite well and yet its structure is relatively easy to understand.
 
+Assuming you've installed the pre-trained weights in `C:\dev\data` and are running against `C:\dev\images\ninjacat.png`, you could use the following command:
+
+    > python deep_dream.py --weights_root c:\dev\data c:\dev\images\ninjacat.png ninjadream
+
+And this would turn
+
+[![Ninjacat](../content/images/ninjacat_small.png)](../content/images/ninjacat_large.png)
+
+into
+
+![Ninjacat, dreamy edition]()
+
+If you run into errors, it could be due to changes in the way Keras or Theano works or how they integrate with CUDA or CUdnn - they are all in _very_ active development. If so, please take a look at [the _official_ `deep_dream.py` example](https://github.com/fchollet/keras/blob/master/examples/deep_dream.py) from Keras - my copy just has enhanced argument handling and has factored a few things to make it easier to play around with.
 
 ## Neural Artistry
+
+Neural Artistry first surfaced with a [paper from Germany](https://arxiv.org/pdf/1508.06576v2.pdf) and has since become another big showcase example for the power of Deep Learning. The basic way it works is to take an existing trained Convolutional Neural Network and use it to convolve two images together, by joining the outputs of different convolutional layers from each image. Assuming (again) that you've installed the VGG16 pre-trained weights in `C:\dev\data` and are running against `C:\dev\images\ninjacat.png` in the style of, say, "The Scream" (which you have at `C:\dev\images\thescream.png`), your command would look like:
+
 
 ## Conclusion
