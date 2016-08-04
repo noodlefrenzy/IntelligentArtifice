@@ -6,9 +6,13 @@ Deep Learning is a relatively new set of techniques in the field of Machine Lear
 
 People have known for some time that a particular Machine Learning technique - Neural Networks - has the capability to learn complex mappings from inputs (e.g. images) to outputs (e.g. "which digit is this?") through the use of a "hidden layer" that mapped between the two.
 
-![A Simple MLP](http://faculty.ksu.edu.sa/zitouni/Pictures%20Library/MultiLayer%20Perceptron.gif)
+![A Simple MLP](../content/images/Multilayer_Perceptron.png)
 
-With the advent of _Big Data_, we suddenly have incredibly large sets of input data we could feed to these models, and with the increasing power of GPUs we have the compute capacity to do so. We had seen Neural Networks with multiple hidden layers in the past, but training them was so expensive and they didn't seem to outperform other techniques that they'd been discarded. Someone realized that with the amount of data we now have and the compute resources available to us, these constraints no longer applied and these older networks were brought back. Since then, networks have only gotten deeper (more hidden layers) and their shapes have only gotten stranger (convolutional neurons, feedback loops, and layer skipping). At this point, we know they are powerful, but we don't really know how powerful they can get, and the field is wide open for advancement. For a more detailed and far more eloquent history of the field, see [NVidia's great post](https://devblogs.nvidia.com/parallelforall/deep-learning-nutshell-history-training/).
+With the advent of _Big Data_, we suddenly have incredibly large sets of input data we could feed to these models, and with the increasing power of GPUs we have the compute capacity to do so. We had seen Neural Networks with multiple hidden layers in the past, but training them was so expensive and they didn't seem to outperform other techniques that they'd been discarded. Someone realized that with the amount of data we now have and the compute resources available to us, these constraints no longer applied and these older networks were brought back. Since then, networks have only gotten deeper (more hidden layers) and their shapes have only gotten stranger (convolutional neurons, feedback loops, and layer skipping). 
+
+![Denser, Deeper Neural Network](../content/images/Dense_NN.png)
+
+At this point, we know they are powerful, but we don't really know how powerful they can get, and the field is wide open for advancement. For a more detailed and far more eloquent history of the field, see [NVidia's great post](https://devblogs.nvidia.com/parallelforall/deep-learning-nutshell-history-training/).
 
 In this post, I'll walk you through how to get one of the most popular toolkits up and running on Windows, and run through and explain some fun examples.
 
