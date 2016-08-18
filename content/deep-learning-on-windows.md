@@ -15,11 +15,11 @@ Deep Learning is a relatively new set of techniques in the field of Machine Lear
 
 People have known for some time that a particular Machine Learning technique - Neural Networks - has the capability to learn complex mappings from inputs (e.g. images) to outputs (e.g. "which digit is this?") through the use of a "hidden layer" that mapped between the two.
 
-![A Simple MLP](../content/images/Multilayer_Perceptron.png)
+![A Simple MLP](./images/Multilayer_Perceptron.png)
 
 With the advent of _Big Data_, we suddenly have incredibly large sets of input data we could feed to these models, and with the increasing power of GPUs we have the compute capacity to do so. We had seen Neural Networks with multiple hidden layers in the past, but training them was so expensive and they didn't seem to outperform other techniques that they'd been discarded. Someone realized that with the amount of data we now have and the compute resources available to us, these constraints no longer applied and these older networks were brought back.  
 
-![Denser, Deeper Neural Network](../content/images/Dense_NN.png)
+![Denser, Deeper Neural Network](./images/Dense_NN.png)
 
 Since then, networks have only gotten deeper (more hidden layers) and their shapes have only gotten stranger (convolutional neurons, feedback loops, and layer skipping). At this point, we know they are powerful, but we don't really know how powerful they can get, and the field is wide open for advancement. For a more detailed and far more eloquent history of the field, see [NVidia's great post](https://devblogs.nvidia.com/parallelforall/deep-learning-nutshell-history-training/).
 
@@ -105,11 +105,11 @@ Assuming you've installed the pre-trained weights in `C:\dev\data` and are runni
 
 And this would turn
 
-[![Ninjacat](../content/images/ninjacat_small.png)](../content/images/ninjacat_large.png)
+[![Ninjacat](./images/ninjacat_small.png)](./images/ninjacat_large.png)
 
 into
 
-[![Ninjacat, dreamy edition](../content/images/ninjadream_small.png)](../content/images/ninjadream_large.png)
+[![Ninjacat, dreamy edition](./images/ninjadream_small.png)](./images/ninjadream_large.png)
 
 If you run into errors, it could be due to changes in the way Keras or Theano works or how they integrate with CUDA or CUdnn - they are all in _very_ active development. If so, please take a look at [the _official_ `deep_dream.py` example](https://github.com/fchollet/keras/blob/master/examples/deep_dream.py) from Keras - my copy just has enhanced argument handling and has factored a few things to make it easier to play around with.
 
@@ -121,11 +121,11 @@ Neural Artistry first surfaced with a [paper from Germany](https://arxiv.org/pdf
 
 And that'd turn
 
-[![Ninjacat](../content/images/ninjacat_small.png)](../content/images/ninjacat_large.png)
+[![Ninjacat](./images/ninjacat_small.png)](./images/ninjacat_large.png)
 
 into
 
-[![Ninjacat, screamy edition](../content/images/ninjascream_small.png)](../content/images/ninjascream_large.png)
+[![Ninjacat, screamy edition](./images/ninjascream_small.png)](./images/ninjascream_large.png)
 
 Once again, if you hit errors, please try [the _official_ `neural_style_transfer.py` example](https://github.com/fchollet/keras/blob/master/examples/neural_style_transfer.py) - my copy just factors out argument handling and lets you play around with which layers you use for transfer.
 
