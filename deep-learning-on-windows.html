@@ -48,9 +48,9 @@
 <h2>A Quick Guide to Deep Learning</h2>
 <p>Deep Learning is a relatively new set of techniques in the field of Machine Learning that have shown the power to generalize well over a whole host of problems, and even solve some problems that were considered unsolveable just a few years before. There are <a href="http://deeplearning.net/tutorial/">many</a> <a href="http://deeplearning.stanford.edu/tutorial/">tutorials</a> and <a href="https://www.quora.com/What-is-deep-learning">write-ups</a> on these techniques <a href="https://www.microsoft.com/en-us/research/publication/deep-learning-methods-and-applications/">online</a>, so I won't go too deep, but I'll lay out the basics.</p>
 <p>People have known for some time that a particular Machine Learning technique - Neural Networks - has the capability to learn complex mappings from inputs (e.g. images) to outputs (e.g. "which digit is this?") through the use of a "hidden layer" that mapped between the two.</p>
-<p><img alt="A Simple MLP" src="../content/images/Multilayer_Perceptron.png" /></p>
+<p><img alt="A Simple MLP" src="./images/Multilayer_Perceptron.png" /></p>
 <p>With the advent of <em>Big Data</em>, we suddenly have incredibly large sets of input data we could feed to these models, and with the increasing power of GPUs we have the compute capacity to do so. We had seen Neural Networks with multiple hidden layers in the past, but training them was so expensive and they didn't seem to outperform other techniques that they'd been discarded. Someone realized that with the amount of data we now have and the compute resources available to us, these constraints no longer applied and these older networks were brought back.  </p>
-<p><img alt="Denser, Deeper Neural Network" src="../content/images/Dense_NN.png" /></p>
+<p><img alt="Denser, Deeper Neural Network" src="./images/Dense_NN.png" /></p>
 <p>Since then, networks have only gotten deeper (more hidden layers) and their shapes have only gotten stranger (convolutional neurons, feedback loops, and layer skipping). At this point, we know they are powerful, but we don't really know how powerful they can get, and the field is wide open for advancement. For a more detailed and far more eloquent history of the field, see <a href="https://devblogs.nvidia.com/parallelforall/deep-learning-nutshell-history-training/">NVidia's great post</a>.</p>
 <p>In this post, I'll walk you through how to get one of the most popular toolkits up and running on Windows, and run through and explain some fun examples.</p>
 <h2>Deep Learning Toolkits</h2>
@@ -113,9 +113,9 @@
 
 
 <p>And this would turn</p>
-<p><a href="../content/images/ninjacat_large.png"><img alt="Ninjacat" src="../content/images/ninjacat_small.png" /></a></p>
+<p><a href="./images/ninjacat_large.png"><img alt="Ninjacat" src="./images/ninjacat_small.png" /></a></p>
 <p>into</p>
-<p><a href="../content/images/ninjadream_large.png"><img alt="Ninjacat, dreamy edition" src="../content/images/ninjadream_small.png" /></a></p>
+<p><a href="./images/ninjadream_large.png"><img alt="Ninjacat, dreamy edition" src="./images/ninjadream_small.png" /></a></p>
 <p>If you run into errors, it could be due to changes in the way Keras or Theano works or how they integrate with CUDA or CUdnn - they are all in <em>very</em> active development. If so, please take a look at <a href="https://github.com/fchollet/keras/blob/master/examples/deep_dream.py">the <em>official</em> <code>deep_dream.py</code> example</a> from Keras - my copy just has enhanced argument handling and has factored a few things to make it easier to play around with.</p>
 <h2>Neural Artistry</h2>
 <p>Neural Artistry first surfaced with a <a href="https://arxiv.org/pdf/1508.06576v2.pdf">paper from Germany</a> and has since become another big showcase example for the power of Deep Learning. Essentially, the way it works is to take an existing trained Convolutional Neural Network and use it to convolve two images together, by joining the outputs of different convolutional layers from each image. Assuming (again) that you've installed the VGG16 pre-trained weights in <code>C:\dev\data</code> and are running against <code>C:\dev\images\ninjacat.png</code> in the style of, say, "The Scream" (which you have at <code>C:\dev\images\thescream.png</code>), your command would look like:</p>
@@ -124,9 +124,9 @@
 
 
 <p>And that'd turn</p>
-<p><a href="../content/images/ninjacat_large.png"><img alt="Ninjacat" src="../content/images/ninjacat_small.png" /></a></p>
+<p><a href="./images/ninjacat_large.png"><img alt="Ninjacat" src="./images/ninjacat_small.png" /></a></p>
 <p>into</p>
-<p><a href="../content/images/ninjascream_large.png"><img alt="Ninjacat, screamy edition" src="../content/images/ninjascream_small.png" /></a></p>
+<p><a href="./images/ninjascream_large.png"><img alt="Ninjacat, screamy edition" src="./images/ninjascream_small.png" /></a></p>
 <p>Once again, if you hit errors, please try <a href="https://github.com/fchollet/keras/blob/master/examples/neural_style_transfer.py">the <em>official</em> <code>neural_style_transfer.py</code> example</a> - my copy just factors out argument handling and lets you play around with which layers you use for transfer.</p>
 <h2>Conclusion and Future Work</h2>
 <p>Setting up deep learning toolkits on Windows is fairly easy, and they've made it quite simple to experiment with them even if you have no background in the field. TensorFlow for Windows <a href="https://github.com/tensorflow/tensorflow/issues/17">is coming</a> but is gated on Bazel support - once it happens, I'll create a follow-up post on <a href="http://www.intelligent-artifice.net/">my blog</a> and go through a similar set of examples, but until then there is nothing stopping you from joining the Deep Learning revolution on your Windows machine.</p>
