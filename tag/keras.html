@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Intelligent Artifice - Keras</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/noodlefrenzy">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="/">Intelligent Artifice </a></h1>
+                <nav><ul>
+                    <li><a href="/pages/about-me-and-this-blog.html">About Me And This Blog</a></li>
+                    <li><a href="/category/devops.html">DevOps</a></li>
+                    <li><a href="/category/meta.html">Meta</a></li>
+                    <li><a href="/category/software.html">Software</a></li>
+                    <li><a href="/category/uncategorized.html">Uncategorized</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="/deep-learning-on-windows.html">Deep Learning on Windows: A Getting Started Guide</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2016-08-04T12:34:00-07:00">
+                Published: Thu 04 August 2016
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="/category/software.html">Software</a>.</p>
+<p>tags: <a href="/tag/windows.html">Windows</a> <a href="/tag/deep-learning.html">Deep Learning</a> <a href="/tag/machine-learning.html">Machine Learning</a> <a href="/tag/theano.html">Theano</a> <a href="/tag/keras.html">Keras</a> <a href="/tag/lasagne.html">Lasagne</a> </p>
+</footer><!-- /.post-info --><h1>Deep Learning on Windows: A Getting Started Guide</h1>
+<h2>A Quick Guide to Deep Learning</h2>
+<p>Deep Learning is a relatively new set of techniques in the field of Machine Learning that have shown the power to generalize well over a whole host of problems, and even solve some problems that were considered unsolveable just a few years before. There are <a href="http://deeplearning.net/tutorial/">many</a> <a href="http://deeplearning.stanford.edu/tutorial/">tutorials</a> and <a href="https://www.quora.com/What-is-deep-learning">write-ups</a> on these techniques <a href="https://www.microsoft.com/en-us/research/publication/deep-learning-methods-and-applications/">online</a>, so I won't go too deep, but I'll lay out the basics.</p>
+<p>People have known for some time that a particular Machine Learning technique - Neural Networks - has the capability to learn complex mappings from inputs (e.g. images) to outputs (e.g. "which digit is this?") through the use of a "hidden layer" that mapped between the two.</p>
+<p><img alt="A Simple MLP" src="../content/images/Multilayer_Perceptron.png" /></p>
+<p>With the advent of <em>Big Data</em>, we suddenly have incredibly large sets of input data we could feed to these models, and with the increasing power of GPUs we have the compute capacity to do so. We had seen Neural Networks with multiple hidden layers in the past, but training them was so expensive and they didn't seem to outperform other techniques that they'd been discarded. Someone realized that with the amount of data we now have and the compute resources available to us, these constraints no longer applied and these older networks were brought back.  </p>
+<p><img alt="Denser, Deeper Neural Network" src="../content/images/Dense_NN.png" /></p>
+<p>Since then, networks have only gotten deeper (more hidden layers) and their shapes have only gotten stranger (convolutional neurons, feedback loops, and layer skipping). At this point, we know they are powerful, but we don't really know how powerful they can get, and the field is wide open for advancement. For a more detailed and far more eloquent history of the field, see <a href="https://devblogs.nvidia.com/parallelforall/deep-learning-nutshell-history-training/">NVidia's great post</a>.</p>
+<p>In this post, I'll walk you through how to get one of the most popular toolkits up and running on Windows, and run through and explain some fun examples.</p>
+<h2>Deep Learning Toolkits</h2>
+<p>Machine Learning has been around for a long time and there are dozens of frameworks out there written in everything from low-level C code to AzureML. In the Deep Learning space, several frameworks have risen to prominence only to gradually lose ground to the "next big thing". It's hard to say who has the best framework, and a lot of it right now comes down to choices about whether it supports your current and expected needs, whether it runs on your platform, and whether you can code to it in a language you enjoy.</p>
+<p><a href="http://caffe.berkeleyvision.org/">Caffe</a> is one of the elders of the field, and with their "Model Zoo" of pre-trained models makes a compelling case for continued usefulness. With plenty of tutorials, good documentation, and a binding for Python, it's a solid choice. It was supplanted by <a href="http://torch.ch/">Torch</a>, Facebook's framework for Lua. This was popular for a while, until it started being replaced by more modern Tensor-based variants. These Tensor-based networks allow for <em>networks of computations</em> instead of <em>networks of layers</em>, and have proven to be more flexible for modern deep learning models.</p>
+<p>Microsoft's <a href="https://github.com/Microsoft/CNTK">CNTK</a> and Google's <a href="https://github.com/tensorflow/tensorflow">TensorFlow</a> are both Tensor-based systems - both run on Linux, while CNTK runs on Windows and TensorFlow runs on Mac. Today I'll be focusing on one of TensorFlow's cheif competitors - <a href="https://github.com/Theano/Theano">Theano</a>. Theano is a Python-bound library that I find useful because it works in low-level Tensor space, but has libraries built on top of it like <a href="https://github.com/fchollet/keras">Keras</a> and <a href="https://github.com/Lasagne/Lasagne">Lasagne</a> that allow you to think at a higher level of abstraction, so e.g. defining a Convolutional Neural Network is trivial with Keras. This isn't meant to imply that Theano is the best - in fact if you want to see a more in-depth comparison of the frameworks, I'd recommend <a href="https://github.com/zer0n/deepframeworks#ecosystem">this living article</a> by Kenneth Tran.</p>
+<h2>Theano, Keras, and Lasagne</h2>
+<h3>Installing on Windows</h3>
+<p>Theano, Keras and Lasagne are all Python libraries, so the first thing we'll need to do is get a Python installation on Windows. For this, there are a couple of great options out there, but I'll go with <a href="https://winpython.github.io/">WinPython</a> for two reasons - first, it installs with no side-effects, so can run side-by-side with any existing Anaconda or other installation you might have; second, it comes with a whole host of packages that you'll need already pre-installed (Numpy, Pandas, Sklearn).</p>
+<h4>Installing WinPython 3.x</h4>
+<p>As of the time of writing (2016-08-02) <a href="https://sourceforge.net/projects/winpython/files/WinPython_3.4/3.4.4.3/">WinPython 3.4.4.3</a> is the latest branch of the 3.4 tree, and Theano did not yet support Python 3.5 on Windows (here's a <a href="http://stevedower.id.au/blog/building-for-python-3-5/">good description of why</a>). If you're reading this far in the future, you should probably go to <a href="https://winpython.github.io/">the main WinPython page</a> and <a href="http://deeplearning.net/software/theano/install.html">the Theano install docs</a> to determine which version to use (or if you're <em>very</em> far in the future, have your robot butler do it for you). Please use the 64-bit version (or if you're <em>insanely</em> far in the future, the 512-bit version).</p>
+<p>Once you've picked your version, installing is as trivial as downloading, double-clicking, and choosing where you want it. Since (as mentioned above) WinPython doesn't have any side-effects, I like to put it in a developer tools directory (c:\dev\tools\WinPython) so it's easy to find. WinPython comes with its own command window which instantiates with the correct path settings, allowing you to keep it off of your path and side-effect free.</p>
+<h4>Adding the Latest Theano, Keras and Lasagne</h4>
+<p>Now that you have WinPython installed, let's install the latest and greatest of the three toolkits we're using, via <code>pip</code>. Start up the <code>WinPython Command Prompt</code> and enter <code>pip --version</code> to ensure you're using the right version. It should mention the directory and version so you know exactly what you're dealing with, and you can then install the packages via:</p>
+<div class="highlight"><pre><span></span>&gt; pip install --upgrade --no-deps https://github.com/Theano/Theano/archive/master.zip
+&gt; pip install --upgrade --no-deps https://github.com/fchollet/keras/archive/master.zip
+&gt; pip install --upgrade --no-deps https://github.com/Lasagne/Lasagne/archive/master.zip
+</pre></div>
+
+
+<p>This installs the latest version of each directly from GitHub, without upgrading any of the dependencies (trust me, you don't want to accidentally upgrade Numpy unless you enjoy watching compiler errors).</p>
+<h4>Testing Your Installation</h4>
+<p>With the latest Theano installed, ensure you can import the library:</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">python</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">theano</span>
+</pre></div>
+
+
+<p>This should take some time, but complete successfully. Now you can clone the examples I've put together on <a href="https://github.com/noodlefrenzy/deep-learning-on-windows">GitHub</a>, and run the <code>mnist.py</code> example. This will test out both Lasagne and Theano by downloading the <a href="http://yann.lecun.com/exdb/mnist/">MNIST data-set</a> and training a classifier to recognize images of digits.</p>
+<div class="highlight"><pre><span></span>&gt; git clone https://github.com/noodlefrenzy/deep-learning-on-windows.git
+&gt; cd deep-learning-on-windows
+&gt; python mnist.py
+</pre></div>
+
+
+<p>If this runs successfully, you know you have a working version of Theano and Lasagne. You might want to Ctrl+C before it finishes, since it'll be running pretty slow. Now to make it work at speeds where you can actually do something useful with it.</p>
+<h3>GPU Support</h3>
+<p>If you have an NVidia GPU, you can make your deep learning frameworks <strong>much</strong> faster using <a href="https://www.nvidia.com/object/cuda_home_new.html">CUDA</a> and <a href="https://developer.nvidia.com/cudnn">CUdnn</a>. First, you should download the <a href="https://developer.nvidia.com/cuda-toolkit">CUDA Toolkit</a> and install it, then register for CUdnn, download that, and install it. I typically "install" CUdnn by just copying the contents of the <code>cuda</code> directory into the installed CUDA Toolkit (which for me on v7.5 is at <code>C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.5</code>). At the time of this writing (2016-08-02), CUDA 8 isn't supported by Theano, so I've installed CUDA 7.5.</p>
+<p>Once you have the libraries installed, you'll need to set the appropriate environment variable (<code>CUDA_PATH</code>) to your install (in my case <code>C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.5</code>). I also add <code>%CUDA_PATH%\bin</code> to my <code>PATH</code> so I have access to the various CUDA tools.</p>
+<h4>Installing a Compiler</h4>
+<p>Using CUDA 7.5 requires an (old) Microsoft 64-bit C++ compiler be installed - specifically Visual Studio 2012 or 2013. For more details of CUDA on Windows, see <a href="http://docs.nvidia.com/cuda/cuda-installation-guide-microsoft-windows/#axzz4GDkECEZk">their intallation guide</a>. For those of you without VS2013 or an MSDN subscription, download the <a href="https://www.visualstudio.com/en-us/news/vs2013-community-vs.aspx">community edition</a>.</p>
+<h4>Configuring Theano To Use GPU</h4>
+<p>Theano has several configuration options that control how it builds and runs models, so to get it to run using your GPU, you'll need to reconfigure it. Since this is likely something you'll want for all of your Theano code, I create a <code>.theanorc</code> file for my entire WinPython install under the <code>settings</code> directory in WinPython (for me, that's <code>C:\dev\tools\WinPython\settings</code>). I've placed an example Theano configuration file in my GitHub repo, but the core settings are:</p>
+<div class="highlight"><pre><span></span>    [global]
+    device=gpu
+
+    [nvcc]
+    compiler_bindir=C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\amd64
+    flags=--cl-version=2013
+</pre></div>
+
+
+<h4>(Re-)Testing Your Installation</h4>
+<p>Now that you've enabled GPU support, try running the MNIST example again (<code>python mnist.py</code>) and see what a difference having a GPU makes - the time for training a single epoch should be dramatically improved.  </p>
+<h2>Deep Dreaming</h2>
+<p>I have to hand it to Google; their posts from the DeepMind team have been some of the most interesting in the field, not least <a href="https://research.googleblog.com/2015/06/inceptionism-going-deeper-into-neural.html">their post</a> introducing "Deep Dream" and "Neural Artwork". We can replicate similar results using Keras, with the <code>deep_dream.py</code> example from my repo. This program uses the convolutional layers of the VGG16 network (from the <a href="http://www.robots.ox.ac.uk/~vgg/research/very_deep/">Visual Geometry Group</a>) with pre-trained weights (<a href="https://gist.github.com/baraldilorenzo/07d7802847aaad0a35d3">converted from Caffe</a>). VGG16 was a top model in the ImageNet competition (ILSVRC) of 2014, and is considered a great playground because it performs quite well and yet its structure is relatively easy to understand.</p>
+<p>Assuming you've installed the pre-trained weights in <code>C:\dev\data</code> and are running against <code>C:\dev\images\ninjacat.png</code>, you could use the following command:</p>
+<div class="highlight"><pre><span></span>&gt; python deep_dream.py --weights_root c:\dev\data c:\dev\images\ninjacat.png ninjadream
+</pre></div>
+
+
+<p>And this would turn</p>
+<p><a href="../content/images/ninjacat_large.png"><img alt="Ninjacat" src="../content/images/ninjacat_small.png" /></a></p>
+<p>into</p>
+<p><a href="../content/images/ninjadream_large.png"><img alt="Ninjacat, dreamy edition" src="../content/images/ninjadream_small.png" /></a></p>
+<p>If you run into errors, it could be due to changes in the way Keras or Theano works or how they integrate with CUDA or CUdnn - they are all in <em>very</em> active development. If so, please take a look at <a href="https://github.com/fchollet/keras/blob/master/examples/deep_dream.py">the <em>official</em> <code>deep_dream.py</code> example</a> from Keras - my copy just has enhanced argument handling and has factored a few things to make it easier to play around with.</p>
+<h2>Neural Artistry</h2>
+<p>Neural Artistry first surfaced with a <a href="https://arxiv.org/pdf/1508.06576v2.pdf">paper from Germany</a> and has since become another big showcase example for the power of Deep Learning. Essentially, the way it works is to take an existing trained Convolutional Neural Network and use it to convolve two images together, by joining the outputs of different convolutional layers from each image. Assuming (again) that you've installed the VGG16 pre-trained weights in <code>C:\dev\data</code> and are running against <code>C:\dev\images\ninjacat.png</code> in the style of, say, "The Scream" (which you have at <code>C:\dev\images\thescream.png</code>), your command would look like:</p>
+<div class="highlight"><pre><span></span>&gt; python neural_style_transfer.py --weights_root c:\dev\data c:\dev\images\ninjacat.png c:\dev\images\thescream.png ninjascream
+</pre></div>
+
+
+<p>And that'd turn</p>
+<p><a href="../content/images/ninjacat_large.png"><img alt="Ninjacat" src="../content/images/ninjacat_small.png" /></a></p>
+<p>into</p>
+<p><a href="../content/images/ninjascream_large.png"><img alt="Ninjacat, screamy edition" src="../content/images/ninjascream_small.png" /></a></p>
+<p>Once again, if you hit errors, please try <a href="https://github.com/fchollet/keras/blob/master/examples/neural_style_transfer.py">the <em>official</em> <code>neural_style_transfer.py</code> example</a> - my copy just factors out argument handling and lets you play around with which layers you use for transfer.</p>
+<h2>Conclusion and Future Work</h2>
+<p>Setting up deep learning toolkits on Windows is fairly easy, and they've made it quite simple to experiment with them even if you have no background in the field. TensorFlow for Windows <a href="https://github.com/tensorflow/tensorflow/issues/17">is coming</a> but is gated on Bazel support - once it happens, I'll create a follow-up post on <a href="http://www.intelligent-artifice.net/">my blog</a> and go through a similar set of examples, but until then there is nothing stopping you from joining the Deep Learning revolution on your Windows machine.</p><p>There are <a href="/deep-learning-on-windows.html#disqus_thread">comments</a>.</p>                </article>
+            </aside><!-- /#featured -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="https://blogs.technet.microsoft.com/machinelearning/">Cortana Analytics</a></li>
+                            <li><a href="http://www.kdnuggets.com/">KDNuggets</a></li>
+                            <li><a href="http://www.hanselman.com/blog/">Hanselman</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://twitter.com/noodlefrenzy">Twitter</a></li>
+                            <li><a href="https://www.linkedin.com/in/noodlefrenzy">LinkedIn</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-54597100-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'intelligentartifice';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'https://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+</html>
