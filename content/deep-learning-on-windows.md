@@ -1,3 +1,12 @@
+Title: Deep Learning on Windows: A Getting Started Guide
+Date: 2016-08-4 12:34
+Author: noodlefrenzy
+Category: Software
+Tags: Windows, Deep Learning, Machine Learning, Theano, Keras, Lasagne
+Slug: deep-learning-on-windows
+Status: published
+Summary: A primer on how to get deep learning frameworks up and running on Windows, with examples.
+
 # Deep Learning on Windows: A Getting Started Guide
 
 ## A Quick Guide to Deep Learning
