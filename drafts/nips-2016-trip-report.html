@@ -45,25 +45,25 @@
         </address>
 <p>In <a href="/category/software.html">Software</a>.</p>
 <p>tags: <a href="/tag/ml.html">ML</a> <a href="/tag/machine-learning.html">Machine Learning</a> <a href="/tag/deep-learning.html">Deep Learning</a> <a href="/tag/gan.html">GAN</a> <a href="/tag/deep-rl.html">Deep RL</a> </p>
-</footer><!-- /.post-info -->      <p><img alt="NIPS Logo" src="./images/NipsLogoSmall.png" title="NIPS Logo" />
+</footer><!-- /.post-info -->      <p><img alt="NIPS Logo" src="../images/NipsLogoSmall.png" title="NIPS Logo" />
 <a href="https://nips.cc">NIPS (Neural Information Processing Symposium)</a> is one of the two largest academic conferences in the Machine Learning world (the other being ICML). This year the conference was held in Barcelona, which worked out well for me because I was planning on attending a hackfest the following week in Milan, so I decided to go as an attendee. </p>
 <p>The conference has doubled in size in the past year, with ~6000 attendees, so their advice to pick up your badge the day before the conference began proved to be quite wise.</p>
 <p><a style='text-decoration: none; color: orange;'>
-<img src="./images/nips2016-registration-line.jpg" alt="Huge line at registration"/>
+<img src="../images/nips2016-registration-line.jpg" alt="Huge line at registration"/>
 <div style="width:790px;text-align:center;">Picking up the day before == brilliant</div>
 </a></p>
 <h2>General Insights</h2>
 <p>There were a few general insights I had during the conference. First - Google, Facebook, and OpenAI are the stars of the show - from the lanyard giving Google and Facebook pride-of-place, to the dueling Google Research and DeepMind booths, Google seems to be the dominant force. Deep Learning is still the star, but Tensor-based learning methods are generally only increasing in prominence - very little on "traditional" methods. Microsoft's booth had solid attendance, but our relatively confusing story (how many offerings do we have? is our Deep Learning system named CNTK or Cognitive Toolkit?) seemed to prevent "virality" compared to Google's TensorFlow or Facebook's Torch. I talked up CNTK v2 to a few people, but when they went to our booth to get stickers only "Microsoft Cognitive Toolkit" stickers could be found.</p>
 <p><a style='text-decoration: none; color: orange'>
-<img src="./images/nips2016-google-research-booth.jpg" alt="Crowd around Google Research booth" style="float:left;margin-right:10px"/>
-<img src="./images/nips2016-microsoft-booth.jpg" alt="Crowd around Microsoft booth"/>
+<img src="../images/nips2016-google-research-booth.jpg" alt="Crowd around Google Research booth" style="float:left;margin-right:10px"/>
+<img src="../images/nips2016-microsoft-booth.jpg" alt="Crowd around Microsoft booth"/>
 <div style="width:790px;text-align:center;">Google Research vs. Microsoft Booths</div>
 </a></p>
 <h2>Machine Learning Trends</h2>
 <h3>Keynote Talks</h3>
 <p><a href="https://en.wikipedia.org/wiki/Yann_LeCun">Yann LeCun</a> gave an interesting keynote on the need for unsupervised learning in general domains as the big open challenge for the future of ML. He called the talk <a href="https://drive.google.com/file/d/0BxKBnD5y2M8NREZod0tVdW5FLTQ/view">Predictive Learning</a>, and described the need for the model to maintain an accurate "world state" in order to begin reasoning in a more general sense.</p>
 <p><a style='text-decoration: none; color: orange;'>
-<img src="./images/yanns-cake.png" alt="Cake as illustration of learning challenges"/>
+<img src="../images/yanns-cake.png" alt="Cake as illustration of learning challenges"/>
 <div style="width:790px;text-align:center;">Yann's now-famous cake</div>
 </a></p>
 <p>Drew Purves (former Microsoftie, now at DeepMind) gave a keynote where he talked about the launch of <a href="https://github.com/deepmind/lab">DeepMind's Lab</a> and more generally talked about the obligation of ML to help solve some of our most pressing environmental problems. He had some really great illustrations in those slides, but I haven't seen him post them yet unfortunately.</p>
@@ -76,7 +76,7 @@
 <h3>Generative Adversarial Networks</h3>
 <p>Earlier this year at ICML the big trends were around understanding Deep Neural Nets and exploring Deep Reinforcement Learning. At NIPS Generative Adversarial Networks were the star of the show, with <a href="https://en.wikipedia.org/wiki/Yann_LeCun">Yann LeCun</a> saying in his keynote that they were the most important development in ML in the last ten to twenty years. Ian Goodfellow gave a great tutorial on GANs (see <a href="http://www.iangoodfellow.com/slides/2016-12-04-NIPS.pdf">slides here</a>), and the creators of <a href="https://arxiv.org/abs/1606.03657v1">InfoGAN</a> also gave a great talk.</p>
 <p><a style='text-decoration: none; color: orange;'>
-<img src="./images/goodfellow-generative-taxonomy.png" alt="Taxonomy of generative models"/>
+<img src="../images/goodfellow-generative-taxonomy.png" alt="Taxonomy of generative models"/>
 <div style="width:790px;text-align:center;">Great overview of generative models</div>
 </a></p>
 <p>One key takeaway was that there is really no good method at present for judging the "success" of GANs in many domains. Maximum likelihood optimization results in blurry images, or images that bear some resemblance to reality but are still far from real. This extends to other domains as well, and is one of the big open issues in the field. In addition, mode collapse is still an unsolved problem (where a GAN Generator learns to generate a single sample type, instead of a diversity, since that's enough to fool the Descriminator). There has been some progress in this area, but it's another open area of research for a more general solution.</p>
@@ -87,21 +87,21 @@
 <p>There was a great talk in the Tensor workshop on how Deep Networks - and in particular CNNs - create exponential expressiveness with only polynomial parameters. This is due to overlapping of the CNN kernels and pooling. He also outlined in this talk how the choice of pooling creates local areas of attention, and alternate choices of pooling can lean to different network topologies able to detect global structure. Additionally, he pointed out that using e.g. CNNs to learn a single binary classifier limits the amount of information that can be learned from any given training sample, resulting in slower convergence and decreased expressiveness.</p>
 <p>The workshops seemed to give some actual in-the-wild implementations a chance to present, with an interesting talk from someone at Sandia on using a DNN to compute better estimates for parameters in dynamical systems - in their case fluid flow dynamics. This led to substantial improvements of the simulation over their current default simplifying assumptions, with only a marginal increase in simulation runtime.</p>
 <p><a style='text-decoration: none; color: orange;'>
-<img src="./images/bcn-beach.jpg" alt="Beach scene as example of dynamical system"/>
+<img src="../images/bcn-beach.jpg" alt="Beach scene as example of dynamical system"/>
 <div style="width:790px;text-align:center;">Another fluid-flow example</div>
 </a></p>
 <h3>Other Methods</h3>
 <p>Variational Inference was big as well, with a great tutorial on it that outlined the method as well as its utility (<a href="http://www.cs.columbia.edu/~blei/talks/2016_NIPS_VI_tutorial.pdf">slides</a>). They walked through the origin of Variational Inference, from the requirement to approximate the Posterior distribution of a predictive model, through the mean-field method, using topic modeling as a motivating example. They then went through scaling VI via stochastic VI, and went deeper with approximating the ELBO via pathwise estimation and several other methods for scaling out VI. Finally, they finished with a deep-dive into better posterior estimation techniques.</p>
 <p>Forecasting and Time-Series were not ignored, but still seem like areas where traditional methods (e.g. ARIMA and its descendents) are holding their own. One tutorial went into deep math around why DL methods could forecast well, but was based on (IMHO) the questionable assumption of "smoothness" in the range [T-S, T]. As someone who did Forecasting for Amazon, I can guarantee that the area around Black Friday is anything but differentiable. </p>
 <p><a style='text-decoration: none; color: orange;'>
-<img src="./images/smooth-surfaces-were-a-theme.jpg" alt="Rounded hallway in Park Guell"/>
+<img src="../images/smooth-surfaces-were-a-theme.jpg" alt="Rounded hallway in Park Guell"/>
 <div style="width:790px;text-align:center;">Smoothness in action</div>
 </a></p>
 <h2>Conclusion</h2>
 <p>I cannot even begin to discuss the full breadth of content presented at NIPS. Machine Learning as a field is expanding far beyond even the specialists' ability to understand all of it, so for a non-theoretician practitioner it's nigh impossible to keep up. <a href="https://tryolabs.com/blog/2016/12/06/major-advancements-deep-learning-2016/">Another article</a> (far better than mine) regarding the advances in the past year just went viral on HN. I'd read that as well to get additional insight. This year at ICML it was quite clear that we didn't even know where the edges were with respect to what DNNs could do. That still seems to be the case at NIPS, and with GANs it's even more evident we still don't know what the limits might be. </p>
 <p>Definitely an exciting time to be in the field - I just wish I had more time to keep up. By the end of the conference, my brain felt like it had been thoroughly chewed on.</p>
 <p><a style='text-decoration: none; color: orange;'>
-<img src="./images/brain-eaten.jpg" alt="Snake-head sculpture appearing to chew on woman's head"/>
+<img src="../images/brain-eaten.jpg" alt="Snake-head sculpture appearing to chew on woman's head"/>
 <div style="width:490px;text-align:center;">Braiinnnzzz</div>
 </a></p>
     </div><!-- /.entry-content -->
