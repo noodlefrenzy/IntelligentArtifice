@@ -7,13 +7,13 @@ Slug: nips-2016-trip-report
 Status: draft
 Summary: Thoughts and insights from the 2016 NIPS conference 
 
-![NIPS Logo](./images/NipsLogoSmall.png "NIPS Logo")
+![NIPS Logo](../images/NipsLogoSmall.png "NIPS Logo")
 [NIPS (Neural Information Processing Symposium)](https://nips.cc) is one of the two largest academic conferences in the Machine Learning world (the other being ICML). This year the conference was held in Barcelona, which worked out well for me because I was planning on attending a hackfest the following week in Milan, so I decided to go as an attendee. 
 
 The conference has doubled in size in the past year, with ~6000 attendees, so their advice to pick up your badge the day before the conference began proved to be quite wise.
 
 <a style='text-decoration: none; color: orange;'>
-<img src="./images/nips2016-registration-line.jpg" alt="Huge line at registration"/>
+<img src="../images/nips2016-registration-line.jpg" alt="Huge line at registration"/>
 <div style="width:790px;text-align:center;">Picking up the day before == brilliant</div>
 </a>
 
@@ -22,8 +22,8 @@ The conference has doubled in size in the past year, with ~6000 attendees, so th
 There were a few general insights I had during the conference. First - Google, Facebook, and OpenAI are the stars of the show - from the lanyard giving Google and Facebook pride-of-place, to the dueling Google Research and DeepMind booths, Google seems to be the dominant force. Deep Learning is still the star, but Tensor-based learning methods are generally only increasing in prominence - very little on "traditional" methods. Microsoft's booth had solid attendance, but our relatively confusing story (how many offerings do we have? is our Deep Learning system named CNTK or Cognitive Toolkit?) seemed to prevent "virality" compared to Google's TensorFlow or Facebook's Torch. I talked up CNTK v2 to a few people, but when they went to our booth to get stickers only "Microsoft Cognitive Toolkit" stickers could be found.
 
 <a style='text-decoration: none; color: orange'>
-<img src="./images/nips2016-google-research-booth.jpg" alt="Crowd around Google Research booth" style="float:left;margin-right:10px"/>
-<img src="./images/nips2016-microsoft-booth.jpg" alt="Crowd around Microsoft booth"/>
+<img src="../images/nips2016-google-research-booth.jpg" alt="Crowd around Google Research booth" style="float:left;margin-right:10px"/>
+<img src="../images/nips2016-microsoft-booth.jpg" alt="Crowd around Microsoft booth"/>
 <div style="width:790px;text-align:center;">Google Research vs. Microsoft Booths</div>
 </a>
 
@@ -34,7 +34,7 @@ There were a few general insights I had during the conference. First - Google, F
 [Yann LeCun](https://en.wikipedia.org/wiki/Yann_LeCun) gave an interesting keynote on the need for unsupervised learning in general domains as the big open challenge for the future of ML. He called the talk [Predictive Learning](https://drive.google.com/file/d/0BxKBnD5y2M8NREZod0tVdW5FLTQ/view), and described the need for the model to maintain an accurate "world state" in order to begin reasoning in a more general sense.
 
 <a style='text-decoration: none; color: orange;'>
-<img src="./images/yanns-cake.png" alt="Cake as illustration of learning challenges"/>
+<img src="../images/yanns-cake.png" alt="Cake as illustration of learning challenges"/>
 <div style="width:790px;text-align:center;">Yann's now-famous cake</div>
 </a>
 
@@ -52,7 +52,7 @@ Drew Purves (former Microsoftie, now at DeepMind) gave a keynote where he talked
 Earlier this year at ICML the big trends were around understanding Deep Neural Nets and exploring Deep Reinforcement Learning. At NIPS Generative Adversarial Networks were the star of the show, with [Yann LeCun](https://en.wikipedia.org/wiki/Yann_LeCun) saying in his keynote that they were the most important development in ML in the last ten to twenty years. Ian Goodfellow gave a great tutorial on GANs (see [slides here](http://www.iangoodfellow.com/slides/2016-12-04-NIPS.pdf)), and the creators of [InfoGAN](https://arxiv.org/abs/1606.03657v1) also gave a great talk.
 
 <a style='text-decoration: none; color: orange;'>
-<img src="./images/goodfellow-generative-taxonomy.png" alt="Taxonomy of generative models"/>
+<img src="../images/goodfellow-generative-taxonomy.png" alt="Taxonomy of generative models"/>
 <div style="width:790px;text-align:center;">Great overview of generative models</div>
 </a>
 
@@ -71,7 +71,7 @@ There was a great talk in the Tensor workshop on how Deep Networks - and in part
 The workshops seemed to give some actual in-the-wild implementations a chance to present, with an interesting talk from someone at Sandia on using a DNN to compute better estimates for parameters in dynamical systems - in their case fluid flow dynamics. This led to substantial improvements of the simulation over their current default simplifying assumptions, with only a marginal increase in simulation runtime.
 
 <a style='text-decoration: none; color: orange;'>
-<img src="./images/bcn-beach.jpg" alt="Beach scene as example of dynamical system"/>
+<img src="../images/bcn-beach.jpg" alt="Beach scene as example of dynamical system"/>
 <div style="width:790px;text-align:center;">Another fluid-flow example</div>
 </a>
 
@@ -82,7 +82,7 @@ Variational Inference was big as well, with a great tutorial on it that outlined
 Forecasting and Time-Series were not ignored, but still seem like areas where traditional methods (e.g. ARIMA and its descendents) are holding their own. One tutorial went into deep math around why DL methods could forecast well, but was based on (IMHO) the questionable assumption of "smoothness" in the range [T-S, T]. As someone who did Forecasting for Amazon, I can guarantee that the area around Black Friday is anything but differentiable. 
 
 <a style='text-decoration: none; color: orange;'>
-<img src="./images/smooth-surfaces-were-a-theme.jpg" alt="Rounded hallway in Park Guell"/>
+<img src="../images/smooth-surfaces-were-a-theme.jpg" alt="Rounded hallway in Park Guell"/>
 <div style="width:790px;text-align:center;">Smoothness in action</div>
 </a>
 
@@ -93,6 +93,6 @@ I cannot even begin to discuss the full breadth of content presented at NIPS. Ma
 Definitely an exciting time to be in the field - I just wish I had more time to keep up. By the end of the conference, my brain felt like it had been thoroughly chewed on.
 
 <a style='text-decoration: none; color: orange;'>
-<img src="./images/brain-eaten.jpg" alt="Snake-head sculpture appearing to chew on woman's head"/>
+<img src="../images/brain-eaten.jpg" alt="Snake-head sculpture appearing to chew on woman's head"/>
 <div style="width:490px;text-align:center;">Braiinnnzzz</div>
 </a>
