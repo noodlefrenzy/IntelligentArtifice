@@ -1,1 +1,7 @@
 User-agent: *
+Disallow: /theme/
+Disallow: /tag/
+Disallow: /uploads/
+Disallow: /category/
+Disallow: /drafts/
+Disallow: /images/

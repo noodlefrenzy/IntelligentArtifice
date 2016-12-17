@@ -3,7 +3,8 @@
 <head>
         <meta charset="utf-8" />
         <title>Intelligent Artifice - Azure</title>
-        <link rel="stylesheet" href="/theme/css/main.css" />
+        <link rel="stylesheet" href="http://www.mikelanzetta.com/theme/css/main.css" />
+        <link href="http://www.mikelanzetta.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Intelligent Artifice Atom Feed" />
 
         <!--[if IE]>
             <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -15,30 +16,29 @@
 <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
 </a>
         <header id="banner" class="body">
-                <h1><a href="/">Intelligent Artifice </a></h1>
+                <h1><a href="http://www.mikelanzetta.com/">Intelligent Artifice </a></h1>
                 <nav><ul>
-                    <li><a href="/pages/about-me-and-this-blog.html">About Me And This Blog</a></li>
-                    <li><a href="/pages/digicert.html">Digicert Validation</a></li>
-                    <li><a href="/category/devops.html">DevOps</a></li>
-                    <li><a href="/category/meta.html">Meta</a></li>
-                    <li><a href="/category/software.html">Software</a></li>
-                    <li><a href="/category/uncategorized.html">Uncategorized</a></li>
+                    <li><a href="http://www.mikelanzetta.com/pages/about-me-and-this-blog.html">About Me And This Blog</a></li>
+                    <li><a href="http://www.mikelanzetta.com/category/devops.html">DevOps</a></li>
+                    <li><a href="http://www.mikelanzetta.com/category/meta.html">Meta</a></li>
+                    <li><a href="http://www.mikelanzetta.com/category/software.html">Software</a></li>
+                    <li><a href="http://www.mikelanzetta.com/category/uncategorized.html">Uncategorized</a></li>
                 </ul></nav>
         </header><!-- /#banner -->
 
             <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href="/tensorflow-on-azure-using-docker.html">TensorFlow on Azure Using Docker</a></h1>
+                    <h1 class="entry-title"><a href="http://www.mikelanzetta.com/tensorflow-on-azure-using-docker.html">TensorFlow on Azure Using Docker</a></h1>
 <footer class="post-info">
         <abbr class="published" title="2015-12-08T14:33:00-08:00">
                 Published: Tue 08 December 2015
         </abbr>
 
         <address class="vcard author">
-                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+                By                         <a class="url fn" href="http://www.mikelanzetta.com/author/noodlefrenzy.html">noodlefrenzy</a>
         </address>
-<p>In <a href="/category/software.html">Software</a>.</p>
-<p>tags: <a href="/tag/azure.html">Azure</a> <a href="/tag/containerization.html">Containerization</a> <a href="/tag/docker.html">Docker</a> <a href="/tag/machine-learning.html">Machine Learning</a> <a href="/tag/ml.html">ML</a> <a href="/tag/neural-networks.html">Neural Networks</a> <a href="/tag/tensorflow.html">TensorFlow</a> </p>
+<p>In <a href="http://www.mikelanzetta.com/category/software.html">Software</a>.</p>
+<p>tags: <a href="http://www.mikelanzetta.com/tag/azure.html">Azure</a> <a href="http://www.mikelanzetta.com/tag/containerization.html">Containerization</a> <a href="http://www.mikelanzetta.com/tag/docker.html">Docker</a> <a href="http://www.mikelanzetta.com/tag/machine-learning.html">Machine Learning</a> <a href="http://www.mikelanzetta.com/tag/ml.html">ML</a> <a href="http://www.mikelanzetta.com/tag/neural-networks.html">Neural Networks</a> <a href="http://www.mikelanzetta.com/tag/tensorflow.html">TensorFlow</a> </p>
 </footer><!-- /.post-info --><p>We live in a time of proliferating machine learning toolkits. From the
 not-so-humble start of <a href="http://opencv.org/">OpenCV</a> (for computer
 vision), <a href="http://www.cs.waikato.ac.nz/ml/weka/">Weka</a>, and
@@ -76,11 +76,11 @@ purposes.</p>
 ever to fire up a new VM running a Docker engine. Using the now-GA "new"
 portal, just search for "Docker on Ubuntu":</p>
 <p><img alt="Search for docker on ubuntu
-server" src="/images/New_Docker.png" /></p>
+server" src="http://www.mikelanzetta.com/images/New_Docker.png" /></p>
 <p>Once you select "Docker on Ubuntu Server" you'll be guided through the
 creation process:</p>
 <p><img alt="Docker VM Creation
-Process" src="/images/Docker_VM_Create.png" /></p>
+Process" src="http://www.mikelanzetta.com/images/Docker_VM_Create.png" /></p>
 <p>Upon completion, your VM will start up, and you can then SSH into it and
 execute whatever Docker commands you wish.</p>
 <h2>Installing TensorFlow</h2>
@@ -101,7 +101,7 @@ VM, but we need to port-forward from the VM externally. To do so, we
 simple expose that port via the Azure portal by adding a new endpoint
 mapping 8888 to whichever external port you choose:</p>
 <p><img alt="Exposing the Jupyter notebook
-endpoint" src="/images/Expose_VM_Endpoint.png" /></p>
+endpoint" src="http://www.mikelanzetta.com/images/Expose_VM_Endpoint.png" /></p>
 <p>Now that you've exposed the endpoint from Azure, you can fire up the
 Docker container by using the command:</p>
 <div class="highlight"><pre><span></span>docker run -d -p 8888:8888 -v /notebook:/notebook xblaster/tensorflow-jupyter
@@ -161,7 +161,7 @@ don't use this for anything you don't mind losing, and shut it down when
 you're done. If you want to secure your notebook, that's beyond the
 scope of this post, but the <a href="http://jupyter-notebook.readthedocs.org/en/latest/public_server.html">documentation is easy to
 follow</a>.</p>
-<p>Happy coding!</p><p>There are <a href="/tensorflow-on-azure-using-docker.html#disqus_thread">comments</a>.</p>                </article>
+<p>Happy coding!</p><p>There are <a href="http://www.mikelanzetta.com/tensorflow-on-azure-using-docker.html#disqus_thread">comments</a>.</p>                </article>
             </aside><!-- /#featured -->
                 <section id="content" class="body">
                     <h1>Other articles</h1>
@@ -170,7 +170,7 @@ follow</a>.</p>
 
             <li><article class="hentry">
                 <header>
-                    <h1><a href="/leader-election-in-node-js-using-azure-blob-storage.html" rel="bookmark"
+                    <h1><a href="http://www.mikelanzetta.com/leader-election-in-node-js-using-azure-blob-storage.html" rel="bookmark"
                            title="Permalink to Leader Election in Node.js Using Azure Blob Storage">Leader Election in Node.js Using Azure Blob Storage</a></h1>
                 </header>
 
@@ -181,22 +181,22 @@ follow</a>.</p>
         </abbr>
 
         <address class="vcard author">
-                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+                By                         <a class="url fn" href="http://www.mikelanzetta.com/author/noodlefrenzy.html">noodlefrenzy</a>
         </address>
-<p>In <a href="/category/software.html">Software</a>.</p>
-<p>tags: <a href="/tag/azure.html">Azure</a> <a href="/tag/azure-blob.html">Azure Blob</a> <a href="/tag/distributed-systems.html">Distributed Systems</a> <a href="/tag/node.html">Node</a> </p>
+<p>In <a href="http://www.mikelanzetta.com/category/software.html">Software</a>.</p>
+<p>tags: <a href="http://www.mikelanzetta.com/tag/azure.html">Azure</a> <a href="http://www.mikelanzetta.com/tag/azure-blob.html">Azure Blob</a> <a href="http://www.mikelanzetta.com/tag/distributed-systems.html">Distributed Systems</a> <a href="http://www.mikelanzetta.com/tag/node.html">Node</a> </p>
 </footer><!-- /.post-info -->                <p><a href="https://en.wikipedia.org/wiki/Leader_election">Leader Election</a> is a
 mechanism for designating one instance of a group as the primary (or
 leader) and the others as secondaries (or followers), and is typically
 used for coordination amongst groups of machines in a distributed
 system. I first learned of leader election back in the olden times of ...</p>
-                <a class="readmore" href="/leader-election-in-node-js-using-azure-blob-storage.html">read more</a>
-<p>There are <a href="/leader-election-in-node-js-using-azure-blob-storage.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+                <a class="readmore" href="http://www.mikelanzetta.com/leader-election-in-node-js-using-azure-blob-storage.html">read more</a>
+<p>There are <a href="http://www.mikelanzetta.com/leader-election-in-node-js-using-azure-blob-storage.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
 
             <li><article class="hentry">
                 <header>
-                    <h1><a href="/managing-a-corpus-of-images-in-azure-blob-storage.html" rel="bookmark"
+                    <h1><a href="http://www.mikelanzetta.com/managing-a-corpus-of-images-in-azure-blob-storage.html" rel="bookmark"
                            title="Permalink to Managing a Corpus of Images in Azure Blob Storage">Managing a Corpus of Images in Azure Blob Storage</a></h1>
                 </header>
 
@@ -207,10 +207,10 @@ system. I first learned of leader election back in the olden times of ...</p>
         </abbr>
 
         <address class="vcard author">
-                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+                By                         <a class="url fn" href="http://www.mikelanzetta.com/author/noodlefrenzy.html">noodlefrenzy</a>
         </address>
-<p>In <a href="/category/software.html">Software</a>.</p>
-<p>tags: <a href="/tag/azure.html">Azure</a> <a href="/tag/azure-blob.html">Azure Blob</a> </p>
+<p>In <a href="http://www.mikelanzetta.com/category/software.html">Software</a>.</p>
+<p>tags: <a href="http://www.mikelanzetta.com/tag/azure.html">Azure</a> <a href="http://www.mikelanzetta.com/tag/azure-blob.html">Azure Blob</a> </p>
 </footer><!-- /.post-info -->                <p>As mentioned in <a href="http://www.mikelanzetta.com/2015/09/image-stream-processing-to-blob-storage/">my previous
 post</a> I
 was recently working on a project training <a href="http://www.readcube.com/articles/10.1038%2Fnature14539?shared_access_token=DaxW8O-3gQoqte9kXFFUANRgN0jAjWel9jnR3ZoTv0PU8PImtLRceRBJ32CtadUBIC1dchyTLE3_1-FCJeTkHXnB0vI4SmupYf4v2t_dG6HjI9FdSJMFDQ6iWCA7T6tcte2-dAp-SzhLtuCkfPvhI6x--H5W98_7bqOVwSnqt1Vqo6bzZ5ZM7lCIPdavoThMMSXBgYmSjKSk0CrGtb5KUw%3D%3D">Deep
@@ -218,13 +218,13 @@ ConvNets</a>
 for image recognition. As with any Machine Learning project one of the
 primary things you need to make it successful is large amounts of data -
 quality labeled data. With image-based convnets, though, the data ...</p>
-                <a class="readmore" href="/managing-a-corpus-of-images-in-azure-blob-storage.html">read more</a>
-<p>There are <a href="/managing-a-corpus-of-images-in-azure-blob-storage.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+                <a class="readmore" href="http://www.mikelanzetta.com/managing-a-corpus-of-images-in-azure-blob-storage.html">read more</a>
+<p>There are <a href="http://www.mikelanzetta.com/managing-a-corpus-of-images-in-azure-blob-storage.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
 
             <li><article class="hentry">
                 <header>
-                    <h1><a href="/image-stream-processing-to-blob-storage.html" rel="bookmark"
+                    <h1><a href="http://www.mikelanzetta.com/image-stream-processing-to-blob-storage.html" rel="bookmark"
                            title="Permalink to Image Stream Processing to Blob Storage">Image Stream Processing to Blob Storage</a></h1>
                 </header>
 
@@ -235,23 +235,23 @@ quality labeled data. With image-based convnets, though, the data ...</p>
         </abbr>
 
         <address class="vcard author">
-                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+                By                         <a class="url fn" href="http://www.mikelanzetta.com/author/noodlefrenzy.html">noodlefrenzy</a>
         </address>
-<p>In <a href="/category/software.html">Software</a>.</p>
-<p>tags: <a href="/tag/net.html">.NET</a> <a href="/tag/aspnet.html">ASP.Net</a> <a href="/tag/azure.html">Azure</a> <a href="/tag/azure-blob.html">Azure Blob</a> <a href="/tag/c.html">C#</a> <a href="/tag/sql-azure.html">SQL Azure</a> </p>
+<p>In <a href="http://www.mikelanzetta.com/category/software.html">Software</a>.</p>
+<p>tags: <a href="http://www.mikelanzetta.com/tag/net.html">.NET</a> <a href="http://www.mikelanzetta.com/tag/aspnet.html">ASP.Net</a> <a href="http://www.mikelanzetta.com/tag/azure.html">Azure</a> <a href="http://www.mikelanzetta.com/tag/azure-blob.html">Azure Blob</a> <a href="http://www.mikelanzetta.com/tag/c.html">C#</a> <a href="http://www.mikelanzetta.com/tag/sql-azure.html">SQL Azure</a> </p>
 </footer><!-- /.post-info -->                <p>I was recently working on a project to train <a href="http://www.readcube.com/articles/10.1038%2Fnature14539?shared_access_token=DaxW8O-3gQoqte9kXFFUANRgN0jAjWel9jnR3ZoTv0PU8PImtLRceRBJ32CtadUBIC1dchyTLE3_1-FCJeTkHXnB0vI4SmupYf4v2t_dG6HjI9FdSJMFDQ6iWCA7T6tcte2-dAp-SzhLtuCkfPvhI6x--H5W98_7bqOVwSnqt1Vqo6bzZ5ZM7lCIPdavoThMMSXBgYmSjKSk0CrGtb5KUw%3D%3D">Deep
 ConvNets</a>
 for image recognition tasks, and ran into several interesting problems
 along the way. This post is the first in a series outlining some of
 those problems and how I went about solving them, and it focuses on the
 problem ...</p>
-                <a class="readmore" href="/image-stream-processing-to-blob-storage.html">read more</a>
-<p>There are <a href="/image-stream-processing-to-blob-storage.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+                <a class="readmore" href="http://www.mikelanzetta.com/image-stream-processing-to-blob-storage.html">read more</a>
+<p>There are <a href="http://www.mikelanzetta.com/image-stream-processing-to-blob-storage.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
 
             <li><article class="hentry">
                 <header>
-                    <h1><a href="/time-series-processing-in-azure-ml-using-python.html" rel="bookmark"
+                    <h1><a href="http://www.mikelanzetta.com/time-series-processing-in-azure-ml-using-python.html" rel="bookmark"
                            title="Permalink to Time-Series Processing in Azure ML Using Python">Time-Series Processing in Azure ML Using Python</a></h1>
                 </header>
 
@@ -262,21 +262,21 @@ problem ...</p>
         </abbr>
 
         <address class="vcard author">
-                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+                By                         <a class="url fn" href="http://www.mikelanzetta.com/author/noodlefrenzy.html">noodlefrenzy</a>
         </address>
-<p>In <a href="/category/software.html">Software</a>.</p>
-<p>tags: <a href="/tag/azure.html">Azure</a> <a href="/tag/machine-learning.html">Machine Learning</a> <a href="/tag/ml.html">ML</a> <a href="/tag/python.html">Python</a> <a href="/tag/time-series.html">Time Series</a> </p>
+<p>In <a href="http://www.mikelanzetta.com/category/software.html">Software</a>.</p>
+<p>tags: <a href="http://www.mikelanzetta.com/tag/azure.html">Azure</a> <a href="http://www.mikelanzetta.com/tag/machine-learning.html">Machine Learning</a> <a href="http://www.mikelanzetta.com/tag/ml.html">ML</a> <a href="http://www.mikelanzetta.com/tag/python.html">Python</a> <a href="http://www.mikelanzetta.com/tag/time-series.html">Time Series</a> </p>
 </footer><!-- /.post-info -->                <p>With the general availability of Azure Machine Learning, the team has
 added a ton of new features.  Perhaps the one I'm most excited about is
 the addition of a general "Execute Python Script" module.  I've been
 meaning to brush up on my Python skills, and with the inclusion ...</p>
-                <a class="readmore" href="/time-series-processing-in-azure-ml-using-python.html">read more</a>
-<p>There are <a href="/time-series-processing-in-azure-ml-using-python.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+                <a class="readmore" href="http://www.mikelanzetta.com/time-series-processing-in-azure-ml-using-python.html">read more</a>
+<p>There are <a href="http://www.mikelanzetta.com/time-series-processing-in-azure-ml-using-python.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
 
             <li><article class="hentry">
                 <header>
-                    <h1><a href="/node-js-and-net-talking-eventhub-together.html" rel="bookmark"
+                    <h1><a href="http://www.mikelanzetta.com/node-js-and-net-talking-eventhub-together.html" rel="bookmark"
                            title="Permalink to Node.js and .NET Talking EventHub, Together">Node.js and .NET Talking EventHub, Together</a></h1>
                 </header>
 
@@ -287,22 +287,22 @@ meaning to brush up on my Python skills, and with the inclusion ...</p>
         </abbr>
 
         <address class="vcard author">
-                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+                By                         <a class="url fn" href="http://www.mikelanzetta.com/author/noodlefrenzy.html">noodlefrenzy</a>
         </address>
-<p>In <a href="/category/software.html">Software</a>.</p>
-<p>tags: <a href="/tag/net.html">.NET</a> <a href="/tag/amqp.html">AMQP</a> <a href="/tag/azure.html">Azure</a> <a href="/tag/c.html">C#</a> <a href="/tag/eventhub.html">EventHub</a> <a href="/tag/node.html">Node</a> </p>
+<p>In <a href="http://www.mikelanzetta.com/category/software.html">Software</a>.</p>
+<p>tags: <a href="http://www.mikelanzetta.com/tag/net.html">.NET</a> <a href="http://www.mikelanzetta.com/tag/amqp.html">AMQP</a> <a href="http://www.mikelanzetta.com/tag/azure.html">Azure</a> <a href="http://www.mikelanzetta.com/tag/c.html">C#</a> <a href="http://www.mikelanzetta.com/tag/eventhub.html">EventHub</a> <a href="http://www.mikelanzetta.com/tag/node.html">Node</a> </p>
 </footer><!-- /.post-info -->                <p>Over the past few months, I've been working on <a href="https://github.com/noodlefrenzy/node-amqp10">a Node.js client for
 AMQP 1.0</a> - the <em>lingua
 franca</em> of Azure's EventHub and ServiceBus.  Well, the EventHub support
 is just about complete, and ServiceBus Topics and Queues should follow
 shortly thereafter (it's just me working on ...</p>
-                <a class="readmore" href="/node-js-and-net-talking-eventhub-together.html">read more</a>
-<p>There are <a href="/node-js-and-net-talking-eventhub-together.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+                <a class="readmore" href="http://www.mikelanzetta.com/node-js-and-net-talking-eventhub-together.html">read more</a>
+<p>There are <a href="http://www.mikelanzetta.com/node-js-and-net-talking-eventhub-together.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
 
             <li><article class="hentry">
                 <header>
-                    <h1><a href="/data-cleaning-with-azureml-and-r-dates.html" rel="bookmark"
+                    <h1><a href="http://www.mikelanzetta.com/data-cleaning-with-azureml-and-r-dates.html" rel="bookmark"
                            title="Permalink to Data Cleaning with AzureML and R: Dates">Data Cleaning with AzureML and R: Dates</a></h1>
                 </header>
 
@@ -313,10 +313,10 @@ shortly thereafter (it's just me working on ...</p>
         </abbr>
 
         <address class="vcard author">
-                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+                By                         <a class="url fn" href="http://www.mikelanzetta.com/author/noodlefrenzy.html">noodlefrenzy</a>
         </address>
-<p>In <a href="/category/software.html">Software</a>.</p>
-<p>tags: <a href="/tag/azure.html">Azure</a> <a href="/tag/azureml.html">AzureML</a> <a href="/tag/ml.html">ML</a> <a href="/tag/r.html">R</a> </p>
+<p>In <a href="http://www.mikelanzetta.com/category/software.html">Software</a>.</p>
+<p>tags: <a href="http://www.mikelanzetta.com/tag/azure.html">Azure</a> <a href="http://www.mikelanzetta.com/tag/azureml.html">AzureML</a> <a href="http://www.mikelanzetta.com/tag/ml.html">ML</a> <a href="http://www.mikelanzetta.com/tag/r.html">R</a> </p>
 </footer><!-- /.post-info -->                <p>I've been working with
 <a href="http://azure.microsoft.com/en-us/services/machine-learning/" title="Azure Machine Learning">AzureML</a>for
 a while now, and it's fantastic.  Having done ML in a few other
@@ -324,13 +324,13 @@ platforms over the years, the ease with which I can put together a few
 regression models, do parameter-sweeps, and compare results is just
 groundbreaking.</p>
 <p>However, one area where it ...</p>
-                <a class="readmore" href="/data-cleaning-with-azureml-and-r-dates.html">read more</a>
-<p>There are <a href="/data-cleaning-with-azureml-and-r-dates.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+                <a class="readmore" href="http://www.mikelanzetta.com/data-cleaning-with-azureml-and-r-dates.html">read more</a>
+<p>There are <a href="http://www.mikelanzetta.com/data-cleaning-with-azureml-and-r-dates.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
 
             <li><article class="hentry">
                 <header>
-                    <h1><a href="/talking-to-eventhub-with-amqp-1-0.html" rel="bookmark"
+                    <h1><a href="http://www.mikelanzetta.com/talking-to-eventhub-with-amqp-1-0.html" rel="bookmark"
                            title="Permalink to Talking to EventHub with AMQP 1.0">Talking to EventHub with AMQP 1.0</a></h1>
                 </header>
 
@@ -341,21 +341,21 @@ groundbreaking.</p>
         </abbr>
 
         <address class="vcard author">
-                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+                By                         <a class="url fn" href="http://www.mikelanzetta.com/author/noodlefrenzy.html">noodlefrenzy</a>
         </address>
-<p>In <a href="/category/software.html">Software</a>.</p>
-<p>tags: <a href="/tag/amqp.html">AMQP</a> <a href="/tag/azure.html">Azure</a> <a href="/tag/eventhub.html">EventHub</a> </p>
+<p>In <a href="http://www.mikelanzetta.com/category/software.html">Software</a>.</p>
+<p>tags: <a href="http://www.mikelanzetta.com/tag/amqp.html">AMQP</a> <a href="http://www.mikelanzetta.com/tag/azure.html">Azure</a> <a href="http://www.mikelanzetta.com/tag/eventhub.html">EventHub</a> </p>
 </footer><!-- /.post-info -->                <p>Lately, I've been working on a Node.js-based library for speaking AMQP
 1.0, since all of the existing ones are still on 0.9.1 and don't seem
 intent on updating, or are based on Qpid Proton and thus burdened with
 more native code than I'd ...</p>
-                <a class="readmore" href="/talking-to-eventhub-with-amqp-1-0.html">read more</a>
-<p>There are <a href="/talking-to-eventhub-with-amqp-1-0.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+                <a class="readmore" href="http://www.mikelanzetta.com/talking-to-eventhub-with-amqp-1-0.html">read more</a>
+<p>There are <a href="http://www.mikelanzetta.com/talking-to-eventhub-with-amqp-1-0.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
 
             <li><article class="hentry">
                 <header>
-                    <h1><a href="/talking-to-eventhub-from-node.html" rel="bookmark"
+                    <h1><a href="http://www.mikelanzetta.com/talking-to-eventhub-from-node.html" rel="bookmark"
                            title="Permalink to Talking to EventHub from Node">Talking to EventHub from Node</a></h1>
                 </header>
 
@@ -366,10 +366,10 @@ more native code than I'd ...</p>
         </abbr>
 
         <address class="vcard author">
-                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+                By                         <a class="url fn" href="http://www.mikelanzetta.com/author/noodlefrenzy.html">noodlefrenzy</a>
         </address>
-<p>In <a href="/category/software.html">Software</a>.</p>
-<p>tags: <a href="/tag/azure.html">Azure</a> <a href="/tag/eventhub.html">EventHub</a> <a href="/tag/node.html">Node</a> </p>
+<p>In <a href="http://www.mikelanzetta.com/category/software.html">Software</a>.</p>
+<p>tags: <a href="http://www.mikelanzetta.com/tag/azure.html">Azure</a> <a href="http://www.mikelanzetta.com/tag/eventhub.html">EventHub</a> <a href="http://www.mikelanzetta.com/tag/node.html">Node</a> </p>
 </footer><!-- /.post-info -->                <p>This past week, I participated in a hackfest trying to get some
 <a href="https://www.alljoyn.org/">Alljoyn</a> devices talking to
 <a href="http://nitrogen.io/">Nitrogen</a>.  It was a great time, getting to learn
@@ -378,14 +378,14 @@ with IoT hardware, and watch my bosses (<a href="http://blogs.msdn.com/b/johnshe
 Shewchuk</a> and <a href="http://channel9.msdn.com/Events/Visual-Studio/Visual-Studio-Live/Tracey-Trewin-Architecture-Intellitrace-DevOps-Unit-Testing">Tracey
 Trewin</a>)
 sling some ...</p>
-                <a class="readmore" href="/talking-to-eventhub-from-node.html">read more</a>
-<p>There are <a href="/talking-to-eventhub-from-node.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+                <a class="readmore" href="http://www.mikelanzetta.com/talking-to-eventhub-from-node.html">read more</a>
+<p>There are <a href="http://www.mikelanzetta.com/talking-to-eventhub-from-node.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
 
             <li><article class="hentry">
                 <header>
-                    <h1><a href="/azure-storage-architecture-troubleshooting.html" rel="bookmark"
-                           title="Permalink to Azure Storage: Architecture Troubleshooting">Azure Storage: Architecture  Troubleshooting</a></h1>
+                    <h1><a href="http://www.mikelanzetta.com/azure-storage-architecture-troubleshooting.html" rel="bookmark"
+                           title="Permalink to Azure Storage: Architecture Troubleshooting">Azure Storage: Architecture Troubleshooting</a></h1>
                 </header>
 
                 <div class="entry-content">
@@ -395,21 +395,21 @@ sling some ...</p>
         </abbr>
 
         <address class="vcard author">
-                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+                By                         <a class="url fn" href="http://www.mikelanzetta.com/author/noodlefrenzy.html">noodlefrenzy</a>
         </address>
-<p>In <a href="/category/software.html">Software</a>.</p>
-<p>tags: <a href="/tag/azure.html">Azure</a> </p>
+<p>In <a href="http://www.mikelanzetta.com/category/software.html">Software</a>.</p>
+<p>tags: <a href="http://www.mikelanzetta.com/tag/azure.html">Azure</a> </p>
 </footer><!-- /.post-info -->                <p>I've been dealing with Azure Storage for years now, and while most of
 the time it's rock solid, on occasion you can get hit with networking
 issues or other "brownout" drops in availability that can make you
 question your sanity.  I find it helpful to know what's ...</p>
-                <a class="readmore" href="/azure-storage-architecture-troubleshooting.html">read more</a>
-<p>There are <a href="/azure-storage-architecture-troubleshooting.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+                <a class="readmore" href="http://www.mikelanzetta.com/azure-storage-architecture-troubleshooting.html">read more</a>
+<p>There are <a href="http://www.mikelanzetta.com/azure-storage-architecture-troubleshooting.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
 
             <li><article class="hentry">
                 <header>
-                    <h1><a href="/running-azure-mobile-services-locally.html" rel="bookmark"
+                    <h1><a href="http://www.mikelanzetta.com/running-azure-mobile-services-locally.html" rel="bookmark"
                            title="Permalink to Running Azure Mobile Services Locally">Running Azure Mobile Services Locally</a></h1>
                 </header>
 
@@ -420,10 +420,10 @@ question your sanity.  I find it helpful to know what's ...</p>
         </abbr>
 
         <address class="vcard author">
-                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+                By                         <a class="url fn" href="http://www.mikelanzetta.com/author/noodlefrenzy.html">noodlefrenzy</a>
         </address>
-<p>In <a href="/category/software.html">Software</a>.</p>
-<p>tags: <a href="/tag/azure.html">Azure</a> <a href="/tag/mobile.html">Mobile</a> <a href="/tag/node.html">Node</a> </p>
+<p>In <a href="http://www.mikelanzetta.com/category/software.html">Software</a>.</p>
+<p>tags: <a href="http://www.mikelanzetta.com/tag/azure.html">Azure</a> <a href="http://www.mikelanzetta.com/tag/mobile.html">Mobile</a> <a href="http://www.mikelanzetta.com/tag/node.html">Node</a> </p>
 </footer><!-- /.post-info -->                <p>On a recent project, I made my first foray into using Azure Mobile
 Services <a href="http://weblogs.asp.net/scottgu/windows-azure-major-updates-for-mobile-backend-development" title="Azure Custom API Announcement">Custom
 API</a>
@@ -431,8 +431,8 @@ support, with a Node.js-backed API implementation.  I've used (and
 loved) Mobile Services in the past for their push notification
 infrastructure, but this was new ground for me.  I liked the easy
 setup ...</p>
-                <a class="readmore" href="/running-azure-mobile-services-locally.html">read more</a>
-<p>There are <a href="/running-azure-mobile-services-locally.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+                <a class="readmore" href="http://www.mikelanzetta.com/running-azure-mobile-services-locally.html">read more</a>
+<p>There are <a href="http://www.mikelanzetta.com/running-azure-mobile-services-locally.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
                 </ol><!-- /#posts-list -->
                 </section><!-- /#content -->
@@ -448,6 +448,7 @@ setup ...</p>
                 <div class="social">
                         <h2>social</h2>
                         <ul>
+                            <li><a href="http://www.mikelanzetta.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
 
                             <li><a href="https://twitter.com/noodlefrenzy">Twitter</a></li>
                             <li><a href="https://www.linkedin.com/in/noodlefrenzy">LinkedIn</a></li>

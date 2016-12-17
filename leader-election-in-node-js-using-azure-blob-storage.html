@@ -3,7 +3,8 @@
 <head>
         <meta charset="utf-8" />
         <title>Leader Election in Node.js Using Azure Blob Storage</title>
-        <link rel="stylesheet" href="/theme/css/main.css" />
+        <link rel="stylesheet" href="http://www.mikelanzetta.com/theme/css/main.css" />
+        <link href="http://www.mikelanzetta.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Intelligent Artifice Atom Feed" />
 
         <!--[if IE]>
             <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -15,21 +16,20 @@
 <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
 </a>
         <header id="banner" class="body">
-                <h1><a href="/">Intelligent Artifice </a></h1>
+                <h1><a href="http://www.mikelanzetta.com/">Intelligent Artifice </a></h1>
                 <nav><ul>
-                    <li><a href="/pages/about-me-and-this-blog.html">About Me And This Blog</a></li>
-                    <li><a href="/pages/digicert.html">Digicert Validation</a></li>
-                    <li><a href="/category/devops.html">DevOps</a></li>
-                    <li><a href="/category/meta.html">Meta</a></li>
-                    <li class="active"><a href="/category/software.html">Software</a></li>
-                    <li><a href="/category/uncategorized.html">Uncategorized</a></li>
+                    <li><a href="http://www.mikelanzetta.com/pages/about-me-and-this-blog.html">About Me And This Blog</a></li>
+                    <li><a href="http://www.mikelanzetta.com/category/devops.html">DevOps</a></li>
+                    <li><a href="http://www.mikelanzetta.com/category/meta.html">Meta</a></li>
+                    <li class="active"><a href="http://www.mikelanzetta.com/category/software.html">Software</a></li>
+                    <li><a href="http://www.mikelanzetta.com/category/uncategorized.html">Uncategorized</a></li>
                 </ul></nav>
         </header><!-- /#banner -->
 <section id="content" class="body">
   <article>
     <header>
       <h1 class="entry-title">
-        <a href="/leader-election-in-node-js-using-azure-blob-storage.html" rel="bookmark"
+        <a href="http://www.mikelanzetta.com/leader-election-in-node-js-using-azure-blob-storage.html" rel="bookmark"
            title="Permalink to Leader Election in Node.js Using Azure Blob Storage">Leader Election in Node.js Using Azure Blob Storage</a></h1>
 <a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="noodlefrenzy">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>
     </header>
@@ -41,10 +41,10 @@
         </abbr>
 
         <address class="vcard author">
-                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+                By                         <a class="url fn" href="http://www.mikelanzetta.com/author/noodlefrenzy.html">noodlefrenzy</a>
         </address>
-<p>In <a href="/category/software.html">Software</a>.</p>
-<p>tags: <a href="/tag/azure.html">Azure</a> <a href="/tag/azure-blob.html">Azure Blob</a> <a href="/tag/distributed-systems.html">Distributed Systems</a> <a href="/tag/node.html">Node</a> </p>
+<p>In <a href="http://www.mikelanzetta.com/category/software.html">Software</a>.</p>
+<p>tags: <a href="http://www.mikelanzetta.com/tag/azure.html">Azure</a> <a href="http://www.mikelanzetta.com/tag/azure-blob.html">Azure Blob</a> <a href="http://www.mikelanzetta.com/tag/distributed-systems.html">Distributed Systems</a> <a href="http://www.mikelanzetta.com/tag/node.html">Node</a> </p>
 </footer><!-- /.post-info -->      <p><a href="https://en.wikipedia.org/wiki/Leader_election">Leader Election</a> is a
 mechanism for designating one instance of a group as the primary (or
 leader) and the others as secondaries (or followers), and is typically
@@ -71,7 +71,7 @@ it'd be a fun exercise, but not when you're up against a deadline.</p>
 resource only one instance is allowed to "control" it. With Paxos for
 instance, any given round's result is "controlled" by the leader.</p>
 <p><img alt="Paxos algorithm
-flow" src="/images/paxos1_sm.png" /></p>
+flow" src="http://www.mikelanzetta.com/images/paxos1_sm.png" /></p>
 <p>With database failover the leader controls all writes and forwards them to
 all followers. In the event of a leader failure that control should
 lapse to another instance after a certain amount of time has elapsed.
@@ -307,6 +307,21 @@ future post).</p>
 module</a> with the
 permissive MIT license, and is published as npm module <code>cerulean</code>.</p>
     </div><!-- /.entry-content -->
+    <div class="comments">
+      <h2>Comments !</h2>
+      <div id="disqus_thread"></div>
+      <script type="text/javascript">
+        var disqus_shortname = 'intelligentartifice';
+        var disqus_identifier = 'leader-election-in-node-js-using-azure-blob-storage.html';
+        var disqus_url = 'http://www.mikelanzetta.com/leader-election-in-node-js-using-azure-blob-storage.html';
+        (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//intelligentartifice.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+      </script>
+      <noscript>Please enable JavaScript to view the comments.</noscript>
+    </div>
 
   </article>
 </section>
@@ -322,6 +337,7 @@ permissive MIT license, and is published as npm module <code>cerulean</code>.</p
                 <div class="social">
                         <h2>social</h2>
                         <ul>
+                            <li><a href="http://www.mikelanzetta.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
 
                             <li><a href="https://twitter.com/noodlefrenzy">Twitter</a></li>
                             <li><a href="https://www.linkedin.com/in/noodlefrenzy">LinkedIn</a></li>

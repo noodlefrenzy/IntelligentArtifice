@@ -3,7 +3,8 @@
 <head>
         <meta charset="utf-8" />
         <title>Intelligent Artifice - memoization</title>
-        <link rel="stylesheet" href="/theme/css/main.css" />
+        <link rel="stylesheet" href="http://www.mikelanzetta.com/theme/css/main.css" />
+        <link href="http://www.mikelanzetta.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Intelligent Artifice Atom Feed" />
 
         <!--[if IE]>
             <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -15,30 +16,29 @@
 <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
 </a>
         <header id="banner" class="body">
-                <h1><a href="/">Intelligent Artifice </a></h1>
+                <h1><a href="http://www.mikelanzetta.com/">Intelligent Artifice </a></h1>
                 <nav><ul>
-                    <li><a href="/pages/about-me-and-this-blog.html">About Me And This Blog</a></li>
-                    <li><a href="/pages/digicert.html">Digicert Validation</a></li>
-                    <li><a href="/category/devops.html">DevOps</a></li>
-                    <li><a href="/category/meta.html">Meta</a></li>
-                    <li><a href="/category/software.html">Software</a></li>
-                    <li><a href="/category/uncategorized.html">Uncategorized</a></li>
+                    <li><a href="http://www.mikelanzetta.com/pages/about-me-and-this-blog.html">About Me And This Blog</a></li>
+                    <li><a href="http://www.mikelanzetta.com/category/devops.html">DevOps</a></li>
+                    <li><a href="http://www.mikelanzetta.com/category/meta.html">Meta</a></li>
+                    <li><a href="http://www.mikelanzetta.com/category/software.html">Software</a></li>
+                    <li><a href="http://www.mikelanzetta.com/category/uncategorized.html">Uncategorized</a></li>
                 </ul></nav>
         </header><!-- /#banner -->
 
             <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href="/caching-responses-in-expressjs.html">Caching Responses in Expressjs</a></h1>
+                    <h1 class="entry-title"><a href="http://www.mikelanzetta.com/caching-responses-in-expressjs.html">Caching Responses in Expressjs</a></h1>
 <footer class="post-info">
         <abbr class="published" title="2014-10-04T15:32:00-07:00">
                 Published: Sat 04 October 2014
         </abbr>
 
         <address class="vcard author">
-                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+                By                         <a class="url fn" href="http://www.mikelanzetta.com/author/noodlefrenzy.html">noodlefrenzy</a>
         </address>
-<p>In <a href="/category/software.html">Software</a>.</p>
-<p>tags: <a href="/tag/caching.html">caching</a> <a href="/tag/expressjs.html">Expressjs</a> <a href="/tag/memoization.html">memoization</a> <a href="/tag/node.html">Node</a> </p>
+<p>In <a href="http://www.mikelanzetta.com/category/software.html">Software</a>.</p>
+<p>tags: <a href="http://www.mikelanzetta.com/tag/caching.html">caching</a> <a href="http://www.mikelanzetta.com/tag/expressjs.html">Expressjs</a> <a href="http://www.mikelanzetta.com/tag/memoization.html">memoization</a> <a href="http://www.mikelanzetta.com/tag/node.html">Node</a> </p>
 </footer><!-- /.post-info --><p>On a recent project, I found myself writing a web service in Node via
 Azure Mobile Services, and realized that the client pattern was to call
 a common set of requests on startup and in early interactions, and then
@@ -131,14 +131,14 @@ adoption, but didn't impact my use:</p>
 on whatever you've passed in, so if you've wrapped an object that has an
 <code>indexOf</code> method, and eventually play it back on a string, it should
 "work", but might not be the behavior you need (it will, however, be
-<a href="http://treasure.diylol.com/uploads/post/image/169566/resized_true-hero-meme-generator-he-s-the-hero-we-deserve-but-not-the-one-we-need-right-now-65e69f.jpg">the behavior you
+<a href="http://www.mikelanzetta.com/images/hero-we-deserve.jpg">the behavior you
 deserve</a>).
  The Memoizer inherits these caveats, and additionally has whatever
 caveats are inherited by the cache implementation you use.  In addition,
 the response predicate is only checked on retrieval from the cache, so
 that there's no ordering dependence on how the caller chooses to invoke
 response methods, and the memoizer doesn't need to keep track of
-when/whether the response has completed.</p><p>There are <a href="/caching-responses-in-expressjs.html#disqus_thread">comments</a>.</p>                </article>
+when/whether the response has completed.</p><p>There are <a href="http://www.mikelanzetta.com/caching-responses-in-expressjs.html#disqus_thread">comments</a>.</p>                </article>
             </aside><!-- /#featured -->
         <section id="extras" class="body">
                 <div class="blogroll">
@@ -152,6 +152,7 @@ when/whether the response has completed.</p><p>There are <a href="/caching-respo
                 <div class="social">
                         <h2>social</h2>
                         <ul>
+                            <li><a href="http://www.mikelanzetta.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
 
                             <li><a href="https://twitter.com/noodlefrenzy">Twitter</a></li>
                             <li><a href="https://www.linkedin.com/in/noodlefrenzy">LinkedIn</a></li>

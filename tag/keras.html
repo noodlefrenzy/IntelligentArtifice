@@ -3,7 +3,8 @@
 <head>
         <meta charset="utf-8" />
         <title>Intelligent Artifice - Keras</title>
-        <link rel="stylesheet" href="/theme/css/main.css" />
+        <link rel="stylesheet" href="http://www.mikelanzetta.com/theme/css/main.css" />
+        <link href="http://www.mikelanzetta.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Intelligent Artifice Atom Feed" />
 
         <!--[if IE]>
             <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -15,36 +16,35 @@
 <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
 </a>
         <header id="banner" class="body">
-                <h1><a href="/">Intelligent Artifice </a></h1>
+                <h1><a href="http://www.mikelanzetta.com/">Intelligent Artifice </a></h1>
                 <nav><ul>
-                    <li><a href="/pages/about-me-and-this-blog.html">About Me And This Blog</a></li>
-                    <li><a href="/pages/digicert.html">Digicert Validation</a></li>
-                    <li><a href="/category/devops.html">DevOps</a></li>
-                    <li><a href="/category/meta.html">Meta</a></li>
-                    <li><a href="/category/software.html">Software</a></li>
-                    <li><a href="/category/uncategorized.html">Uncategorized</a></li>
+                    <li><a href="http://www.mikelanzetta.com/pages/about-me-and-this-blog.html">About Me And This Blog</a></li>
+                    <li><a href="http://www.mikelanzetta.com/category/devops.html">DevOps</a></li>
+                    <li><a href="http://www.mikelanzetta.com/category/meta.html">Meta</a></li>
+                    <li><a href="http://www.mikelanzetta.com/category/software.html">Software</a></li>
+                    <li><a href="http://www.mikelanzetta.com/category/uncategorized.html">Uncategorized</a></li>
                 </ul></nav>
         </header><!-- /#banner -->
 
             <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href="/deep-learning-on-windows.html">Deep Learning on Windows: A Getting Started Guide</a></h1>
+                    <h1 class="entry-title"><a href="http://www.mikelanzetta.com/deep-learning-on-windows.html">Deep Learning on Windows: A Getting Started Guide</a></h1>
 <footer class="post-info">
         <abbr class="published" title="2016-08-04T12:34:00-07:00">
                 Published: Thu 04 August 2016
         </abbr>
 
         <address class="vcard author">
-                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+                By                         <a class="url fn" href="http://www.mikelanzetta.com/author/noodlefrenzy.html">noodlefrenzy</a>
         </address>
-<p>In <a href="/category/software.html">Software</a>.</p>
-<p>tags: <a href="/tag/windows.html">Windows</a> <a href="/tag/deep-learning.html">Deep Learning</a> <a href="/tag/machine-learning.html">Machine Learning</a> <a href="/tag/theano.html">Theano</a> <a href="/tag/keras.html">Keras</a> <a href="/tag/lasagne.html">Lasagne</a> </p>
+<p>In <a href="http://www.mikelanzetta.com/category/software.html">Software</a>.</p>
+<p>tags: <a href="http://www.mikelanzetta.com/tag/windows.html">Windows</a> <a href="http://www.mikelanzetta.com/tag/deep-learning.html">Deep Learning</a> <a href="http://www.mikelanzetta.com/tag/machine-learning.html">Machine Learning</a> <a href="http://www.mikelanzetta.com/tag/theano.html">Theano</a> <a href="http://www.mikelanzetta.com/tag/keras.html">Keras</a> <a href="http://www.mikelanzetta.com/tag/lasagne.html">Lasagne</a> </p>
 </footer><!-- /.post-info --><h2>A Quick Guide to Deep Learning</h2>
 <p>Deep Learning is a relatively new set of techniques in the field of Machine Learning that have shown the power to generalize well over a whole host of problems, and even solve some problems that were considered unsolveable just a few years before. There are <a href="http://deeplearning.net/tutorial/">many</a> <a href="http://deeplearning.stanford.edu/tutorial/">tutorials</a> and <a href="https://www.quora.com/What-is-deep-learning">write-ups</a> on these techniques <a href="https://www.microsoft.com/en-us/research/publication/deep-learning-methods-and-applications/">online</a>, so I won't go too deep, but I'll lay out the basics.</p>
 <p>People have known for some time that a particular Machine Learning technique - Neural Networks - has the capability to learn complex mappings from inputs (e.g. images) to outputs (e.g. "which digit is this?") through the use of a "hidden layer" that mapped between the two.</p>
-<p><img alt="A Simple MLP" src="./images/Multilayer_Perceptron.png" /></p>
+<p><img alt="A Simple MLP" src="http://www.mikelanzetta.com/images/Multilayer_Perceptron.png" /></p>
 <p>With the advent of <em>Big Data</em>, we suddenly have incredibly large sets of input data we could feed to these models, and with the increasing power of GPUs we have the compute capacity to do so. We had seen Neural Networks with multiple hidden layers in the past, but training them was so expensive and they didn't seem to outperform other techniques that they'd been discarded. Someone realized that with the amount of data we now have and the compute resources available to us, these constraints no longer applied and these older networks were brought back.  </p>
-<p><img alt="Denser, Deeper Neural Network" src="./images/Dense_NN.png" /></p>
+<p><img alt="Denser, Deeper Neural Network" src="http://www.mikelanzetta.com/images/Dense_NN.png" /></p>
 <p>Since then, networks have only gotten deeper (more hidden layers) and their shapes have only gotten stranger (convolutional neurons, feedback loops, and layer skipping). At this point, we know they are powerful, but we don't really know how powerful they can get, and the field is wide open for advancement. For a more detailed and far more eloquent history of the field, see <a href="https://devblogs.nvidia.com/parallelforall/deep-learning-nutshell-history-training/">NVidia's great post</a>.</p>
 <p>In this post, I'll walk you through how to get one of the most popular toolkits up and running on Windows, and run through and explain some fun examples.</p>
 <h2>Deep Learning Toolkits</h2>
@@ -107,9 +107,9 @@
 
 
 <p>And this would turn</p>
-<p><a href="./images/ninjacat_large.png"><img alt="Ninjacat" src="./images/ninjacat_small.png" /></a></p>
+<p><a href="http://www.mikelanzetta.com/images/ninjacat_large.png"><img alt="Ninjacat" src="http://www.mikelanzetta.com/images/ninjacat_small.png" /></a></p>
 <p>into</p>
-<p><a href="./images/ninjadream_large.png"><img alt="Ninjacat, dreamy edition" src="./images/ninjadream_small.png" /></a></p>
+<p><a href="http://www.mikelanzetta.com/images/ninjadream_large.png"><img alt="Ninjacat, dreamy edition" src="http://www.mikelanzetta.com/images/ninjadream_small.png" /></a></p>
 <p>If you run into errors, it could be due to changes in the way Keras or Theano works or how they integrate with CUDA or CUdnn - they are all in <em>very</em> active development. If so, please take a look at <a href="https://github.com/fchollet/keras/blob/master/examples/deep_dream.py">the <em>official</em> <code>deep_dream.py</code> example</a> from Keras - my copy just has enhanced argument handling and has factored a few things to make it easier to play around with.</p>
 <h2>Neural Artistry</h2>
 <p>Neural Artistry first surfaced with a <a href="https://arxiv.org/pdf/1508.06576v2.pdf">paper from Germany</a> and has since become another big showcase example for the power of Deep Learning. Essentially, the way it works is to take an existing trained Convolutional Neural Network and use it to convolve two images together, by joining the outputs of different convolutional layers from each image. Assuming (again) that you've installed the VGG16 pre-trained weights in <code>C:\dev\data</code> and are running against <code>C:\dev\images\ninjacat.png</code> in the style of, say, "The Scream" (which you have at <code>C:\dev\images\thescream.png</code>), your command would look like:</p>
@@ -118,12 +118,12 @@
 
 
 <p>And that'd turn</p>
-<p><a href="./images/ninjacat_large.png"><img alt="Ninjacat" src="./images/ninjacat_small.png" /></a></p>
+<p><a href="http://www.mikelanzetta.com/images/ninjacat_large.png"><img alt="Ninjacat" src="http://www.mikelanzetta.com/images/ninjacat_small.png" /></a></p>
 <p>into</p>
-<p><a href="./images/ninjascream_large.png"><img alt="Ninjacat, screamy edition" src="./images/ninjascream_small.png" /></a></p>
+<p><a href="http://www.mikelanzetta.com/images/ninjascream_large.png"><img alt="Ninjacat, screamy edition" src="http://www.mikelanzetta.com/images/ninjascream_small.png" /></a></p>
 <p>Once again, if you hit errors, please try <a href="https://github.com/fchollet/keras/blob/master/examples/neural_style_transfer.py">the <em>official</em> <code>neural_style_transfer.py</code> example</a> - my copy just factors out argument handling and lets you play around with which layers you use for transfer.</p>
 <h2>Conclusion and Future Work</h2>
-<p>Setting up deep learning toolkits on Windows is fairly easy, and they've made it quite simple to experiment with them even if you have no background in the field. TensorFlow for Windows <a href="https://github.com/tensorflow/tensorflow/issues/17">is coming</a> but is gated on Bazel support - once it happens, I'll create a follow-up post on <a href="http://www.intelligent-artifice.net/">my blog</a> and go through a similar set of examples, but until then there is nothing stopping you from joining the Deep Learning revolution on your Windows machine.</p><p>There are <a href="/deep-learning-on-windows.html#disqus_thread">comments</a>.</p>                </article>
+<p>Setting up deep learning toolkits on Windows is fairly easy, and they've made it quite simple to experiment with them even if you have no background in the field. TensorFlow for Windows <a href="https://github.com/tensorflow/tensorflow/issues/17">is coming</a> but is gated on Bazel support - once it happens, I'll create a follow-up post on <a href="http://www.intelligent-artifice.net/">my blog</a> and go through a similar set of examples, but until then there is nothing stopping you from joining the Deep Learning revolution on your Windows machine.</p><p>There are <a href="http://www.mikelanzetta.com/deep-learning-on-windows.html#disqus_thread">comments</a>.</p>                </article>
             </aside><!-- /#featured -->
         <section id="extras" class="body">
                 <div class="blogroll">
@@ -137,6 +137,7 @@
                 <div class="social">
                         <h2>social</h2>
                         <ul>
+                            <li><a href="http://www.mikelanzetta.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
 
                             <li><a href="https://twitter.com/noodlefrenzy">Twitter</a></li>
                             <li><a href="https://www.linkedin.com/in/noodlefrenzy">LinkedIn</a></li>

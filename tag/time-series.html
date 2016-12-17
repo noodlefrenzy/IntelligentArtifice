@@ -3,7 +3,8 @@
 <head>
         <meta charset="utf-8" />
         <title>Intelligent Artifice - Time Series</title>
-        <link rel="stylesheet" href="/theme/css/main.css" />
+        <link rel="stylesheet" href="http://www.mikelanzetta.com/theme/css/main.css" />
+        <link href="http://www.mikelanzetta.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Intelligent Artifice Atom Feed" />
 
         <!--[if IE]>
             <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -15,30 +16,29 @@
 <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
 </a>
         <header id="banner" class="body">
-                <h1><a href="/">Intelligent Artifice </a></h1>
+                <h1><a href="http://www.mikelanzetta.com/">Intelligent Artifice </a></h1>
                 <nav><ul>
-                    <li><a href="/pages/about-me-and-this-blog.html">About Me And This Blog</a></li>
-                    <li><a href="/pages/digicert.html">Digicert Validation</a></li>
-                    <li><a href="/category/devops.html">DevOps</a></li>
-                    <li><a href="/category/meta.html">Meta</a></li>
-                    <li><a href="/category/software.html">Software</a></li>
-                    <li><a href="/category/uncategorized.html">Uncategorized</a></li>
+                    <li><a href="http://www.mikelanzetta.com/pages/about-me-and-this-blog.html">About Me And This Blog</a></li>
+                    <li><a href="http://www.mikelanzetta.com/category/devops.html">DevOps</a></li>
+                    <li><a href="http://www.mikelanzetta.com/category/meta.html">Meta</a></li>
+                    <li><a href="http://www.mikelanzetta.com/category/software.html">Software</a></li>
+                    <li><a href="http://www.mikelanzetta.com/category/uncategorized.html">Uncategorized</a></li>
                 </ul></nav>
         </header><!-- /#banner -->
 
             <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href="/time-series-processing-in-azure-ml-using-python.html">Time-Series Processing in Azure ML Using Python</a></h1>
+                    <h1 class="entry-title"><a href="http://www.mikelanzetta.com/time-series-processing-in-azure-ml-using-python.html">Time-Series Processing in Azure ML Using Python</a></h1>
 <footer class="post-info">
         <abbr class="published" title="2015-03-14T22:09:00-07:00">
                 Published: Sat 14 March 2015
         </abbr>
 
         <address class="vcard author">
-                By                         <a class="url fn" href="/author/noodlefrenzy.html">noodlefrenzy</a>
+                By                         <a class="url fn" href="http://www.mikelanzetta.com/author/noodlefrenzy.html">noodlefrenzy</a>
         </address>
-<p>In <a href="/category/software.html">Software</a>.</p>
-<p>tags: <a href="/tag/azure.html">Azure</a> <a href="/tag/machine-learning.html">Machine Learning</a> <a href="/tag/ml.html">ML</a> <a href="/tag/python.html">Python</a> <a href="/tag/time-series.html">Time Series</a> </p>
+<p>In <a href="http://www.mikelanzetta.com/category/software.html">Software</a>.</p>
+<p>tags: <a href="http://www.mikelanzetta.com/tag/azure.html">Azure</a> <a href="http://www.mikelanzetta.com/tag/machine-learning.html">Machine Learning</a> <a href="http://www.mikelanzetta.com/tag/ml.html">ML</a> <a href="http://www.mikelanzetta.com/tag/python.html">Python</a> <a href="http://www.mikelanzetta.com/tag/time-series.html">Time Series</a> </p>
 </footer><!-- /.post-info --><p>With the general availability of Azure Machine Learning, the team has
 added a ton of new features.  Perhaps the one I'm most excited about is
 the addition of a general "Execute Python Script" module.  I've been
@@ -56,7 +56,7 @@ support for
 time-series</a>
 data manipulation.  The ability to normalize dates, roll up into
 aggregates, and easily slice ranges is phenomenal.</p>
-<p><img alt="execute_python" src="/images/execute_python.png" /></p>
+<p><img alt="execute_python" src="http://www.mikelanzetta.com/images/execute_python.png" /></p>
 <p>To get started, we'll pull in some time-series data, and mess around
 with it in the Python module - set up an experiment with a Reader
 connected to an "Execute Python Script" module.</p>
@@ -68,7 +68,7 @@ TSLA: http://ichart.finance.yahoo.com/table.csv?s=TSLA.  This returns
 data as a CSV with a header row, leading to the final Reader
 configuration
 below.</p>
-<p><img alt="ichart_reader_config" src="/images/ichart_reader_config.png" /></p>
+<p><img alt="ichart_reader_config" src="http://www.mikelanzetta.com/images/ichart_reader_config.png" /></p>
 <p>Once we have the data coming in, it's time to do something fun with it.
  Let's take a first crack at it - we'll take the input and turn it into
 monthly means.  In regular Python with Pandas, that looks like:</p>
@@ -157,7 +157,7 @@ conversion before our set_index call:</p>
 </pre></div>
 
 
-<p><img alt="orig_output" src="/images/orig_output.png" /> </p>
+<p><img alt="orig_output" src="http://www.mikelanzetta.com/images/orig_output.png" /> </p>
 <p>This worked!  However, looking at the output there is no Date column - so I'm
 guessing that in the same way the input data didn't pull the first
 column as an index, the output doesn't write out the index either.
@@ -186,7 +186,7 @@ I'll let the AzureML team know.  The final code looks like:</p>
 
 <p>I hope this helps!  If you find any other quirks let me know - I'll
 definitely let the AzureML team know, and add the workarounds to my
-list.</p><p>There are <a href="/time-series-processing-in-azure-ml-using-python.html#disqus_thread">comments</a>.</p>                </article>
+list.</p><p>There are <a href="http://www.mikelanzetta.com/time-series-processing-in-azure-ml-using-python.html#disqus_thread">comments</a>.</p>                </article>
             </aside><!-- /#featured -->
         <section id="extras" class="body">
                 <div class="blogroll">
@@ -200,6 +200,7 @@ list.</p><p>There are <a href="/time-series-processing-in-azure-ml-using-python.
                 <div class="social">
                         <h2>social</h2>
                         <ul>
+                            <li><a href="http://www.mikelanzetta.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
 
                             <li><a href="https://twitter.com/noodlefrenzy">Twitter</a></li>
                             <li><a href="https://www.linkedin.com/in/noodlefrenzy">LinkedIn</a></li>
