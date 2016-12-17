@@ -1,7 +1,7 @@
 Title: Time-Series Processing in Azure ML Using Python
 Date: 2015-03-14 22:09
 Author: noodlefrenzy
-Category: Software
+Category: Machine Learning
 Tags: Azure, Machine Learning, ML, Python, Time Series
 Slug: time-series-processing-in-azure-ml-using-python
 Status: published

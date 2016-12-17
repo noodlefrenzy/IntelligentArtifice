@@ -1,7 +1,7 @@
 Title: TensorFlow on Azure Using Docker
 Date: 2015-12-08 14:33
 Author: noodlefrenzy
-Category: Software
+Category: Machine Learning
 Tags: Azure, Containerization, Docker, Machine Learning, ML, Neural Networks, TensorFlow
 Slug: tensorflow-on-azure-using-docker
 Status: published

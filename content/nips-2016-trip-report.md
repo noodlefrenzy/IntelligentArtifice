@@ -1,7 +1,7 @@
 Title: NIPS 2016 Trip Report
 Date: 2016-12-13 11:52AM
 Author: noodlefrenzy
-Category: Software
+Category: Machine Learning
 Tags: ML, Machine Learning, Deep Learning, GAN, Deep RL
 Slug: nips-2016-trip-report
 Status: published

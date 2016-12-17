@@ -1,7 +1,7 @@
 Title: Text Classification - Four Ways
 Date: 2016-08-18 12:34
 Author: noodlefrenzy
-Category: Software
+Category: Machine Learning
 Tags: Machine Learning, NLP, Azure, AzureML
 Slug: text-classification-four-ways
 Status: draft

@@ -1,7 +1,7 @@
 Title: Old IE, New Vagrant
 Date: 2014-09-03 08:05
 Author: noodlefrenzy
-Category: DevOps
+Category: Software
 Tags: Web Development
 Slug: old-ie-new-vagrant
 Status: published

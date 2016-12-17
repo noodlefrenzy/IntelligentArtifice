@@ -1,7 +1,7 @@
 Title: Developing on Windows
 Date: 2014-10-09 08:31
 Author: noodlefrenzy
-Category: Uncategorized
+Category: Software
 Slug: developing-on-windows
 Status: published
 

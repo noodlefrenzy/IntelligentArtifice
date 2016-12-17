@@ -1,7 +1,7 @@
 Title: Data Cleaning with AzureML and R: Dates
 Date: 2015-01-19 17:42
 Author: noodlefrenzy
-Category: Software
+Category: Machine Learning
 Tags: Azure, AzureML, ML, R
 Slug: data-cleaning-with-azureml-and-r-dates
 Status: published
