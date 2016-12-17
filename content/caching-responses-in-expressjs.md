@@ -105,7 +105,7 @@ on whatever you've passed in, so if you've wrapped an object that has an
 `indexOf` method, and eventually play it back on a string, it should
 "work", but might not be the behavior you need (it will, however, be
 [the behavior you
-deserve](http://treasure.diylol.com/uploads/post/image/169566/resized_true-hero-meme-generator-he-s-the-hero-we-deserve-but-not-the-one-we-need-right-now-65e69f.jpg)).
+deserve]({filename}/images/hero-we-deserve.jpg)).
  The Memoizer inherits these caveats, and additionally has whatever
 caveats are inherited by the cache implementation you use.  In addition,
 the response predicate is only checked on retrieval from the cache, so

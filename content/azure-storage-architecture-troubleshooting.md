@@ -1,4 +1,4 @@
-Title: Azure Storage: Architecture  Troubleshooting
+Title: Azure Storage: Architecture Troubleshooting
 Date: 2014-09-16 10:12
 Author: noodlefrenzy
 Category: Software

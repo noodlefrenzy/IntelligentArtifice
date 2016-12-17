@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 AUTHOR = 'Mike Lanzetta'
 SITENAME = 'Intelligent Artifice'
-SITEURL = ''
+SITEURL = 'http://www.mikelanzetta.com'
 
 TIMEZONE = 'America/Tijuana'
 DEFAULT_LANG = 'en'
