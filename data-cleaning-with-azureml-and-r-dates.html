@@ -92,20 +92,20 @@ data.set<span class="o">$</span>hourOfDay <span class="o">=</span> data.set<span
 don't waste your compute cycles until you need them), and it worked
 fine, so I sent it through AzureML... BOOM!  The R module failed, and
 gave me a bunch of output, with the important pieces right here:</p>
-<div class="highlight"><pre><span></span><span class="x">[ModuleOutput] Warning messages:</span>
-<span class="x">[ModuleOutput] </span>
-<span class="x">[ModuleOutput] 1: In strptime(data.set</span><span class="p">$</span><span class="nv">weirdDateTime</span><span class="x">, &quot;%Y:%m:%d %H:%M:%S&quot;) :</span>
-<span class="x">[ModuleOutput] </span>
-<span class="x">[ModuleOutput]   unable to identify current timezone &#39;C&#39;:</span>
-<span class="x">[ModuleOutput] </span>
-<span class="x">[ModuleOutput] please set environment variable &#39;TZ&#39;</span>
-<span class="x">[ModuleOutput] </span>
-<span class="x">[ModuleOutput] 2: In strptime(data.set</span><span class="p">$</span><span class="nv">weirdDateTime</span><span class="x">, &quot;%Y:%m:%d %H:%M:%S&quot;) :</span>
-<span class="x">[ModuleOutput] </span>
-<span class="x">[ModuleOutput]   unknown timezone &#39;localtime&#39;</span>
-<span class="x">[ModuleOutput] </span>
-<span class="x">[ModuleOutput] DllModuleHost Stop: 1 : DllModuleMethod::Execute. Duration: 00:00:04.6139721</span>
-<span class="x">[ModuleOutput] DllModuleHost Error: 1 : Program::Main encountered fatal exception: Microsoft.Analytics.Exceptions.ErrorMapping+ModuleException: Error 1000: RPackage library exception: Failed to convert RObject to DataSet ---&gt; Microsoft.Analytics.Modules.R.ErrorHandling.RException: Failed to convert RObject to DataSet ---&gt; Microsoft.Analytics.Modules.R.ErrorHandling.RNotImplementedException: Parser is not implemented for the Microsoft.MetaAnalytics.RDataSupport.RObject`1[Microsoft.MetaAnalytics.RDataSupport.RObject] type or data is invalid</span>
+<div class="highlight"><pre><span></span>[ModuleOutput] Warning messages:
+[ModuleOutput] 
+[ModuleOutput] 1: In strptime(data.set$weirdDateTime, &quot;%Y:%m:%d %H:%M:%S&quot;) :
+[ModuleOutput] 
+[ModuleOutput]   unable to identify current timezone &#39;C&#39;:
+[ModuleOutput] 
+[ModuleOutput] please set environment variable &#39;TZ&#39;
+[ModuleOutput] 
+[ModuleOutput] 2: In strptime(data.set$weirdDateTime, &quot;%Y:%m:%d %H:%M:%S&quot;) :
+[ModuleOutput] 
+[ModuleOutput]   unknown timezone &#39;localtime&#39;
+[ModuleOutput] 
+[ModuleOutput] DllModuleHost Stop: 1 : DllModuleMethod::Execute. Duration: 00:00:04.6139721
+[ModuleOutput] DllModuleHost Error: 1 : Program::Main encountered fatal exception: Microsoft.Analytics.Exceptions.ErrorMapping+ModuleException: Error 1000: RPackage library exception: Failed to convert RObject to DataSet ---&gt; Microsoft.Analytics.Modules.R.ErrorHandling.RException: Failed to convert RObject to DataSet ---&gt; Microsoft.Analytics.Modules.R.ErrorHandling.RNotImplementedException: Parser is not implemented for the Microsoft.MetaAnalytics.RDataSupport.RObject`1[Microsoft.MetaAnalytics.RDataSupport.RObject] type or data is invalid
 </pre></div>
 
 
@@ -117,7 +117,7 @@ change.  I tried setting the TZ environment variable manually
 using <code>Sys.setenv(TZ="GMT")</code> - no dice.  So I ran the same code, but
 used my other "what class is this?" code to tell me what garbage it
 might be generating:</p>
-<p><img alt="r_type_conversions" src="http://www.mikelanzetta.com/images/r_type_conversions.png" /></p>
+<p><img alt="r_type_conversions" src="http://www.mikelanzetta.com/images/r_type_conversions.png"></p>
 <p>Hmm, these types look fine.  I spent some time looking around, trying
 different things, and finally asked the people on the Azure ML team.
  They told me that they don't yet support the POSIXlt data type on
@@ -159,7 +159,7 @@ provides and fails to provide.  There's much more to come.</p>
 </section>
         <section id="extras" class="body">
                 <div class="blogroll">
-                        <h2>blogroll</h2>
+                        <h2>links</h2>
                         <ul>
                             <li><a href="https://blogs.technet.microsoft.com/machinelearning/">Cortana Analytics</a></li>
                             <li><a href="http://www.kdnuggets.com/">KDNuggets</a></li>
@@ -186,14 +186,13 @@ provides and fails to provide.  There's much more to come.</p>
         </footer><!-- /#contentinfo -->
 
     <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-54597100-1']);
-    _gaq.push(['_trackPageview']);
-    (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = 'https://ssl.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-54597100-1', 'auto');
+    ga('send', 'pageview');
     </script>
 <script type="text/javascript">
     var disqus_shortname = 'intelligentartifice';

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Intelligent Artifice</title><link href="http://www.mikelanzetta.com/" rel="alternate"></link><link href="http://www.mikelanzetta.com/feeds/all.atom.xml" rel="self"></link><id>http://www.mikelanzetta.com/</id><updated>2016-12-13T11:52:00-08:00</updated><entry><title>NIPS 2016 Trip Report</title><link href="http://www.mikelanzetta.com/nips-2016-trip-report.html" rel="alternate"></link><published>2016-12-13T11:52:00-08:00</published><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2016-12-13:nips-2016-trip-report.html</id><summary type="html">&lt;p&gt;&lt;img alt="NIPS Logo" src="http://www.mikelanzetta.com/images/NipsLogoSmall.png" title="NIPS Logo" /&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Intelligent Artifice</title><link href="http://www.mikelanzetta.com/" rel="alternate"></link><link href="http://www.mikelanzetta.com/feeds/all.atom.xml" rel="self"></link><id>http://www.mikelanzetta.com/</id><updated>2016-12-13T11:52:00-08:00</updated><entry><title>NIPS 2016 Trip Report</title><link href="http://www.mikelanzetta.com/nips-2016-trip-report.html" rel="alternate"></link><published>2016-12-13T11:52:00-08:00</published><updated>2016-12-13T11:52:00-08:00</updated><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2016-12-13:/nips-2016-trip-report.html</id><summary type="html">&lt;p&gt;Thoughts and insights from the 2016 NIPS conference&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="NIPS Logo" src="http://www.mikelanzetta.com/images/NipsLogoSmall.png" title="NIPS Logo"&gt;
 &lt;a href="https://nips.cc"&gt;NIPS (Neural Information Processing Symposium)&lt;/a&gt; is one of the two largest academic conferences in the Machine Learning world (the other being ICML). This year the conference was held in Barcelona, which worked out well for me because I was planning to attend a hackfest the following week in Milan, so I decided to go as an attendee. &lt;/p&gt;
 &lt;p&gt;The conference has doubled in size in the past year, with ~6000 attendees, so their advice to pick up your badge the day before the conference began proved to be quite wise.&lt;/p&gt;
 &lt;p&gt;&lt;a style='text-decoration: none; color: orange;'&gt;
@@ -56,12 +56,12 @@
 &lt;p&gt;&lt;a style='text-decoration: none; color: orange;'&gt;
 &lt;img src="http://www.mikelanzetta.com/images/brain-eaten.jpg" alt="Snake-head sculpture appearing to chew on woman's head"/&gt;
 &lt;div style="width:490px;text-align:center;"&gt;Braiinnnzzz&lt;/div&gt;
-&lt;/a&gt;&lt;/p&gt;</summary><category term="ML"></category><category term="Machine Learning"></category><category term="Deep Learning"></category><category term="GAN"></category><category term="Deep RL"></category></entry><entry><title>Deep Learning on Windows: A Getting Started Guide</title><link href="http://www.mikelanzetta.com/deep-learning-on-windows.html" rel="alternate"></link><published>2016-08-04T12:34:00-07:00</published><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2016-08-04:deep-learning-on-windows.html</id><summary type="html">&lt;h2&gt;A Quick Guide to Deep Learning&lt;/h2&gt;
+&lt;/a&gt;&lt;/p&gt;</content><category term="ML"></category><category term="Machine Learning"></category><category term="Deep Learning"></category><category term="GAN"></category><category term="Deep RL"></category></entry><entry><title>Deep Learning on Windows: A Getting Started Guide</title><link href="http://www.mikelanzetta.com/deep-learning-on-windows.html" rel="alternate"></link><published>2016-08-04T12:34:00-07:00</published><updated>2016-08-04T12:34:00-07:00</updated><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2016-08-04:/deep-learning-on-windows.html</id><summary type="html">&lt;p&gt;A primer on how to get deep learning frameworks up and running on Windows, with examples.&lt;/p&gt;</summary><content type="html">&lt;h2&gt;A Quick Guide to Deep Learning&lt;/h2&gt;
 &lt;p&gt;Deep Learning is a relatively new set of techniques in the field of Machine Learning that have shown the power to generalize well over a whole host of problems, and even solve some problems that were considered unsolveable just a few years before. There are &lt;a href="http://deeplearning.net/tutorial/"&gt;many&lt;/a&gt; &lt;a href="http://deeplearning.stanford.edu/tutorial/"&gt;tutorials&lt;/a&gt; and &lt;a href="https://www.quora.com/What-is-deep-learning"&gt;write-ups&lt;/a&gt; on these techniques &lt;a href="https://www.microsoft.com/en-us/research/publication/deep-learning-methods-and-applications/"&gt;online&lt;/a&gt;, so I won't go too deep, but I'll lay out the basics.&lt;/p&gt;
 &lt;p&gt;People have known for some time that a particular Machine Learning technique - Neural Networks - has the capability to learn complex mappings from inputs (e.g. images) to outputs (e.g. "which digit is this?") through the use of a "hidden layer" that mapped between the two.&lt;/p&gt;
-&lt;p&gt;&lt;img alt="A Simple MLP" src="http://www.mikelanzetta.com/images/Multilayer_Perceptron.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="A Simple MLP" src="http://www.mikelanzetta.com/images/Multilayer_Perceptron.png"&gt;&lt;/p&gt;
 &lt;p&gt;With the advent of &lt;em&gt;Big Data&lt;/em&gt;, we suddenly have incredibly large sets of input data we could feed to these models, and with the increasing power of GPUs we have the compute capacity to do so. We had seen Neural Networks with multiple hidden layers in the past, but training them was so expensive and they didn't seem to outperform other techniques that they'd been discarded. Someone realized that with the amount of data we now have and the compute resources available to us, these constraints no longer applied and these older networks were brought back.  &lt;/p&gt;
-&lt;p&gt;&lt;img alt="Denser, Deeper Neural Network" src="http://www.mikelanzetta.com/images/Dense_NN.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Denser, Deeper Neural Network" src="http://www.mikelanzetta.com/images/Dense_NN.png"&gt;&lt;/p&gt;
 &lt;p&gt;Since then, networks have only gotten deeper (more hidden layers) and their shapes have only gotten stranger (convolutional neurons, feedback loops, and layer skipping). At this point, we know they are powerful, but we don't really know how powerful they can get, and the field is wide open for advancement. For a more detailed and far more eloquent history of the field, see &lt;a href="https://devblogs.nvidia.com/parallelforall/deep-learning-nutshell-history-training/"&gt;NVidia's great post&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;In this post, I'll walk you through how to get one of the most popular toolkits up and running on Windows, and run through and explain some fun examples.&lt;/p&gt;
 &lt;h2&gt;Deep Learning Toolkits&lt;/h2&gt;
@@ -124,9 +124,9 @@
 
 
 &lt;p&gt;And this would turn&lt;/p&gt;
-&lt;p&gt;&lt;a href="http://www.mikelanzetta.com/images/ninjacat_large.png"&gt;&lt;img alt="Ninjacat" src="http://www.mikelanzetta.com/images/ninjacat_small.png" /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://www.mikelanzetta.com/images/ninjacat_large.png"&gt;&lt;img alt="Ninjacat" src="http://www.mikelanzetta.com/images/ninjacat_small.png"&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;into&lt;/p&gt;
-&lt;p&gt;&lt;a href="http://www.mikelanzetta.com/images/ninjadream_large.png"&gt;&lt;img alt="Ninjacat, dreamy edition" src="http://www.mikelanzetta.com/images/ninjadream_small.png" /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://www.mikelanzetta.com/images/ninjadream_large.png"&gt;&lt;img alt="Ninjacat, dreamy edition" src="http://www.mikelanzetta.com/images/ninjadream_small.png"&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;If you run into errors, it could be due to changes in the way Keras or Theano works or how they integrate with CUDA or CUdnn - they are all in &lt;em&gt;very&lt;/em&gt; active development. If so, please take a look at &lt;a href="https://github.com/fchollet/keras/blob/master/examples/deep_dream.py"&gt;the &lt;em&gt;official&lt;/em&gt; &lt;code&gt;deep_dream.py&lt;/code&gt; example&lt;/a&gt; from Keras - my copy just has enhanced argument handling and has factored a few things to make it easier to play around with.&lt;/p&gt;
 &lt;h2&gt;Neural Artistry&lt;/h2&gt;
 &lt;p&gt;Neural Artistry first surfaced with a &lt;a href="https://arxiv.org/pdf/1508.06576v2.pdf"&gt;paper from Germany&lt;/a&gt; and has since become another big showcase example for the power of Deep Learning. Essentially, the way it works is to take an existing trained Convolutional Neural Network and use it to convolve two images together, by joining the outputs of different convolutional layers from each image. Assuming (again) that you've installed the VGG16 pre-trained weights in &lt;code&gt;C:\dev\data&lt;/code&gt; and are running against &lt;code&gt;C:\dev\images\ninjacat.png&lt;/code&gt; in the style of, say, "The Scream" (which you have at &lt;code&gt;C:\dev\images\thescream.png&lt;/code&gt;), your command would look like:&lt;/p&gt;
@@ -135,12 +135,15 @@
 
 
 &lt;p&gt;And that'd turn&lt;/p&gt;
-&lt;p&gt;&lt;a href="http://www.mikelanzetta.com/images/ninjacat_large.png"&gt;&lt;img alt="Ninjacat" src="http://www.mikelanzetta.com/images/ninjacat_small.png" /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://www.mikelanzetta.com/images/ninjacat_large.png"&gt;&lt;img alt="Ninjacat" src="http://www.mikelanzetta.com/images/ninjacat_small.png"&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;into&lt;/p&gt;
-&lt;p&gt;&lt;a href="http://www.mikelanzetta.com/images/ninjascream_large.png"&gt;&lt;img alt="Ninjacat, screamy edition" src="http://www.mikelanzetta.com/images/ninjascream_small.png" /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://www.mikelanzetta.com/images/ninjascream_large.png"&gt;&lt;img alt="Ninjacat, screamy edition" src="http://www.mikelanzetta.com/images/ninjascream_small.png"&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;Once again, if you hit errors, please try &lt;a href="https://github.com/fchollet/keras/blob/master/examples/neural_style_transfer.py"&gt;the &lt;em&gt;official&lt;/em&gt; &lt;code&gt;neural_style_transfer.py&lt;/code&gt; example&lt;/a&gt; - my copy just factors out argument handling and lets you play around with which layers you use for transfer.&lt;/p&gt;
 &lt;h2&gt;Conclusion and Future Work&lt;/h2&gt;
-&lt;p&gt;Setting up deep learning toolkits on Windows is fairly easy, and they've made it quite simple to experiment with them even if you have no background in the field. TensorFlow for Windows &lt;a href="https://github.com/tensorflow/tensorflow/issues/17"&gt;is coming&lt;/a&gt; but is gated on Bazel support - once it happens, I'll create a follow-up post on &lt;a href="http://www.intelligent-artifice.net/"&gt;my blog&lt;/a&gt; and go through a similar set of examples, but until then there is nothing stopping you from joining the Deep Learning revolution on your Windows machine.&lt;/p&gt;</summary><category term="Windows"></category><category term="Deep Learning"></category><category term="Machine Learning"></category><category term="Theano"></category><category term="Keras"></category><category term="Lasagne"></category></entry><entry><title>Python List Comprehensions Gone Crazy</title><link href="http://www.mikelanzetta.com/python-list-comprehensions-gone-crazy.html" rel="alternate"></link><published>2016-01-27T15:48:00-08:00</published><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2016-01-27:python-list-comprehensions-gone-crazy.html</id><summary type="html">&lt;p&gt;Recently, I was messing around with some image recognition tasks in
+&lt;p&gt;Setting up deep learning toolkits on Windows is fairly easy, and they've made it quite simple to experiment with them even if you have no background in the field. TensorFlow for Windows &lt;a href="https://github.com/tensorflow/tensorflow/issues/17"&gt;is coming&lt;/a&gt; but is gated on Bazel support - once it happens, I'll create a follow-up post on &lt;a href="http://www.intelligent-artifice.net/"&gt;my blog&lt;/a&gt; and go through a similar set of examples, but until then there is nothing stopping you from joining the Deep Learning revolution on your Windows machine.&lt;/p&gt;</content><category term="Windows"></category><category term="Deep Learning"></category><category term="Machine Learning"></category><category term="Theano"></category><category term="Keras"></category><category term="Lasagne"></category></entry><entry><title>Python List Comprehensions Gone Crazy</title><link href="http://www.mikelanzetta.com/python-list-comprehensions-gone-crazy.html" rel="alternate"></link><published>2016-01-27T15:48:00-08:00</published><updated>2016-01-27T15:48:00-08:00</updated><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2016-01-27:/python-list-comprehensions-gone-crazy.html</id><summary type="html">&lt;p&gt;Recently, I was messing around with some image recognition tasks in
+Python, and wanted to take a look at some of the images in my training
+set. At first, I was tempted to go open file explorer and walk around
+the directory tree spot-checking a few, but then I remembered …&lt;/p&gt;</summary><content type="html">&lt;p&gt;Recently, I was messing around with some image recognition tasks in
 Python, and wanted to take a look at some of the images in my training
 set. At first, I was tempted to go open file explorer and walk around
 the directory tree spot-checking a few, but then I remembered that it
@@ -216,7 +219,19 @@ notebook:&lt;/p&gt;
 &lt;span class="nb"&gt;map&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;display&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;Image&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;os&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;t&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;img&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
  &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;t&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;os&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;walk&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;root_dir&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; 
  &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;img&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;sample&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;t&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;endswith&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;.png&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;.jpg&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;))],&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)])&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;</summary><category term="Python"></category></entry><entry><title>TensorFlow on Azure Using Docker</title><link href="http://www.mikelanzetta.com/tensorflow-on-azure-using-docker.html" rel="alternate"></link><published>2015-12-08T14:33:00-08:00</published><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2015-12-08:tensorflow-on-azure-using-docker.html</id><summary type="html">&lt;p&gt;We live in a time of proliferating machine learning toolkits. From the
+&lt;/pre&gt;&lt;/div&gt;</content><category term="Python"></category></entry><entry><title>TensorFlow on Azure Using Docker</title><link href="http://www.mikelanzetta.com/tensorflow-on-azure-using-docker.html" rel="alternate"></link><published>2015-12-08T14:33:00-08:00</published><updated>2015-12-08T14:33:00-08:00</updated><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2015-12-08:/tensorflow-on-azure-using-docker.html</id><summary type="html">&lt;p&gt;We live in a time of proliferating machine learning toolkits. From the
+not-so-humble start of &lt;a href="http://opencv.org/"&gt;OpenCV&lt;/a&gt; (for computer
+vision), &lt;a href="http://www.cs.waikato.ac.nz/ml/weka/"&gt;Weka&lt;/a&gt;, and
+&lt;a href="http://caffe.berkeleyvision.org/"&gt;Caffe&lt;/a&gt;, in just a short period of
+time we've added &lt;a href="http://torch.ch/"&gt;Torch&lt;/a&gt;,
+&lt;a href="http://www.deeplearning.net/software/theano/"&gt;Theano&lt;/a&gt;,
+&lt;a href="http://research.microsoft.com/apps/pubs/?id=226641"&gt;CNTK&lt;/a&gt;and now
+&lt;a href="https://googleblog.blogspot.com/2015/11/tensorflow-smarter-machine-learning-for.html"&gt;TensorFlow&lt;/a&gt;and
+&lt;a href="http://siliconangle.com/blog/2015/11/24/ibm-open-sources-its-systemml-machine-learning-tech/"&gt;SystemML&lt;/a&gt;
+(and I'm not even mentioning things like
+&lt;a href="http://spark.apache.org/docs/latest/mllib-guide.html"&gt;SparkML&lt;/a&gt;and
+&lt;a href="https://azure.microsoft.com/en-us/services/machine-learning/"&gt;AzureML&lt;/a&gt;).
+As …&lt;/p&gt;</summary><content type="html">&lt;p&gt;We live in a time of proliferating machine learning toolkits. From the
 not-so-humble start of &lt;a href="http://opencv.org/"&gt;OpenCV&lt;/a&gt; (for computer
 vision), &lt;a href="http://www.cs.waikato.ac.nz/ml/weka/"&gt;Weka&lt;/a&gt;, and
 &lt;a href="http://caffe.berkeleyvision.org/"&gt;Caffe&lt;/a&gt;, in just a short period of
@@ -253,11 +268,11 @@ purposes.&lt;/p&gt;
 ever to fire up a new VM running a Docker engine. Using the now-GA "new"
 portal, just search for "Docker on Ubuntu":&lt;/p&gt;
 &lt;p&gt;&lt;img alt="Search for docker on ubuntu
-server" src="http://www.mikelanzetta.com/images/New_Docker.png" /&gt;&lt;/p&gt;
+server" src="http://www.mikelanzetta.com/images/New_Docker.png"&gt;&lt;/p&gt;
 &lt;p&gt;Once you select "Docker on Ubuntu Server" you'll be guided through the
 creation process:&lt;/p&gt;
 &lt;p&gt;&lt;img alt="Docker VM Creation
-Process" src="http://www.mikelanzetta.com/images/Docker_VM_Create.png" /&gt;&lt;/p&gt;
+Process" src="http://www.mikelanzetta.com/images/Docker_VM_Create.png"&gt;&lt;/p&gt;
 &lt;p&gt;Upon completion, your VM will start up, and you can then SSH into it and
 execute whatever Docker commands you wish.&lt;/p&gt;
 &lt;h2&gt;Installing TensorFlow&lt;/h2&gt;
@@ -278,10 +293,10 @@ VM, but we need to port-forward from the VM externally. To do so, we
 simple expose that port via the Azure portal by adding a new endpoint
 mapping 8888 to whichever external port you choose:&lt;/p&gt;
 &lt;p&gt;&lt;img alt="Exposing the Jupyter notebook
-endpoint" src="http://www.mikelanzetta.com/images/Expose_VM_Endpoint.png" /&gt;&lt;/p&gt;
+endpoint" src="http://www.mikelanzetta.com/images/Expose_VM_Endpoint.png"&gt;&lt;/p&gt;
 &lt;p&gt;Now that you've exposed the endpoint from Azure, you can fire up the
 Docker container by using the command:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;docker run -d -p 8888:8888 -v /notebook:/notebook xblaster/tensorflow-jupyter
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;docker run -d -p &lt;span class="m"&gt;8888&lt;/span&gt;:8888 -v /notebook:/notebook xblaster/tensorflow-jupyter
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -338,7 +353,11 @@ don't use this for anything you don't mind losing, and shut it down when
 you're done. If you want to secure your notebook, that's beyond the
 scope of this post, but the &lt;a href="http://jupyter-notebook.readthedocs.org/en/latest/public_server.html"&gt;documentation is easy to
 follow&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;Happy coding!&lt;/p&gt;</summary><category term="Azure"></category><category term="Containerization"></category><category term="Docker"></category><category term="Machine Learning"></category><category term="ML"></category><category term="Neural Networks"></category><category term="TensorFlow"></category></entry><entry><title>Leader Election in Node.js Using Azure Blob Storage</title><link href="http://www.mikelanzetta.com/leader-election-in-node-js-using-azure-blob-storage.html" rel="alternate"></link><published>2015-11-18T15:58:00-08:00</published><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2015-11-18:leader-election-in-node-js-using-azure-blob-storage.html</id><summary type="html">&lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/Leader_election"&gt;Leader Election&lt;/a&gt; is a
+&lt;p&gt;Happy coding!&lt;/p&gt;</content><category term="Azure"></category><category term="Containerization"></category><category term="Docker"></category><category term="Machine Learning"></category><category term="ML"></category><category term="Neural Networks"></category><category term="TensorFlow"></category></entry><entry><title>Leader Election in Node.js Using Azure Blob Storage</title><link href="http://www.mikelanzetta.com/leader-election-in-node-js-using-azure-blob-storage.html" rel="alternate"></link><published>2015-11-18T15:58:00-08:00</published><updated>2015-11-18T15:58:00-08:00</updated><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2015-11-18:/leader-election-in-node-js-using-azure-blob-storage.html</id><summary type="html">&lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/Leader_election"&gt;Leader Election&lt;/a&gt; is a
+mechanism for designating one instance of a group as the primary (or
+leader) and the others as secondaries (or followers), and is typically
+used for coordination amongst groups of machines in a distributed
+system. I first learned of leader election back in the olden times of …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/Leader_election"&gt;Leader Election&lt;/a&gt; is a
 mechanism for designating one instance of a group as the primary (or
 leader) and the others as secondaries (or followers), and is typically
 used for coordination amongst groups of machines in a distributed
@@ -364,7 +383,7 @@ it'd be a fun exercise, but not when you're up against a deadline.&lt;/p&gt;
 resource only one instance is allowed to "control" it. With Paxos for
 instance, any given round's result is "controlled" by the leader.&lt;/p&gt;
 &lt;p&gt;&lt;img alt="Paxos algorithm
-flow" src="http://www.mikelanzetta.com/images/paxos1_sm.png" /&gt;&lt;/p&gt;
+flow" src="http://www.mikelanzetta.com/images/paxos1_sm.png"&gt;&lt;/p&gt;
 &lt;p&gt;With database failover the leader controls all writes and forwards them to
 all followers. In the event of a leader failure that control should
 lapse to another instance after a certain amount of time has elapsed.
@@ -598,7 +617,13 @@ to manage Event Hub subscriptions in .NET (which I'll document in a
 future post).&lt;/p&gt;
 &lt;p&gt;Once again, all of the code above lives on GitHub in my &lt;a href="https://github.com/noodlefrenzy/node-cerulean"&gt;node-cerulean
 module&lt;/a&gt; with the
-permissive MIT license, and is published as npm module &lt;code&gt;cerulean&lt;/code&gt;.&lt;/p&gt;</summary><category term="Azure"></category><category term="Azure Blob"></category><category term="Distributed Systems"></category><category term="Node"></category></entry><entry><title>Managing a Corpus of Images in Azure Blob Storage</title><link href="http://www.mikelanzetta.com/managing-a-corpus-of-images-in-azure-blob-storage.html" rel="alternate"></link><published>2015-11-12T09:10:00-08:00</published><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2015-11-12:managing-a-corpus-of-images-in-azure-blob-storage.html</id><summary type="html">&lt;p&gt;As mentioned in &lt;a href="http://www.mikelanzetta.com/2015/09/image-stream-processing-to-blob-storage/"&gt;my previous
+permissive MIT license, and is published as npm module &lt;code&gt;cerulean&lt;/code&gt;.&lt;/p&gt;</content><category term="Azure"></category><category term="Azure Blob"></category><category term="Distributed Systems"></category><category term="Node"></category></entry><entry><title>Managing a Corpus of Images in Azure Blob Storage</title><link href="http://www.mikelanzetta.com/managing-a-corpus-of-images-in-azure-blob-storage.html" rel="alternate"></link><published>2015-11-12T09:10:00-08:00</published><updated>2015-11-12T09:10:00-08:00</updated><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2015-11-12:/managing-a-corpus-of-images-in-azure-blob-storage.html</id><summary type="html">&lt;p&gt;As mentioned in &lt;a href="http://www.mikelanzetta.com/2015/09/image-stream-processing-to-blob-storage/"&gt;my previous
+post&lt;/a&gt; I
+was recently working on a project training &lt;a href="http://www.readcube.com/articles/10.1038%2Fnature14539?shared_access_token=DaxW8O-3gQoqte9kXFFUANRgN0jAjWel9jnR3ZoTv0PU8PImtLRceRBJ32CtadUBIC1dchyTLE3_1-FCJeTkHXnB0vI4SmupYf4v2t_dG6HjI9FdSJMFDQ6iWCA7T6tcte2-dAp-SzhLtuCkfPvhI6x--H5W98_7bqOVwSnqt1Vqo6bzZ5ZM7lCIPdavoThMMSXBgYmSjKSk0CrGtb5KUw%3D%3D"&gt;Deep
+ConvNets&lt;/a&gt;
+for image recognition. As with any Machine Learning project one of the
+primary things you need to make it successful is large amounts of data -
+quality labeled data. With image-based convnets, though, the data …&lt;/p&gt;</summary><content type="html">&lt;p&gt;As mentioned in &lt;a href="http://www.mikelanzetta.com/2015/09/image-stream-processing-to-blob-storage/"&gt;my previous
 post&lt;/a&gt; I
 was recently working on a project training &lt;a href="http://www.readcube.com/articles/10.1038%2Fnature14539?shared_access_token=DaxW8O-3gQoqte9kXFFUANRgN0jAjWel9jnR3ZoTv0PU8PImtLRceRBJ32CtadUBIC1dchyTLE3_1-FCJeTkHXnB0vI4SmupYf4v2t_dG6HjI9FdSJMFDQ6iWCA7T6tcte2-dAp-SzhLtuCkfPvhI6x--H5W98_7bqOVwSnqt1Vqo6bzZ5ZM7lCIPdavoThMMSXBgYmSjKSk0CrGtb5KUw%3D%3D"&gt;Deep
 ConvNets&lt;/a&gt;
@@ -883,7 +908,12 @@ post or via
 Committers are always welcome as are questions and issues. I'll try and
 follow this up with additional work in this area so you can see the
 Entity Framework version but let me know if there are other aspects
-you'd like to see.&lt;/p&gt;</summary><category term="Azure"></category><category term="Azure Blob"></category></entry><entry><title>Image Stream Processing to Blob Storage</title><link href="http://www.mikelanzetta.com/image-stream-processing-to-blob-storage.html" rel="alternate"></link><published>2015-09-11T16:08:00-07:00</published><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2015-09-11:image-stream-processing-to-blob-storage.html</id><summary type="html">&lt;p&gt;I was recently working on a project to train &lt;a href="http://www.readcube.com/articles/10.1038%2Fnature14539?shared_access_token=DaxW8O-3gQoqte9kXFFUANRgN0jAjWel9jnR3ZoTv0PU8PImtLRceRBJ32CtadUBIC1dchyTLE3_1-FCJeTkHXnB0vI4SmupYf4v2t_dG6HjI9FdSJMFDQ6iWCA7T6tcte2-dAp-SzhLtuCkfPvhI6x--H5W98_7bqOVwSnqt1Vqo6bzZ5ZM7lCIPdavoThMMSXBgYmSjKSk0CrGtb5KUw%3D%3D"&gt;Deep
+you'd like to see.&lt;/p&gt;</content><category term="Azure"></category><category term="Azure Blob"></category></entry><entry><title>Image Stream Processing to Blob Storage</title><link href="http://www.mikelanzetta.com/image-stream-processing-to-blob-storage.html" rel="alternate"></link><published>2015-09-11T16:08:00-07:00</published><updated>2015-09-11T16:08:00-07:00</updated><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2015-09-11:/image-stream-processing-to-blob-storage.html</id><summary type="html">&lt;p&gt;I was recently working on a project to train &lt;a href="http://www.readcube.com/articles/10.1038%2Fnature14539?shared_access_token=DaxW8O-3gQoqte9kXFFUANRgN0jAjWel9jnR3ZoTv0PU8PImtLRceRBJ32CtadUBIC1dchyTLE3_1-FCJeTkHXnB0vI4SmupYf4v2t_dG6HjI9FdSJMFDQ6iWCA7T6tcte2-dAp-SzhLtuCkfPvhI6x--H5W98_7bqOVwSnqt1Vqo6bzZ5ZM7lCIPdavoThMMSXBgYmSjKSk0CrGtb5KUw%3D%3D"&gt;Deep
+ConvNets&lt;/a&gt;
+for image recognition tasks, and ran into several interesting problems
+along the way. This post is the first in a series outlining some of
+those problems and how I went about solving them, and it focuses on the
+problem …&lt;/p&gt;</summary><content type="html">&lt;p&gt;I was recently working on a project to train &lt;a href="http://www.readcube.com/articles/10.1038%2Fnature14539?shared_access_token=DaxW8O-3gQoqte9kXFFUANRgN0jAjWel9jnR3ZoTv0PU8PImtLRceRBJ32CtadUBIC1dchyTLE3_1-FCJeTkHXnB0vI4SmupYf4v2t_dG6HjI9FdSJMFDQ6iWCA7T6tcte2-dAp-SzhLtuCkfPvhI6x--H5W98_7bqOVwSnqt1Vqo6bzZ5ZM7lCIPdavoThMMSXBgYmSjKSk0CrGtb5KUw%3D%3D"&gt;Deep
 ConvNets&lt;/a&gt;
 for image recognition tasks, and ran into several interesting problems
 along the way. This post is the first in a series outlining some of
@@ -913,7 +943,7 @@ picture, the resulting payload looks something like:&lt;/p&gt;
 &lt;span class="nt"&gt;Content-Disposition&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;form-data&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt; &lt;span class="nt"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;image1&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt; &lt;span class="nt"&gt;filename&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;EpicSandwich.jpg&amp;quot;&lt;/span&gt;
 &lt;span class="nt"&gt;Content-Type&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;image&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nt"&gt;jpeg&lt;/span&gt;
 
-&lt;span class="o"&gt;..&lt;/span&gt;&lt;span class="nc"&gt;.bits&lt;/span&gt;&lt;span class="o"&gt;...&lt;/span&gt;
+&lt;span class="o"&gt;..&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;bits&lt;/span&gt;&lt;span class="o"&gt;...&lt;/span&gt;
 &lt;span class="nt"&gt;-----------------------------8675309--&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
@@ -1125,7 +1155,10 @@ dependency on GDI+ or other low-level image stream processing libraries.&lt;/p&g
 &lt;p&gt;As always, I've made my code available &lt;a href="https://github.com/noodlefrenzy/asp-blob-uploader"&gt;on GitHub as
 asp-blob-uploader&lt;/a&gt;
 under the MIT permissive license - feel free to fork, submit PRs, and
-open issues as you see fit.&lt;/p&gt;</summary><category term=".NET"></category><category term="ASP.Net"></category><category term="Azure"></category><category term="Azure Blob"></category><category term="C#"></category><category term="SQL Azure"></category></entry><entry><title>Real-time Mapping with SignalR and Event Hubs</title><link href="http://www.mikelanzetta.com/real-time-mapping-with-signalr-and-event-hubs.html" rel="alternate"></link><published>2015-08-18T10:20:00-07:00</published><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2015-08-18:real-time-mapping-with-signalr-and-event-hubs.html</id><summary type="html">&lt;p&gt;One of my recent projects had to do with watching people moving around
+open issues as you see fit.&lt;/p&gt;</content><category term=".NET"></category><category term="ASP.Net"></category><category term="Azure"></category><category term="Azure Blob"></category><category term="C#"></category><category term="SQL Azure"></category></entry><entry><title>Real-time Mapping with SignalR and Event Hubs</title><link href="http://www.mikelanzetta.com/real-time-mapping-with-signalr-and-event-hubs.html" rel="alternate"></link><published>2015-08-18T10:20:00-07:00</published><updated>2015-08-18T10:20:00-07:00</updated><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2015-08-18:/real-time-mapping-with-signalr-and-event-hubs.html</id><summary type="html">&lt;p&gt;One of my recent projects had to do with watching people moving around
+the city - not in a creepy stalker way, but trying to get some sense of
+where people congregated and general walking traffic flow. As anyone who
+has dealt with large data, especially large geo data can tell …&lt;/p&gt;</summary><content type="html">&lt;p&gt;One of my recent projects had to do with watching people moving around
 the city - not in a creepy stalker way, but trying to get some sense of
 where people congregated and general walking traffic flow. As anyone who
 has dealt with large data, especially large geo data can tell you -
@@ -1133,7 +1166,7 @@ visualization is everything. Somehow looking at a screen full of
 lat/long coordinates and timestamps just doesn't tell you a story like
 seeing things play out on the
 map.&lt;/p&gt;
-&lt;p&gt;&lt;a href="http://www.mikelanzetta.com/images/route_animation.gif"&gt;&lt;img alt="route_animation" src="http://www.mikelanzetta.com/images/route_animation.gif" /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://www.mikelanzetta.com/images/route_animation.gif"&gt;&lt;img alt="route_animation" src="http://www.mikelanzetta.com/images/route_animation.gif"&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;So what if you have large amounts of geo data coming in from different
 users, say via a high-scale queuing mechanism like Event Hubs? What if
 you want to display that to anyone who wants to see it, in
@@ -1505,7 +1538,11 @@ be done with little code using Event Hubs and SignalR. As always, my
 code is &lt;a href="https://github.com/noodlefrenzy/asp-mappy"&gt;up on GitHub&lt;/a&gt;and is
 MIT license, so do with it what you will. Let me know via comments,
 twitter, or GitHub issues if you have any feedback - I'd love to hear
-it.&lt;/p&gt;</summary><category term=".NET"></category><category term="C#"></category><category term="EventHub"></category><category term="Geo"></category><category term="WebSockets"></category></entry><entry><title>My Trip to CascadiaFest</title><link href="http://www.mikelanzetta.com/my-trip-to-cascadiafest.html" rel="alternate"></link><published>2015-08-11T11:37:00-07:00</published><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2015-08-11:my-trip-to-cascadiafest.html</id><summary type="html">&lt;p&gt;... or "who knew there was anything in Blaine, Washington?"&lt;/p&gt;
+it.&lt;/p&gt;</content><category term=".NET"></category><category term="C#"></category><category term="EventHub"></category><category term="Geo"></category><category term="WebSockets"></category></entry><entry><title>My Trip to CascadiaFest</title><link href="http://www.mikelanzetta.com/my-trip-to-cascadiafest.html" rel="alternate"></link><published>2015-08-11T11:37:00-07:00</published><updated>2015-08-11T11:37:00-07:00</updated><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2015-08-11:/my-trip-to-cascadiafest.html</id><summary type="html">&lt;p&gt;... or "who knew there was anything in Blaine, Washington?"&lt;/p&gt;
+&lt;p&gt;I got back recently from giving my first talk at &lt;a href="http://2015.cascadiajs.com/"&gt;CascadiaFest
+2015&lt;/a&gt;, held in the beautiful Semiahmoo
+Resort outside of Blaine, WA. As a long-term Seattle resident, my only
+knowledge of Blaine was as "that place where we spend too much …&lt;/p&gt;</summary><content type="html">&lt;p&gt;... or "who knew there was anything in Blaine, Washington?"&lt;/p&gt;
 &lt;p&gt;I got back recently from giving my first talk at &lt;a href="http://2015.cascadiajs.com/"&gt;CascadiaFest
 2015&lt;/a&gt;, held in the beautiful Semiahmoo
 Resort outside of Blaine, WA. As a long-term Seattle resident, my only
@@ -1527,19 +1564,19 @@ others from even farther afield.&lt;/p&gt;
 &lt;p&gt;The conference was held at the &lt;a href="http://www.semiahmoo.com/"&gt;Semiahmoo
 Resort&lt;/a&gt;, which was actually quite
 beautiful. &lt;/p&gt;
-&lt;p&gt;&lt;img alt="Sunset at Semiahmoo Resort" src="http://www.mikelanzetta.com/images/semiahmoo_sunset_sm.jpg" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Sunset at Semiahmoo Resort" src="http://www.mikelanzetta.com/images/semiahmoo_sunset_sm.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;The grounds were large, it was surrounded by water, had a spa and a
 pool - honestly I had no idea there was any place this nice between
 Seattle and Canada. &lt;/p&gt;
-&lt;p&gt;&lt;img alt="Semiahmoo Resort coastal pic during the day" src="http://www.mikelanzetta.com/images/semiahmoo_coast_sm.jpg" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Semiahmoo Resort coastal pic during the day" src="http://www.mikelanzetta.com/images/semiahmoo_coast_sm.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;The lines to get in on the first day were long - it seemed like if they'd
 let people check in the night before, they could have prevented some
 initial headaches.&lt;/p&gt;
-&lt;p&gt;&lt;img alt="CascadiaFest Line" src="http://www.mikelanzetta.com/images/cascadia_line_sm.jpg" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="CascadiaFest Line" src="http://www.mikelanzetta.com/images/cascadia_line_sm.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;But once that initial hurdle was passed, the rest of the conference was
 incredibly well run. The conference badges were far beyond any I've ever
 received&lt;/p&gt;
-&lt;p&gt;&lt;img alt="Cascadia Speaker Badge" src="http://www.mikelanzetta.com/images/cascadia_badge_sm.jpg" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Cascadia Speaker Badge" src="http://www.mikelanzetta.com/images/cascadia_badge_sm.jpg"&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;solid laser-etched wood, definitely one to be kept. There was some
 other swag, including a great CascadiaFest hoodie, but the badge was a
@@ -1625,7 +1662,11 @@ learn quite a bit.&lt;/p&gt;
 &lt;p&gt;I'd also like to give a shout-out to &lt;a href="http://www.tougocoffee.com/"&gt;Tougo
 Coffee&lt;/a&gt; for keeping me wired throughout the
 entire three-day period, and whatever genius on the CascadiaFest team
-who decided to bring them up to Semiahmoo.&lt;/p&gt;</summary><category term="AMQP"></category><category term="Cascadia"></category><category term="Conferences"></category><category term="Javascript"></category><category term="Nitrogen"></category><category term="Node"></category></entry><entry><title>Using Project Oxford To Pull Entities From Images</title><link href="http://www.mikelanzetta.com/using-project-oxford-to-pull-entities-from-images.html" rel="alternate"></link><published>2015-05-14T11:06:00-07:00</published><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2015-05-14:using-project-oxford-to-pull-entities-from-images.html</id><summary type="html">&lt;p&gt;I love my job. Less than a week after watching the amazing announcements
+who decided to bring them up to Semiahmoo.&lt;/p&gt;</content><category term="AMQP"></category><category term="Cascadia"></category><category term="Conferences"></category><category term="Javascript"></category><category term="Nitrogen"></category><category term="Node"></category></entry><entry><title>Using Project Oxford To Pull Entities From Images</title><link href="http://www.mikelanzetta.com/using-project-oxford-to-pull-entities-from-images.html" rel="alternate"></link><published>2015-05-14T11:06:00-07:00</published><updated>2015-05-14T11:06:00-07:00</updated><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2015-05-14:/using-project-oxford-to-pull-entities-from-images.html</id><summary type="html">&lt;p&gt;I love my job. Less than a week after watching the amazing announcements
+at &lt;a href="http://www.buildwindows.com/"&gt;//Build2015&lt;/a&gt;, I had a chance to try
+using some of them on a real project as part of a hackathon.
+Unfortunately, I can't share the actual problem they are trying to
+solve, but the work itself …&lt;/p&gt;</summary><content type="html">&lt;p&gt;I love my job. Less than a week after watching the amazing announcements
 at &lt;a href="http://www.buildwindows.com/"&gt;//Build2015&lt;/a&gt;, I had a chance to try
 using some of them on a real project as part of a hackathon.
 Unfortunately, I can't share the actual problem they are trying to
@@ -1655,7 +1696,7 @@ GitHub&lt;/a&gt;under MIT
 license, but probably not quite as terse (I've removed braces from
 single statements etc. to mitigate TL;DR syndrome).&lt;/p&gt;
 &lt;h2&gt;The Input&lt;/h2&gt;
-&lt;p&gt;&lt;img alt="Morpheus: What if I told you it was staring you right in the face?" src="http://www.mikelanzetta.com/images/1wL61Ro1.jpg" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Morpheus: What if I told you it was staring you right in the face?" src="http://www.mikelanzetta.com/images/1wL61Ro1.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;So what sort of input data should we use? It needs to be images with
 structured text, and the text should have both an overall
 intent/category as well as individual entities within it. Where could we
@@ -1771,7 +1812,7 @@ single string, which I do using the following:&lt;/p&gt;
 &lt;p&gt;Joining all of the words' text together for all lines in all
 regions. Let's take a look at the results.&lt;/p&gt;
 &lt;h2&gt;Results... and a Realization&lt;/h2&gt;
-&lt;p&gt;&lt;img alt="Stuff" src="http://www.mikelanzetta.com/images/5ocZvsW1.jpg" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Stuff" src="http://www.mikelanzetta.com/images/5ocZvsW1.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;So running the OCR on our example image above, I notice a problem - it's
 missed a chunk of text and returned "what if it was staring you right in
 the face?". Crap, well at least the text it did find it got right.
@@ -1799,10 +1840,10 @@ adding "utterances" - for each utterance you pick an intent and then
 label any entities within it. You can then re-train the model with the
 button in the bottom left and see how it did - here's a shot of what my
 model looks like after a few training utterances have been added:&lt;/p&gt;
-&lt;p&gt;&lt;a href="http://www.mikelanzetta.com/images/luis_training.png"&gt;&lt;img alt="LUIS_Training" src="http://www.mikelanzetta.com/images/luis_training.png" /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://www.mikelanzetta.com/images/luis_training.png"&gt;&lt;img alt="LUIS_Training" src="http://www.mikelanzetta.com/images/luis_training.png"&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;Now that it's trained, you can go back to your application list and hit
 "Publish":&lt;/p&gt;
-&lt;p&gt;&lt;a href="http://www.mikelanzetta.com/images/LUIS_Publish.png"&gt;&lt;img alt="LUIS_Publish" src="http://www.mikelanzetta.com/images/LUIS_Publish.png" /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://www.mikelanzetta.com/images/LUIS_Publish.png"&gt;&lt;img alt="LUIS_Publish" src="http://www.mikelanzetta.com/images/LUIS_Publish.png"&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;Once it's published, you can just invoke it with the given URL and the
 utterance you want it to try and tag. For the Boromir example above,
 I've run it through the single-channel filter (blue) and then passed it
@@ -1844,7 +1885,10 @@ text. Not too surprising since I've over-fit the model, but it gives you
 some ideas of how you can string Oxford, LUIS, and some simple image
 processing together to build a pipeline. Once again, all of this code is
 &lt;a href="https://github.com/noodlefrenzy/image-to-entities"&gt;on GitHub&lt;/a&gt; under and
-MIT license, so feel free to use it as you see fit.&lt;/p&gt;</summary><category term="C#"></category><category term="Entity Extraction"></category><category term="Machine Learning"></category><category term="ML"></category><category term="MSR"></category><category term="OCR"></category><category term="Project Oxford"></category></entry><entry><title>Storm Bolts Using Reactive Extensions</title><link href="http://www.mikelanzetta.com/storm-bolts-using-reactive-extensions.html" rel="alternate"></link><published>2015-04-07T11:03:00-07:00</published><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2015-04-07:storm-bolts-using-reactive-extensions.html</id><summary type="html">&lt;p&gt;As you might have noticed in some of my other posts, I've spent my share
+MIT license, so feel free to use it as you see fit.&lt;/p&gt;</content><category term="C#"></category><category term="Entity Extraction"></category><category term="Machine Learning"></category><category term="ML"></category><category term="MSR"></category><category term="OCR"></category><category term="Project Oxford"></category></entry><entry><title>Storm Bolts Using Reactive Extensions</title><link href="http://www.mikelanzetta.com/storm-bolts-using-reactive-extensions.html" rel="alternate"></link><published>2015-04-07T11:03:00-07:00</published><updated>2015-04-07T11:03:00-07:00</updated><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2015-04-07:/storm-bolts-using-reactive-extensions.html</id><summary type="html">&lt;p&gt;As you might have noticed in some of my other posts, I've spent my share
+of time with Azure EventHubs.  It's a great ingestion pipeline able to
+cope with some of the highest scale workloads you can throw at it, but
+once the data is in there it's another matter …&lt;/p&gt;</summary><content type="html">&lt;p&gt;As you might have noticed in some of my other posts, I've spent my share
 of time with Azure EventHubs.  It's a great ingestion pipeline able to
 cope with some of the highest scale workloads you can throw at it, but
 once the data is in there it's another matter to pull it out and do
@@ -1864,7 +1908,7 @@ a future post I will discuss using this structure to process input
 from EventHubs. Programming note: all of the code in this post is
 &lt;a href="https://github.com/noodlefrenzy/ReactiveStorm"&gt;available on GitHub&lt;/a&gt;.&lt;/p&gt;
 &lt;h2&gt;Into the Storm&lt;/h2&gt;
-&lt;p&gt;&lt;img alt="topology" src="http://www.mikelanzetta.com/images/topology1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="topology" src="http://www.mikelanzetta.com/images/topology1.png"&gt;&lt;/p&gt;
 &lt;p&gt;Like any other data processing pipeline, Apache Storm consists of a way to
 get data into the system followed by a series of processing
 steps resulting in one or more data outputs.  In Storm, the
@@ -1888,7 +1932,7 @@ installing the tools, connecting to your subscription and getting
 started.  You'll notice a host of new project types specifically for
 working with HDInsight once you've installed it and restarted VS - we
 want "Storm Application".&lt;/p&gt;
-&lt;p&gt;&lt;img alt="HDInsight -&amp;gt; Storm Application" src="http://www.mikelanzetta.com/images/create_storm_project.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="HDInsight -&amp;gt; Storm Application" src="http://www.mikelanzetta.com/images/create_storm_project.png"&gt;&lt;/p&gt;
 &lt;p&gt;When you create the project, you'll wind up with a C# Class Library
 project with a few files you can use as templates to build out your
 storm Topology - we'll be replacing most of those, as outlined below.
@@ -2282,7 +2326,11 @@ accomplish.  All of the code above is &lt;a href="https://github.com/noodlefren
 GitHub&lt;/a&gt;- feel free to
 clone it, modify it to your heart's content, and if you find any issues
 file them or submit a PR.  I hope I've helped, and comments, as always,
-are welcome.&lt;/p&gt;</summary><category term=".NET"></category><category term="Apache Storm"></category><category term="C#"></category><category term="Distributed Systems"></category><category term="Reactive"></category></entry><entry><title>Time-Series Processing in Azure ML Using Python</title><link href="http://www.mikelanzetta.com/time-series-processing-in-azure-ml-using-python.html" rel="alternate"></link><published>2015-03-14T22:09:00-07:00</published><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2015-03-14:time-series-processing-in-azure-ml-using-python.html</id><summary type="html">&lt;p&gt;With the general availability of Azure Machine Learning, the team has
+are welcome.&lt;/p&gt;</content><category term=".NET"></category><category term="Apache Storm"></category><category term="C#"></category><category term="Distributed Systems"></category><category term="Reactive"></category></entry><entry><title>Time-Series Processing in Azure ML Using Python</title><link href="http://www.mikelanzetta.com/time-series-processing-in-azure-ml-using-python.html" rel="alternate"></link><published>2015-03-14T22:09:00-07:00</published><updated>2015-03-14T22:09:00-07:00</updated><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2015-03-14:/time-series-processing-in-azure-ml-using-python.html</id><summary type="html">&lt;p&gt;With the general availability of Azure Machine Learning, the team has
+added a ton of new features.  Perhaps the one I'm most excited about is
+the addition of a general "Execute Python Script" module.  I've been
+meaning to brush up on my Python skills, and with the inclusion of
+Pandas …&lt;/p&gt;</summary><content type="html">&lt;p&gt;With the general availability of Azure Machine Learning, the team has
 added a ton of new features.  Perhaps the one I'm most excited about is
 the addition of a general "Execute Python Script" module.  I've been
 meaning to brush up on my Python skills, and with the inclusion of
@@ -2299,7 +2347,7 @@ support for
 time-series&lt;/a&gt;
 data manipulation.  The ability to normalize dates, roll up into
 aggregates, and easily slice ranges is phenomenal.&lt;/p&gt;
-&lt;p&gt;&lt;img alt="execute_python" src="http://www.mikelanzetta.com/images/execute_python.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="execute_python" src="http://www.mikelanzetta.com/images/execute_python.png"&gt;&lt;/p&gt;
 &lt;p&gt;To get started, we'll pull in some time-series data, and mess around
 with it in the Python module - set up an experiment with a Reader
 connected to an "Execute Python Script" module.&lt;/p&gt;
@@ -2311,7 +2359,7 @@ TSLA: http://ichart.finance.yahoo.com/table.csv?s=TSLA.  This returns
 data as a CSV with a header row, leading to the final Reader
 configuration
 below.&lt;/p&gt;
-&lt;p&gt;&lt;img alt="ichart_reader_config" src="http://www.mikelanzetta.com/images/ichart_reader_config.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="ichart_reader_config" src="http://www.mikelanzetta.com/images/ichart_reader_config.png"&gt;&lt;/p&gt;
 &lt;p&gt;Once we have the data coming in, it's time to do something fun with it.
  Let's take a first crack at it - we'll take the input and turn it into
 monthly means.  In regular Python with Pandas, that looks like:&lt;/p&gt;
@@ -2400,7 +2448,7 @@ conversion before our set_index call:&lt;/p&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="orig_output" src="http://www.mikelanzetta.com/images/orig_output.png" /&gt; &lt;/p&gt;
+&lt;p&gt;&lt;img alt="orig_output" src="http://www.mikelanzetta.com/images/orig_output.png"&gt; &lt;/p&gt;
 &lt;p&gt;This worked!  However, looking at the output there is no Date column - so I'm
 guessing that in the same way the input data didn't pull the first
 column as an index, the output doesn't write out the index either.
@@ -2429,7 +2477,13 @@ I'll let the AzureML team know.  The final code looks like:&lt;/p&gt;
 
 &lt;p&gt;I hope this helps!  If you find any other quirks let me know - I'll
 definitely let the AzureML team know, and add the workarounds to my
-list.&lt;/p&gt;</summary><category term="Azure"></category><category term="Machine Learning"></category><category term="ML"></category><category term="Python"></category><category term="Time Series"></category></entry><entry><title>Collaboration on Open-Source Node Projects</title><link href="http://www.mikelanzetta.com/collaboration-on-open-source-node-projects.html" rel="alternate"></link><published>2015-02-11T11:38:00-08:00</published><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2015-02-11:collaboration-on-open-source-node-projects.html</id><summary type="html">&lt;p&gt;I've been working on a &lt;a href="https://github.com/noodlefrenzy/node-amqp-1-0"&gt;Node-based AMQP
+list.&lt;/p&gt;</content><category term="Azure"></category><category term="Machine Learning"></category><category term="ML"></category><category term="Python"></category><category term="Time Series"></category></entry><entry><title>Collaboration on Open-Source Node Projects</title><link href="http://www.mikelanzetta.com/collaboration-on-open-source-node-projects.html" rel="alternate"></link><published>2015-02-11T11:38:00-08:00</published><updated>2015-02-11T11:38:00-08:00</updated><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2015-02-11:/collaboration-on-open-source-node-projects.html</id><summary type="html">&lt;p&gt;I've been working on a &lt;a href="https://github.com/noodlefrenzy/node-amqp-1-0"&gt;Node-based AMQP
+1.0&lt;/a&gt; library and
+&lt;a href="https://github.com/noodlefrenzy/node-sbus-amqp10"&gt;wrappers&lt;/a&gt; that allow
+it to talk ServiceBus and EventHub easily with a colleague of mine at
+work, and it's taught me many things about doing Node.js
+development, collaborating on GitHub, and publishing on npmjs.  The
+documentation is mostly …&lt;/p&gt;</summary><content type="html">&lt;p&gt;I've been working on a &lt;a href="https://github.com/noodlefrenzy/node-amqp-1-0"&gt;Node-based AMQP
 1.0&lt;/a&gt; library and
 &lt;a href="https://github.com/noodlefrenzy/node-sbus-amqp10"&gt;wrappers&lt;/a&gt; that allow
 it to talk ServiceBus and EventHub easily with a colleague of mine at
@@ -2571,13 +2625,13 @@ GitHub and can then go deal with the PRs.  For example, I've submitted
 this change to &lt;code&gt;node-sbus&lt;/code&gt; from my fork to the originator.  Since I'm a
 contributor on the upstream repo, the view I see when I go to the Pull
 Requests tab on that repo looks like:&lt;/p&gt;
-&lt;p&gt;&lt;img alt="merge_pr" src="http://www.mikelanzetta.com/images/merge_pr.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="merge_pr" src="http://www.mikelanzetta.com/images/merge_pr.png"&gt;&lt;/p&gt;
 &lt;p&gt;Note that I can automatically merge this PR, but since I have Travis set
 up it's telling me that it hasn't yet passed the build.  I should wait
 until I get a green light on that before considering accepting the PR -
 in the meantime I can click on the one change to go to a diff view and
 review it:&lt;/p&gt;
-&lt;p&gt;&lt;img alt="pr_diff" src="http://www.mikelanzetta.com/images/pr_diff_sm.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="pr_diff" src="http://www.mikelanzetta.com/images/pr_diff_sm.png"&gt;&lt;/p&gt;
 &lt;p&gt;Looks good to me, and the Travis build has now passed (not strictly
 necessary since this was just a content change), so I accept the PR.&lt;/p&gt;
 &lt;h2&gt;Multiple Owners, Multiple Publishers&lt;/h2&gt;
@@ -2586,14 +2640,18 @@ add them as a collaborator.  You'll need to add them in both GitHub and
 NPM in order to make them a full peer for pushing/handling PRs and
 publishing.  For GitHub, you'll add them as a collaborator to your
 project using Settings-&gt;Collaborators:&lt;/p&gt;
-&lt;p&gt;&lt;img alt="github_collaborators" src="http://www.mikelanzetta.com/images/github_collaborators.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="github_collaborators" src="http://www.mikelanzetta.com/images/github_collaborators.png"&gt;&lt;/p&gt;
 &lt;p&gt;And for NPM you'll need to &lt;a href="https://docs.npmjs.com/cli/owner" title="NPM Owner"&gt;add the user as an
 owner&lt;/a&gt;.  This should allow
 both of you to push changes, integrate pull requests, and publish new
 versions.&lt;/p&gt;
 &lt;p&gt;Hopefully this has been helpful - let me know if I've missed any basics,
 and if you have any other suggestions or ideas for collaborating on OSS
-projects.&lt;/p&gt;</summary><category term="GitHub"></category><category term="Node"></category><category term="NPM"></category></entry><entry><title>Node.js and .NET Talking EventHub, Together</title><link href="http://www.mikelanzetta.com/node-js-and-net-talking-eventhub-together.html" rel="alternate"></link><published>2015-01-28T13:48:00-08:00</published><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2015-01-28:node-js-and-net-talking-eventhub-together.html</id><summary type="html">&lt;p&gt;Over the past few months, I've been working on &lt;a href="https://github.com/noodlefrenzy/node-amqp10"&gt;a Node.js client for
+projects.&lt;/p&gt;</content><category term="GitHub"></category><category term="Node"></category><category term="NPM"></category></entry><entry><title>Node.js and .NET Talking EventHub, Together</title><link href="http://www.mikelanzetta.com/node-js-and-net-talking-eventhub-together.html" rel="alternate"></link><published>2015-01-28T13:48:00-08:00</published><updated>2015-01-28T13:48:00-08:00</updated><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2015-01-28:/node-js-and-net-talking-eventhub-together.html</id><summary type="html">&lt;p&gt;Over the past few months, I've been working on &lt;a href="https://github.com/noodlefrenzy/node-amqp10"&gt;a Node.js client for
+AMQP 1.0&lt;/a&gt; - the &lt;em&gt;lingua
+franca&lt;/em&gt; of Azure's EventHub and ServiceBus.  Well, the EventHub support
+is just about complete, and ServiceBus Topics and Queues should follow
+shortly thereafter (it's just me working on it, so it's …&lt;/p&gt;</summary><content type="html">&lt;p&gt;Over the past few months, I've been working on &lt;a href="https://github.com/noodlefrenzy/node-amqp10"&gt;a Node.js client for
 AMQP 1.0&lt;/a&gt; - the &lt;em&gt;lingua
 franca&lt;/em&gt; of Azure's EventHub and ServiceBus.  Well, the EventHub support
 is just about complete, and ServiceBus Topics and Queues should follow
@@ -2936,7 +2994,13 @@ F#-based workers processing EventHub data-streams computing aggregates,
 doing predictive analytics, or driving future work.  I hope I've fired
 up some of you to play around with EventHub - I'd love people to use my
 module, and if you have any feedback please let me know, either through
-comments here or through pull requests :)  Happy eventing!&lt;/p&gt;</summary><category term=".NET"></category><category term="AMQP"></category><category term="Azure"></category><category term="C#"></category><category term="EventHub"></category><category term="Node"></category></entry><entry><title>Data Cleaning with AzureML and R: Dates</title><link href="http://www.mikelanzetta.com/data-cleaning-with-azureml-and-r-dates.html" rel="alternate"></link><published>2015-01-19T17:42:00-08:00</published><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2015-01-19:data-cleaning-with-azureml-and-r-dates.html</id><summary type="html">&lt;p&gt;I've been working with
+comments here or through pull requests :)  Happy eventing!&lt;/p&gt;</content><category term=".NET"></category><category term="AMQP"></category><category term="Azure"></category><category term="C#"></category><category term="EventHub"></category><category term="Node"></category></entry><entry><title>Data Cleaning with AzureML and R: Dates</title><link href="http://www.mikelanzetta.com/data-cleaning-with-azureml-and-r-dates.html" rel="alternate"></link><published>2015-01-19T17:42:00-08:00</published><updated>2015-01-19T17:42:00-08:00</updated><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2015-01-19:/data-cleaning-with-azureml-and-r-dates.html</id><summary type="html">&lt;p&gt;I've been working with
+&lt;a href="http://azure.microsoft.com/en-us/services/machine-learning/" title="Azure Machine Learning"&gt;AzureML&lt;/a&gt;for
+a while now, and it's fantastic.  Having done ML in a few other
+platforms over the years, the ease with which I can put together a few
+regression models, do parameter-sweeps, and compare results is just
+groundbreaking.&lt;/p&gt;
+&lt;p&gt;However, one area where it isn't quite …&lt;/p&gt;</summary><content type="html">&lt;p&gt;I've been working with
 &lt;a href="http://azure.microsoft.com/en-us/services/machine-learning/" title="Azure Machine Learning"&gt;AzureML&lt;/a&gt;for
 a while now, and it's fantastic.  Having done ML in a few other
 platforms over the years, the ease with which I can put together a few
@@ -2984,20 +3048,20 @@ data.set&lt;span class="o"&gt;$&lt;/span&gt;hourOfDay &lt;span class="o"&gt;=&lt
 don't waste your compute cycles until you need them), and it worked
 fine, so I sent it through AzureML... BOOM!  The R module failed, and
 gave me a bunch of output, with the important pieces right here:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="x"&gt;[ModuleOutput] Warning messages:&lt;/span&gt;
-&lt;span class="x"&gt;[ModuleOutput] &lt;/span&gt;
-&lt;span class="x"&gt;[ModuleOutput] 1: In strptime(data.set&lt;/span&gt;&lt;span class="p"&gt;$&lt;/span&gt;&lt;span class="nv"&gt;weirdDateTime&lt;/span&gt;&lt;span class="x"&gt;, &amp;quot;%Y:%m:%d %H:%M:%S&amp;quot;) :&lt;/span&gt;
-&lt;span class="x"&gt;[ModuleOutput] &lt;/span&gt;
-&lt;span class="x"&gt;[ModuleOutput]   unable to identify current timezone &amp;#39;C&amp;#39;:&lt;/span&gt;
-&lt;span class="x"&gt;[ModuleOutput] &lt;/span&gt;
-&lt;span class="x"&gt;[ModuleOutput] please set environment variable &amp;#39;TZ&amp;#39;&lt;/span&gt;
-&lt;span class="x"&gt;[ModuleOutput] &lt;/span&gt;
-&lt;span class="x"&gt;[ModuleOutput] 2: In strptime(data.set&lt;/span&gt;&lt;span class="p"&gt;$&lt;/span&gt;&lt;span class="nv"&gt;weirdDateTime&lt;/span&gt;&lt;span class="x"&gt;, &amp;quot;%Y:%m:%d %H:%M:%S&amp;quot;) :&lt;/span&gt;
-&lt;span class="x"&gt;[ModuleOutput] &lt;/span&gt;
-&lt;span class="x"&gt;[ModuleOutput]   unknown timezone &amp;#39;localtime&amp;#39;&lt;/span&gt;
-&lt;span class="x"&gt;[ModuleOutput] &lt;/span&gt;
-&lt;span class="x"&gt;[ModuleOutput] DllModuleHost Stop: 1 : DllModuleMethod::Execute. Duration: 00:00:04.6139721&lt;/span&gt;
-&lt;span class="x"&gt;[ModuleOutput] DllModuleHost Error: 1 : Program::Main encountered fatal exception: Microsoft.Analytics.Exceptions.ErrorMapping+ModuleException: Error 1000: RPackage library exception: Failed to convert RObject to DataSet ---&amp;gt; Microsoft.Analytics.Modules.R.ErrorHandling.RException: Failed to convert RObject to DataSet ---&amp;gt; Microsoft.Analytics.Modules.R.ErrorHandling.RNotImplementedException: Parser is not implemented for the Microsoft.MetaAnalytics.RDataSupport.RObject`1[Microsoft.MetaAnalytics.RDataSupport.RObject] type or data is invalid&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;[ModuleOutput] Warning messages:
+[ModuleOutput] 
+[ModuleOutput] 1: In strptime(data.set$weirdDateTime, &amp;quot;%Y:%m:%d %H:%M:%S&amp;quot;) :
+[ModuleOutput] 
+[ModuleOutput]   unable to identify current timezone &amp;#39;C&amp;#39;:
+[ModuleOutput] 
+[ModuleOutput] please set environment variable &amp;#39;TZ&amp;#39;
+[ModuleOutput] 
+[ModuleOutput] 2: In strptime(data.set$weirdDateTime, &amp;quot;%Y:%m:%d %H:%M:%S&amp;quot;) :
+[ModuleOutput] 
+[ModuleOutput]   unknown timezone &amp;#39;localtime&amp;#39;
+[ModuleOutput] 
+[ModuleOutput] DllModuleHost Stop: 1 : DllModuleMethod::Execute. Duration: 00:00:04.6139721
+[ModuleOutput] DllModuleHost Error: 1 : Program::Main encountered fatal exception: Microsoft.Analytics.Exceptions.ErrorMapping+ModuleException: Error 1000: RPackage library exception: Failed to convert RObject to DataSet ---&amp;gt; Microsoft.Analytics.Modules.R.ErrorHandling.RException: Failed to convert RObject to DataSet ---&amp;gt; Microsoft.Analytics.Modules.R.ErrorHandling.RNotImplementedException: Parser is not implemented for the Microsoft.MetaAnalytics.RDataSupport.RObject`1[Microsoft.MetaAnalytics.RDataSupport.RObject] type or data is invalid
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -3009,7 +3073,7 @@ change.  I tried setting the TZ environment variable manually
 using &lt;code&gt;Sys.setenv(TZ="GMT")&lt;/code&gt; - no dice.  So I ran the same code, but
 used my other "what class is this?" code to tell me what garbage it
 might be generating:&lt;/p&gt;
-&lt;p&gt;&lt;img alt="r_type_conversions" src="http://www.mikelanzetta.com/images/r_type_conversions.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="r_type_conversions" src="http://www.mikelanzetta.com/images/r_type_conversions.png"&gt;&lt;/p&gt;
 &lt;p&gt;Hmm, these types look fine.  I spent some time looking around, trying
 different things, and finally asked the people on the Azure ML team.
  They told me that they don't yet support the POSIXlt data type on
@@ -3029,7 +3093,10 @@ data.set&lt;span class="o"&gt;$&lt;/span&gt;asDateTime &lt;span class="o"&gt;=&l
 
 &lt;p&gt;Hopefully this simple example gives you some insight into how to
 diagnose issues with Azure ML's R module, and some insight into what it
-provides and fails to provide.  There's much more to come.&lt;/p&gt;</summary><category term="Azure"></category><category term="AzureML"></category><category term="ML"></category><category term="R"></category></entry><entry><title>I Miss Integers</title><link href="http://www.mikelanzetta.com/i-miss-integers.html" rel="alternate"></link><published>2015-01-12T16:53:00-08:00</published><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2015-01-12:i-miss-integers.html</id><summary type="html">&lt;p&gt;One of the worst things about working with Node.js is the .js part - as
+provides and fails to provide.  There's much more to come.&lt;/p&gt;</content><category term="Azure"></category><category term="AzureML"></category><category term="ML"></category><category term="R"></category></entry><entry><title>I Miss Integers</title><link href="http://www.mikelanzetta.com/i-miss-integers.html" rel="alternate"></link><published>2015-01-12T16:53:00-08:00</published><updated>2015-01-12T16:53:00-08:00</updated><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2015-01-12:/i-miss-integers.html</id><summary type="html">&lt;p&gt;One of the worst things about working with Node.js is the .js part - as
+much as I like Node, I still think JavaScript is a strange, broken
+little language.  Not quite OO, not quite functional, it's a language
+made to help browsers validate form fields and is now stuck …&lt;/p&gt;</summary><content type="html">&lt;p&gt;One of the worst things about working with Node.js is the .js part - as
 much as I like Node, I still think JavaScript is a strange, broken
 little language.  Not quite OO, not quite functional, it's a language
 made to help browsers validate form fields and is now stuck trying to
@@ -3076,7 +3143,10 @@ sort to get access to the bytes involved.&lt;/p&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="Divide By Zero" src="http://www.mikelanzetta.com/images/divide-by-zero-blog-safe1.jpg" /&gt;&lt;/p&gt;</summary><category term="Javascript"></category><category term="Random musings"></category><category term="weirdness"></category></entry><entry><title>Talking to EventHub with AMQP 1.0</title><link href="http://www.mikelanzetta.com/talking-to-eventhub-with-amqp-1-0.html" rel="alternate"></link><published>2014-11-06T14:50:00-08:00</published><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2014-11-06:talking-to-eventhub-with-amqp-1-0.html</id><summary type="html">&lt;p&gt;Lately, I've been working on a Node.js-based library for speaking AMQP
+&lt;p&gt;&lt;img alt="Divide By Zero" src="http://www.mikelanzetta.com/images/divide-by-zero-blog-safe1.jpg"&gt;&lt;/p&gt;</content><category term="Javascript"></category><category term="Random musings"></category><category term="weirdness"></category></entry><entry><title>Talking to EventHub with AMQP 1.0</title><link href="http://www.mikelanzetta.com/talking-to-eventhub-with-amqp-1-0.html" rel="alternate"></link><published>2014-11-06T14:50:00-08:00</published><updated>2014-11-06T14:50:00-08:00</updated><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2014-11-06:/talking-to-eventhub-with-amqp-1-0.html</id><summary type="html">&lt;p&gt;Lately, I've been working on a Node.js-based library for speaking AMQP
+1.0, since all of the existing ones are still on 0.9.1 and don't seem
+intent on updating, or are based on Qpid Proton and thus burdened with
+more native code than I'd like.  It's still …&lt;/p&gt;</summary><content type="html">&lt;p&gt;Lately, I've been working on a Node.js-based library for speaking AMQP
 1.0, since all of the existing ones are still on 0.9.1 and don't seem
 intent on updating, or are based on Qpid Proton and thus burdened with
 more native code than I'd like.  It's still very much a work in
@@ -3218,7 +3288,12 @@ it uses the REST API and is generally easier to get up and running.
 enough information to get up and running.  If you're looking for a
 Node.js solution to working with AMQP1.0, I'm working on one, but it's
 not there yet - if you feel like being a contributor, &lt;a href="https://github.com/noodlefrenzy/node-amqp10"&gt;come on
-down&lt;/a&gt; and help!&lt;/p&gt;</summary><category term="AMQP"></category><category term="Azure"></category><category term="EventHub"></category></entry><entry><title>Developing on Windows</title><link href="http://www.mikelanzetta.com/developing-on-windows.html" rel="alternate"></link><published>2014-10-09T08:31:00-07:00</published><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2014-10-09:developing-on-windows.html</id><summary type="html">&lt;p&gt;This isn't a long post, I just wanted to shout-out my colleague &lt;a href="http://www.felixrieseberg.com/"&gt;Felix
+down&lt;/a&gt; and help!&lt;/p&gt;</content><category term="AMQP"></category><category term="Azure"></category><category term="EventHub"></category></entry><entry><title>Developing on Windows</title><link href="http://www.mikelanzetta.com/developing-on-windows.html" rel="alternate"></link><published>2014-10-09T08:31:00-07:00</published><updated>2014-10-09T08:31:00-07:00</updated><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2014-10-09:/developing-on-windows.html</id><summary type="html">&lt;p&gt;This isn't a long post, I just wanted to shout-out my colleague &lt;a href="http://www.felixrieseberg.com/"&gt;Felix
+Rieseberg&lt;/a&gt;, who has &lt;a href="http://www.felixrieseberg.com/the-windows-dev-environment/"&gt;a great
+post&lt;/a&gt;outlining
+a whole selection of tools to help you get up and running with a Windows
+development environment.  The most notable is probably &lt;a href="http://chocolatey.org/"&gt;Chocolatey
+NuGet&lt;/a&gt;, which if you're a long-term Windows …&lt;/p&gt;</summary><content type="html">&lt;p&gt;This isn't a long post, I just wanted to shout-out my colleague &lt;a href="http://www.felixrieseberg.com/"&gt;Felix
 Rieseberg&lt;/a&gt;, who has &lt;a href="http://www.felixrieseberg.com/the-windows-dev-environment/"&gt;a great
 post&lt;/a&gt;outlining
 a whole selection of tools to help you get up and running with a Windows
@@ -3231,7 +3306,11 @@ agree that Cygwin is dead.  He recommends
 &lt;a href="https://github.com/bmatzelle/gow"&gt;GOW&lt;/a&gt; which I've just started playing
 around with, but I'm more familiar with
 &lt;a href="http://gnuwin32.sourceforge.net/"&gt;GnuWin32&lt;/a&gt; and would recommend those
-(for now) - either one frees you from cygpath-hell.&lt;/p&gt;</summary></entry><entry><title>Caching Responses in Expressjs</title><link href="http://www.mikelanzetta.com/caching-responses-in-expressjs.html" rel="alternate"></link><published>2014-10-04T15:32:00-07:00</published><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2014-10-04:caching-responses-in-expressjs.html</id><summary type="html">&lt;p&gt;On a recent project, I found myself writing a web service in Node via
+(for now) - either one frees you from cygpath-hell.&lt;/p&gt;</content></entry><entry><title>Caching Responses in Expressjs</title><link href="http://www.mikelanzetta.com/caching-responses-in-expressjs.html" rel="alternate"></link><published>2014-10-04T15:32:00-07:00</published><updated>2014-10-04T15:32:00-07:00</updated><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2014-10-04:/caching-responses-in-expressjs.html</id><summary type="html">&lt;p&gt;On a recent project, I found myself writing a web service in Node via
+Azure Mobile Services, and realized that the client pattern was to call
+a common set of requests on startup and in early interactions, and then
+dig down into more detailed requests.  Furthermore, these common
+requests were …&lt;/p&gt;</summary><content type="html">&lt;p&gt;On a recent project, I found myself writing a web service in Node via
 Azure Mobile Services, and realized that the client pattern was to call
 a common set of requests on startup and in early interactions, and then
 dig down into more detailed requests.  Furthermore, these common
@@ -3330,7 +3409,14 @@ caveats are inherited by the cache implementation you use.  In addition,
 the response predicate is only checked on retrieval from the cache, so
 that there's no ordering dependence on how the caller chooses to invoke
 response methods, and the memoizer doesn't need to keep track of
-when/whether the response has completed.&lt;/p&gt;</summary><category term="caching"></category><category term="Expressjs"></category><category term="memoization"></category><category term="Node"></category></entry><entry><title>Talking to EventHub from Node</title><link href="http://www.mikelanzetta.com/talking-to-eventhub-from-node.html" rel="alternate"></link><published>2014-09-28T13:14:00-07:00</published><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2014-09-28:talking-to-eventhub-from-node.html</id><summary type="html">&lt;p&gt;This past week, I participated in a hackfest trying to get some
+when/whether the response has completed.&lt;/p&gt;</content><category term="caching"></category><category term="Expressjs"></category><category term="memoization"></category><category term="Node"></category></entry><entry><title>Talking to EventHub from Node</title><link href="http://www.mikelanzetta.com/talking-to-eventhub-from-node.html" rel="alternate"></link><published>2014-09-28T13:14:00-07:00</published><updated>2014-09-28T13:14:00-07:00</updated><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2014-09-28:/talking-to-eventhub-from-node.html</id><summary type="html">&lt;p&gt;This past week, I participated in a hackfest trying to get some
+&lt;a href="https://www.alljoyn.org/"&gt;Alljoyn&lt;/a&gt; devices talking to
+&lt;a href="http://nitrogen.io/"&gt;Nitrogen&lt;/a&gt;.  It was a great time, getting to learn
+some new technologies, get exposed to the ~~pain ~~wonder of working
+with IoT hardware, and watch my bosses (&lt;a href="http://blogs.msdn.com/b/johnshews_blog/"&gt;John
+Shewchuk&lt;/a&gt; and &lt;a href="http://channel9.msdn.com/Events/Visual-Studio/Visual-Studio-Live/Tracey-Trewin-Architecture-Intellitrace-DevOps-Unit-Testing"&gt;Tracey
+Trewin&lt;/a&gt;)
+sling some …&lt;/p&gt;</summary><content type="html">&lt;p&gt;This past week, I participated in a hackfest trying to get some
 &lt;a href="https://www.alljoyn.org/"&gt;Alljoyn&lt;/a&gt; devices talking to
 &lt;a href="http://nitrogen.io/"&gt;Nitrogen&lt;/a&gt;.  It was a great time, getting to learn
 some new technologies, get exposed to the ~~pain ~~wonder of working
@@ -3379,7 +3465,7 @@ send messages to my very own Event Hub.  I created a custom SAS key for
 sending using the portal:&lt;/p&gt;
 &lt;p&gt;&lt;a href="http://www.mikelanzetta.com/images/eventhub_saskeys.png"&gt;&lt;img alt="Creating
 Alternate SAS
-Keys" src="http://www.mikelanzetta.com/images/eventhub_saskeys.png" /&gt;&lt;/a&gt;&lt;/p&gt;
+Keys" src="http://www.mikelanzetta.com/images/eventhub_saskeys.png"&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;used my new code to build a token from them:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kd"&gt;function&lt;/span&gt; &lt;span class="nx"&gt;createSharedAccessToken&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;namespace&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;hubName&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;saName&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;saKey&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
     &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;!&lt;/span&gt;&lt;span class="nx"&gt;namespace&lt;/span&gt; &lt;span class="o"&gt;||&lt;/span&gt; &lt;span class="o"&gt;!&lt;/span&gt;&lt;span class="nx"&gt;hubName&lt;/span&gt; &lt;span class="o"&gt;||&lt;/span&gt; &lt;span class="o"&gt;!&lt;/span&gt;&lt;span class="nx"&gt;saName&lt;/span&gt; &lt;span class="o"&gt;||&lt;/span&gt; &lt;span class="o"&gt;!&lt;/span&gt;&lt;span class="nx"&gt;saKey&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
@@ -3441,7 +3527,10 @@ post&lt;/a&gt;
 from Hypernephelist that covers much of the same ground.  If only I'd
 found it a week sooner!  It doesn't cope with AMQP, and it doesn't
 package things up into a &lt;code&gt;package.json&lt;/code&gt;-includable form, so I thought my
-post still had value.&lt;/p&gt;</summary><category term="Azure"></category><category term="EventHub"></category><category term="Node"></category></entry><entry><title>Azure Storage: Architecture Troubleshooting</title><link href="http://www.mikelanzetta.com/azure-storage-architecture-troubleshooting.html" rel="alternate"></link><published>2014-09-16T10:12:00-07:00</published><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2014-09-16:azure-storage-architecture-troubleshooting.html</id><summary type="html">&lt;p&gt;I've been dealing with Azure Storage for years now, and while most of
+post still had value.&lt;/p&gt;</content><category term="Azure"></category><category term="EventHub"></category><category term="Node"></category></entry><entry><title>Azure Storage: Architecture Troubleshooting</title><link href="http://www.mikelanzetta.com/azure-storage-architecture-troubleshooting.html" rel="alternate"></link><published>2014-09-16T10:12:00-07:00</published><updated>2014-09-16T10:12:00-07:00</updated><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2014-09-16:/azure-storage-architecture-troubleshooting.html</id><summary type="html">&lt;p&gt;I've been dealing with Azure Storage for years now, and while most of
+the time it's rock solid, on occasion you can get hit with networking
+issues or other "brownout" drops in availability that can make you
+question your sanity.  I find it helpful to know what's going on behind …&lt;/p&gt;</summary><content type="html">&lt;p&gt;I've been dealing with Azure Storage for years now, and while most of
 the time it's rock solid, on occasion you can get hit with networking
 issues or other "brownout" drops in availability that can make you
 question your sanity.  I find it helpful to know what's going on behind
@@ -3469,7 +3558,13 @@ Netmon anymore :-\.&lt;/p&gt;
 reading &lt;em&gt;now&lt;/em&gt; if you do any storage-related work, if only to make sure
 you're gathering the right metrics for when you need them, and the paper
 can wait for when you have some free time and want something a bit more
-detailed.  Enjoy!&lt;/p&gt;</summary><category term="Azure"></category></entry><entry><title>Running Azure Mobile Services Locally</title><link href="http://www.mikelanzetta.com/running-azure-mobile-services-locally.html" rel="alternate"></link><published>2014-09-08T11:32:00-07:00</published><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2014-09-08:running-azure-mobile-services-locally.html</id><summary type="html">&lt;p&gt;On a recent project, I made my first foray into using Azure Mobile
+detailed.  Enjoy!&lt;/p&gt;</content><category term="Azure"></category></entry><entry><title>Running Azure Mobile Services Locally</title><link href="http://www.mikelanzetta.com/running-azure-mobile-services-locally.html" rel="alternate"></link><published>2014-09-08T11:32:00-07:00</published><updated>2014-09-08T11:32:00-07:00</updated><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2014-09-08:/running-azure-mobile-services-locally.html</id><summary type="html">&lt;p&gt;On a recent project, I made my first foray into using Azure Mobile
+Services &lt;a href="http://weblogs.asp.net/scottgu/windows-azure-major-updates-for-mobile-backend-development" title="Azure Custom API Announcement"&gt;Custom
+API&lt;/a&gt;
+support, with a Node.js-backed API implementation.  I've used (and
+loved) Mobile Services in the past for their push notification
+infrastructure, but this was new ground for me.  I liked the easy
+setup - trivial …&lt;/p&gt;</summary><content type="html">&lt;p&gt;On a recent project, I made my first foray into using Azure Mobile
 Services &lt;a href="http://weblogs.asp.net/scottgu/windows-azure-major-updates-for-mobile-backend-development" title="Azure Custom API Announcement"&gt;Custom
 API&lt;/a&gt;
 support, with a Node.js-backed API implementation.  I've used (and
@@ -3484,7 +3579,7 @@ Configure tab for the Git URL), modify it, and then push changes which
 will cause an auto-deployment. This works great, but the problem is that
 you can't run &lt;em&gt;or &lt;/em&gt;test those changes locally before deployment,
 and that's not the kind of test-in-production workflow I'm into.&lt;/p&gt;
-&lt;p&gt;&lt;img alt="I don't always test my code, but when I do, I do it in production." src="http://www.mikelanzetta.com/images/test_in_production.jpg" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="I don't always test my code, but when I do, I do it in production." src="http://www.mikelanzetta.com/images/test_in_production.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;I talked with the Azure Mobile Services team about their testing story,
 and was told that they'd been focusing on improving the .NET-backed
 services first - they would love to get Node.js local development fixed
@@ -3653,7 +3748,11 @@ with 200s.&lt;/p&gt;
 &lt;p&gt;As mentioned above, the code is all in GitHub right here:
 &lt;a href="https://github.com/noodlefrenzy/azure-mobile-local"&gt;https://github.com/noodlefrenzy/azure-mobile-local&lt;/a&gt; - if you see
 obvious improvements, I'd love to hear about them either in comments or
-pull requests.&lt;/p&gt;</summary><category term="Azure"></category><category term="Mobile"></category><category term="Node"></category></entry><entry><title>Old IE, New Vagrant</title><link href="http://www.mikelanzetta.com/old-ie-new-vagrant.html" rel="alternate"></link><published>2014-09-03T08:05:00-07:00</published><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2014-09-03:old-ie-new-vagrant.html</id><summary type="html">&lt;p&gt;I've been messing around with
+pull requests.&lt;/p&gt;</content><category term="Azure"></category><category term="Mobile"></category><category term="Node"></category></entry><entry><title>Old IE, New Vagrant</title><link href="http://www.mikelanzetta.com/old-ie-new-vagrant.html" rel="alternate"></link><published>2014-09-03T08:05:00-07:00</published><updated>2014-09-03T08:05:00-07:00</updated><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2014-09-03:/old-ie-new-vagrant.html</id><summary type="html">&lt;p&gt;I've been messing around with
+&lt;a href="http://www.vagrantup.com/" title="Vagrant"&gt;Vagrant&lt;/a&gt;for a few weeks now, on
+and off, to manage my Linux VMs on my Win8.1 box with Hyper-V.  So far,
+it's been working well, barring a few caveats due primarily to MSIT's
+restrictive proxy settings (although I could find out it's really …&lt;/p&gt;</summary><content type="html">&lt;p&gt;I've been messing around with
 &lt;a href="http://www.vagrantup.com/" title="Vagrant"&gt;Vagrant&lt;/a&gt;for a few weeks now, on
 and off, to manage my Linux VMs on my Win8.1 box with Hyper-V.  So far,
 it's been working well, barring a few caveats due primarily to MSIT's
@@ -3672,7 +3771,13 @@ Parallels to Virtual Box - this just extends those to allow you to
 help them evaluate, to gauge interest and uncover issues - if you have
 the need and the time, I would encourage you to go take a look, and read
 the &lt;strong&gt;&lt;a href="http://blog.syntaxc4.net/post/2014/09/03/windows-boxes-for-vagrant-courtesy-of-modern-ie.aspx" title="Modern.ie on Vagrant"&gt;official blog
-post&lt;/a&gt;&lt;/strong&gt;.&lt;/p&gt;</summary><category term="Web Development"></category></entry><entry><title>Distributed Systems Primer</title><link href="http://www.mikelanzetta.com/distributed-systems-primer.html" rel="alternate"></link><published>2014-08-14T13:29:00-07:00</published><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2014-08-14:distributed-systems-primer.html</id><summary type="html">&lt;p&gt;&lt;a href="https://twitter.com/HenryR"&gt;Henry Robinson&lt;/a&gt;, the smart Cloudera SDE
+post&lt;/a&gt;&lt;/strong&gt;.&lt;/p&gt;</content><category term="Web Development"></category></entry><entry><title>Distributed Systems Primer</title><link href="http://www.mikelanzetta.com/distributed-systems-primer.html" rel="alternate"></link><published>2014-08-14T13:29:00-07:00</published><updated>2014-08-14T13:29:00-07:00</updated><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2014-08-14:/distributed-systems-primer.html</id><summary type="html">&lt;p&gt;&lt;a href="https://twitter.com/HenryR"&gt;Henry Robinson&lt;/a&gt;, the smart Cloudera SDE
+behind The &lt;a href="http://the-paper-trail.org/blog/"&gt;Paper Trail&lt;/a&gt; blog, just
+posted a great &lt;a href="http://the-paper-trail.org/blog/distributed-systems-theory-for-the-distributed-systems-engineer/" title="Distributed Systems Theory for the Distributed Systems Engineer"&gt;primer on distributed
+systems&lt;/a&gt;.
+ I highly recommend anyone interested in this field go and take a
+look - if you've been around long enough, you'll have read most of the
+papers, but it's a good collection …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;a href="https://twitter.com/HenryR"&gt;Henry Robinson&lt;/a&gt;, the smart Cloudera SDE
 behind The &lt;a href="http://the-paper-trail.org/blog/"&gt;Paper Trail&lt;/a&gt; blog, just
 posted a great &lt;a href="http://the-paper-trail.org/blog/distributed-systems-theory-for-the-distributed-systems-engineer/" title="Distributed Systems Theory for the Distributed Systems Engineer"&gt;primer on distributed
 systems&lt;/a&gt;.
@@ -3681,7 +3786,11 @@ look - if you've been around long enough, you'll have read most of the
 papers, but it's a good collection of resources.  I also agree with the
 person in the comments who recommended
 &lt;a href="http://raftconsensus.github.io/"&gt;Raft&lt;/a&gt;be included, although I would
-include it &lt;em&gt;in addition to&lt;/em&gt; Paxos, and not &lt;em&gt;in lieu of&lt;/em&gt; it.&lt;/p&gt;</summary><category term="Distributed Systems"></category></entry><entry><title>SQL vs. NoSQL</title><link href="http://www.mikelanzetta.com/sql-vs-nosql.html" rel="alternate"></link><published>2014-08-01T17:11:00-07:00</published><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2014-08-01:sql-vs-nosql.html</id><summary type="html">&lt;p&gt;I was recently asked by a colleague of mine why anyone is even using
+include it &lt;em&gt;in addition to&lt;/em&gt; Paxos, and not &lt;em&gt;in lieu of&lt;/em&gt; it.&lt;/p&gt;</content><category term="Distributed Systems"></category></entry><entry><title>SQL vs. NoSQL</title><link href="http://www.mikelanzetta.com/sql-vs-nosql.html" rel="alternate"></link><published>2014-08-01T17:11:00-07:00</published><updated>2014-08-01T17:11:00-07:00</updated><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2014-08-01:/sql-vs-nosql.html</id><summary type="html">&lt;p&gt;I was recently asked by a colleague of mine why anyone is even using
+NoSQL solutions at all, and not just sticking with SQL.  After telling
+them that people use them because they're
+&lt;a href="https://www.youtube.com/watch?v=b2F-DItXtZs"&gt;web-scale&lt;/a&gt;, I did some
+thinking about when you should use NoSQL vs. just sticking with good old …&lt;/p&gt;</summary><content type="html">&lt;p&gt;I was recently asked by a colleague of mine why anyone is even using
 NoSQL solutions at all, and not just sticking with SQL.  After telling
 them that people use them because they're
 &lt;a href="https://www.youtube.com/watch?v=b2F-DItXtZs"&gt;web-scale&lt;/a&gt;, I did some
@@ -3695,7 +3804,7 @@ shopping carts - hundreds of millions of highly-churned objects, no
 connections between them, easily GET/PUT compatible - this makes perfect
 sense, and it worked fantastically well.  Thus, the NoSQL revolution was
 born, and everyone decided they needed to jump on the NoSQL train.&lt;/p&gt;
-&lt;p&gt;&lt;img alt="I should use NoSQL" src="http://noodlefrenzy-wp.azurewebsites.net/wp-content/uploads/2014/08/nosql_cat.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="I should use NoSQL" src="http://noodlefrenzy-wp.azurewebsites.net/wp-content/uploads/2014/08/nosql_cat.png"&gt;&lt;/p&gt;
 &lt;p&gt;The biggest problem with moving to NoSQL is the amount of functionality
 you lose over regular RDBMSs - little things like "transactions",
 "joins", "queries", "aggregation", "ACID guarantees" and "secondary
@@ -3731,7 +3840,11 @@ MS), and know how useful they can be.  Anyone considering NoSQL, though,
 should go into it with eyes open, and consider whether SQL might work
 better for their case.  With Azure, it's easy to spool up a SQL Server
 instance &lt;em&gt;and&lt;/em&gt; an instance of MongoDB, try both, and see which one you
-like.&lt;/p&gt;</summary><category term="Distributed Systems"></category><category term="NoSQL"></category></entry><entry><title>Starting Fresh</title><link href="http://www.mikelanzetta.com/starting-fresh.html" rel="alternate"></link><published>2014-07-09T22:08:00-07:00</published><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2014-07-09:starting-fresh.html</id><summary type="html">&lt;p&gt;I've decided to move from &lt;a href="http://blogs.msdn.com/b/milanz/"&gt;my MSDN
+like.&lt;/p&gt;</content><category term="Distributed Systems"></category><category term="NoSQL"></category></entry><entry><title>Starting Fresh</title><link href="http://www.mikelanzetta.com/starting-fresh.html" rel="alternate"></link><published>2014-07-09T22:08:00-07:00</published><updated>2014-07-09T22:08:00-07:00</updated><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2014-07-09:/starting-fresh.html</id><summary type="html">&lt;p&gt;I've decided to move from &lt;a href="http://blogs.msdn.com/b/milanz/"&gt;my MSDN
+blog&lt;/a&gt; to my own WordPress site.  No big
+deal, since my cobweb of a blog hadn't been updated in years, but you
+might notice that this site is much younger than most of the posts on
+it.  I've migrated my old posts and …&lt;/p&gt;</summary><content type="html">&lt;p&gt;I've decided to move from &lt;a href="http://blogs.msdn.com/b/milanz/"&gt;my MSDN
 blog&lt;/a&gt; to my own WordPress site.  No big
 deal, since my cobweb of a blog hadn't been updated in years, but you
 might notice that this site is much younger than most of the posts on
@@ -3740,7 +3853,13 @@ publishing date.&lt;/p&gt;
 &lt;p&gt;My hope is that I'll be publishing to my blog more frequently, and my
 plan is to open up the blog to non-programming-related topics in an
 effort to motivate myself to make that happen. Hopefully that strategy
-works.&lt;/p&gt;</summary><category term="Random musings"></category></entry><entry><title>Duck Typing in C# 4.0</title><link href="http://www.mikelanzetta.com/duck-typing-in-c-4-0.html" rel="alternate"></link><published>2010-05-01T16:04:00-07:00</published><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2010-05-01:duck-typing-in-c-4-0.html</id><summary type="html">&lt;p&gt;One of my favorite new features in C# 4.0 is the &lt;span
+works.&lt;/p&gt;</content><category term="Random musings"></category></entry><entry><title>Duck Typing in C# 4.0</title><link href="http://www.mikelanzetta.com/duck-typing-in-c-4-0.html" rel="alternate"></link><published>2010-05-01T16:04:00-07:00</published><updated>2010-05-01T16:04:00-07:00</updated><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2010-05-01:/duck-typing-in-c-4-0.html</id><summary type="html">&lt;p&gt;One of my favorite new features in C# 4.0 is the &lt;span
+style="font-family: Consolas;"&gt;&lt;span
+style="font-size: small;"&gt;dynamic&lt;/span&gt; &lt;/span&gt;keyword.  Not only does
+it allow you to do freaky things with interactions between C# and
+scripting languages like IronRuby, but it opens up one of my favorite
+features from that language – &lt;em&gt;Duck Typing&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Duck typing&lt;/em&gt; is …&lt;/p&gt;</summary><content type="html">&lt;p&gt;One of my favorite new features in C# 4.0 is the &lt;span
 style="font-family: Consolas;"&gt;&lt;span
 style="font-size: small;"&gt;dynamic&lt;/span&gt; &lt;/span&gt;keyword.  Not only does
 it allow you to do freaky things with interactions between C# and
@@ -3830,7 +3949,11 @@ style="font-family: Consolas; font-size: small;"&gt;dynamic&lt;/span&gt; is a
 fantastic and powerful addition to the language, but with great power…. 
 As long as we’re careful with the types we use with it, and we
 understand the limits imposed on us, I’m really looking forward to the
-exciting future of static/dynamic hybrid code before us.&lt;/p&gt;</summary><category term=".NET"></category><category term="C#"></category></entry><entry><title>Misusing Infer.NET For Fun and Profit</title><link href="http://www.mikelanzetta.com/misusing-infer-net-for-fun-and-profit.html" rel="alternate"></link><published>2009-12-04T22:21:00-08:00</published><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2009-12-04:misusing-infer-net-for-fun-and-profit.html</id><summary type="html">&lt;p&gt;I’ve recently started looking
+exciting future of static/dynamic hybrid code before us.&lt;/p&gt;</content><category term=".NET"></category><category term="C#"></category></entry><entry><title>Misusing Infer.NET For Fun and Profit</title><link href="http://www.mikelanzetta.com/misusing-infer-net-for-fun-and-profit.html" rel="alternate"></link><published>2009-12-04T22:21:00-08:00</published><updated>2009-12-04T22:21:00-08:00</updated><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2009-12-04:/misusing-infer-net-for-fun-and-profit.html</id><summary type="html">&lt;p&gt;I’ve recently started looking
+into &lt;a href="http://research.microsoft.com/en-us/um/cambridge/projects/infernet/"&gt;Infer.NET&lt;/a&gt; –
+I’m trying to learn some Bayesian inference, and it seems like a good
+tool for the job (I’m a bear of little brain, and need all the help I
+can get).  However, it’s an exciting library, so I’ve …&lt;/p&gt;</summary><content type="html">&lt;p&gt;I’ve recently started looking
 into &lt;a href="http://research.microsoft.com/en-us/um/cambridge/projects/infernet/"&gt;Infer.NET&lt;/a&gt; –
 I’m trying to learn some Bayesian inference, and it seems like a good
 tool for the job (I’m a bear of little brain, and need all the help I
@@ -3898,7 +4021,10 @@ a &lt;a href="http://www.wolframalpha.com/input/?i=gaussian+distribution+%281%2
 possibilities behind Infer.NET – both great and small – and examples
 like these help me work through them.  I’m hoping that this post will
 help bring Infer.NET to a wider audience - well, all two people who read
-my blog :)&lt;/p&gt;</summary><category term=".NET"></category><category term="ML"></category></entry><entry><title>Using Java Concurrency Primitives: ReadWriteLock</title><link href="http://www.mikelanzetta.com/using-java-concurrency-primitives-readwritelock.html" rel="alternate"></link><published>2009-10-21T21:54:00-07:00</published><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2009-10-21:using-java-concurrency-primitives-readwritelock.html</id><summary type="html">&lt;p&gt;So it’s been some time since I updated this blog, and I thought I’d
+my blog :)&lt;/p&gt;</content><category term=".NET"></category><category term="ML"></category></entry><entry><title>Using Java Concurrency Primitives: ReadWriteLock</title><link href="http://www.mikelanzetta.com/using-java-concurrency-primitives-readwritelock.html" rel="alternate"></link><published>2009-10-21T21:54:00-07:00</published><updated>2009-10-21T21:54:00-07:00</updated><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2009-10-21:/using-java-concurrency-primitives-readwritelock.html</id><summary type="html">&lt;p&gt;So it’s been some time since I updated this blog, and I thought I’d
+explain why just on the off-chance folks are actually reading. My wife
+and I just bought a new house (well, town-house, we are in Seattle), and
+that took (and is still taking) a lot …&lt;/p&gt;</summary><content type="html">&lt;p&gt;So it’s been some time since I updated this blog, and I thought I’d
 explain why just on the off-chance folks are actually reading. My wife
 and I just bought a new house (well, town-house, we are in Seattle), and
 that took (and is still taking) a lot of my time. In addition, we’re in
@@ -3989,7 +4115,10 @@ heavyweight solution and I’d probably just go with an AtomicReference:&lt;/p&g
 &lt;p&gt;I hope this proves useful for some folks.  I’m planning on following
 this up with more posts about both Java and .NET constructs for
 concurrency, and as always I welcome comments and suggestions on future
-directions.&lt;/p&gt;</summary><category term="concurrency"></category><category term="Java"></category></entry><entry><title>Writing a Powershell Snapin for Bing</title><link href="http://www.mikelanzetta.com/writing-a-powershell-snapin-for-bing.html" rel="alternate"></link><published>2009-06-05T19:16:00-07:00</published><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2009-06-05:writing-a-powershell-snapin-for-bing.html</id><summary type="html">&lt;p&gt;I’ve been meaning to write a post on how to author custom Powershell
+directions.&lt;/p&gt;</content><category term="concurrency"></category><category term="Java"></category></entry><entry><title>Writing a Powershell Snapin for Bing</title><link href="http://www.mikelanzetta.com/writing-a-powershell-snapin-for-bing.html" rel="alternate"></link><published>2009-06-05T19:16:00-07:00</published><updated>2009-06-05T19:16:00-07:00</updated><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2009-06-05:/writing-a-powershell-snapin-for-bing.html</id><summary type="html">&lt;p&gt;I’ve been meaning to write a post on how to author custom Powershell
+Cmdlets for some time now, as it’s incredibly easy to do and makes an
+awesome cmd shell even better.  I’m still more comfortable in tcsh, but
+for working in Windows, Powershell makes life a …&lt;/p&gt;</summary><content type="html">&lt;p&gt;I’ve been meaning to write a post on how to author custom Powershell
 Cmdlets for some time now, as it’s incredibly easy to do and makes an
 awesome cmd shell even better.  I’m still more comfortable in tcsh, but
 for working in Windows, Powershell makes life a lot easier – and the
@@ -4125,13 +4254,13 @@ Framework64 version of installutil.exe below.&lt;/p&gt;
 
 
 &lt;p&gt;And you should see output similar to the below:&lt;/p&gt;
-&lt;p&gt;&lt;a href="http://blogs.msdn.com/blogfiles/milanz/WindowsLiveWriter/WritingaPowershellSnapinforBing_E4B7/image_2.png"&gt;&lt;img alt="image" src="http://blogs.msdn.com/blogfiles/milanz/WindowsLiveWriter/WritingaPowershellSnapinforBing_E4B7/image_thumb.png" title="image" /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://blogs.msdn.com/blogfiles/milanz/WindowsLiveWriter/WritingaPowershellSnapinforBing_E4B7/image_2.png"&gt;&lt;img alt="image" src="http://blogs.msdn.com/blogfiles/milanz/WindowsLiveWriter/WritingaPowershellSnapinforBing_E4B7/image_thumb.png" title="image"&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;Make sure your snapin was registered…&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;PS&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;get-pssnapin&lt;/span&gt; &lt;span class="err"&gt;–&lt;/span&gt;&lt;span class="n"&gt;registered&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;a href="http://blogs.msdn.com/blogfiles/milanz/WindowsLiveWriter/WritingaPowershellSnapinforBing_E4B7/image_4.png"&gt;&lt;img alt="image" src="http://blogs.msdn.com/blogfiles/milanz/WindowsLiveWriter/WritingaPowershellSnapinforBing_E4B7/image_thumb_1.png" title="image" /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://blogs.msdn.com/blogfiles/milanz/WindowsLiveWriter/WritingaPowershellSnapinforBing_E4B7/image_4.png"&gt;&lt;img alt="image" src="http://blogs.msdn.com/blogfiles/milanz/WindowsLiveWriter/WritingaPowershellSnapinforBing_E4B7/image_thumb_1.png" title="image"&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;And then add it and execute!&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;PS&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;add-pssnapin&lt;/span&gt; &lt;span class="n"&gt;BingCmdlets&lt;/span&gt;
 &lt;span class="n"&gt;PS&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;get-bingweb&lt;/span&gt; &lt;span class="n"&gt;sushi&lt;/span&gt;
@@ -4139,7 +4268,7 @@ Framework64 version of installutil.exe below.&lt;/p&gt;
 
 
 &lt;p&gt;The output should look roughly like the below:&lt;/p&gt;
-&lt;p&gt;&lt;a href="http://blogs.msdn.com/blogfiles/milanz/WindowsLiveWriter/WritingaPowershellSnapinforBing_E4B7/image_6.png"&gt;&lt;img alt="image" src="http://blogs.msdn.com/blogfiles/milanz/WindowsLiveWriter/WritingaPowershellSnapinforBing_E4B7/image_thumb_2.png" title="image" /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://blogs.msdn.com/blogfiles/milanz/WindowsLiveWriter/WritingaPowershellSnapinforBing_E4B7/image_6.png"&gt;&lt;img alt="image" src="http://blogs.msdn.com/blogfiles/milanz/WindowsLiveWriter/WritingaPowershellSnapinforBing_E4B7/image_thumb_2.png" title="image"&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;Obviously this isn’t the format we’d want for the results, so we can run
 it again and get the result as XML.  At that point, we can use LINQ to
 extract the values we care about, and format them as CSV or whatever we
@@ -4152,7 +4281,7 @@ define that for future use….&lt;/p&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;a href="http://blogs.msdn.com/blogfiles/milanz/WindowsLiveWriter/WritingaPowershellSnapinforBing_BC02/image_2.png"&gt;&lt;img alt="image" src="http://blogs.msdn.com/blogfiles/milanz/WindowsLiveWriter/WritingaPowershellSnapinforBing_BC02/image_thumb.png" title="image" /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://blogs.msdn.com/blogfiles/milanz/WindowsLiveWriter/WritingaPowershellSnapinforBing_BC02/image_2.png"&gt;&lt;img alt="image" src="http://blogs.msdn.com/blogfiles/milanz/WindowsLiveWriter/WritingaPowershellSnapinforBing_BC02/image_thumb.png" title="image"&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;I hope this has given you an idea both of what’s possible within
 Powershell, and what’s possible via the Bing API.  Both are easy to use,
 and provide some incredible power.&lt;/p&gt;
@@ -4165,7 +4294,10 @@ are easier to incorporate into others’ powershells than scripts, meaning
 your code will benefit others.&lt;/p&gt;
 &lt;p&gt;[Update: 2009-June-09]&lt;/p&gt;
 &lt;p&gt;I've published my example on codeplex (as a zip, not a tgz,
-sorry): &lt;a href="http://bingable.codeplex.com/" title="http://bingable.codeplex.com/"&gt;http://bingable.codeplex.com/ &lt;/a&gt;&lt;/p&gt;</summary><category term="Powershell"></category></entry><entry><title>Java’s Checked vs. Unchecked Exceptions</title><link href="http://www.mikelanzetta.com/javas-checked-vs-unchecked-exceptions.html" rel="alternate"></link><published>2009-05-05T12:17:00-07:00</published><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2009-05-05:javas-checked-vs-unchecked-exceptions.html</id><summary type="html">&lt;p&gt;I’m probably late to the party here (I’ve been in C#-land lately), but
+sorry): &lt;a href="http://bingable.codeplex.com/" title="http://bingable.codeplex.com/"&gt;http://bingable.codeplex.com/ &lt;/a&gt;&lt;/p&gt;</content><category term="Powershell"></category></entry><entry><title>Java’s Checked vs. Unchecked Exceptions</title><link href="http://www.mikelanzetta.com/javas-checked-vs-unchecked-exceptions.html" rel="alternate"></link><published>2009-05-05T12:17:00-07:00</published><updated>2009-05-05T12:17:00-07:00</updated><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2009-05-05:/javas-checked-vs-unchecked-exceptions.html</id><summary type="html">&lt;p&gt;I’m probably late to the party here (I’ve been in C#-land lately), but
+I think I’ve finally worked out what irks me about the Checked vs.
+Unchecked Exception religious war in the Java world.  I’ve always been
+on the Checked side of the fence, but …&lt;/p&gt;</summary><content type="html">&lt;p&gt;I’m probably late to the party here (I’ve been in C#-land lately), but
 I think I’ve finally worked out what irks me about the Checked vs.
 Unchecked Exception religious war in the Java world.  I’ve always been
 on the Checked side of the fence, but lately there’s a whole host of
@@ -4224,7 +4356,10 @@ have that class loaded).  What it does is allow you to make your
 interface explicit – even your error conditions – without forcing you to
 throw exceptions at a low level your clients don’t want.  Exceptions are
 a part of your interface, and should get the same care and attention as
-the rest of it.&lt;/p&gt;</summary><category term="Java"></category></entry><entry><title>“You can’t use that, it’s not performant”</title><link href="http://www.mikelanzetta.com/you-cant-use-that-its-not-performant.html" rel="alternate"></link><published>2009-04-08T12:54:00-07:00</published><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2009-04-08:you-cant-use-that-its-not-performant.html</id><summary type="html">&lt;p&gt;I can’t tell you how many times I’ve heard this - from PMs, dev leads,
+the rest of it.&lt;/p&gt;</content><category term="Java"></category></entry><entry><title>“You can’t use that, it’s not performant”</title><link href="http://www.mikelanzetta.com/you-cant-use-that-its-not-performant.html" rel="alternate"></link><published>2009-04-08T12:54:00-07:00</published><updated>2009-04-08T12:54:00-07:00</updated><author><name>noodlefrenzy</name></author><id>tag:www.mikelanzetta.com,2009-04-08:/you-cant-use-that-its-not-performant.html</id><summary type="html">&lt;p&gt;I can’t tell you how many times I’ve heard this - from PMs, dev leads,
+and colleagues.  Other than the use of the “word” performant, what bugs
+me about this is that usually they don’t have any data (or current data)
+to back it up.  Coming from the …&lt;/p&gt;</summary><content type="html">&lt;p&gt;I can’t tell you how many times I’ve heard this - from PMs, dev leads,
 and colleagues.  Other than the use of the “word” performant, what bugs
 me about this is that usually they don’t have any data (or current data)
 to back it up.  Coming from the Java world, I’ve probably heard it more
@@ -4252,7 +4387,7 @@ went to town.&lt;/p&gt;
 &lt;p&gt;The graph below measures the time (in normalized time units, on the
 left) to read different size XML files (on the bottom – the number of
 high-level objects in the files).&lt;/p&gt;
-&lt;p&gt;&lt;a href="http://blogs.msdn.com/blogfiles/milanz/WindowsLiveWriter/Youcantusethatitsnotperformant_DB47/image_2.png"&gt;&lt;img alt="image" src="http://blogs.msdn.com/blogfiles/milanz/WindowsLiveWriter/Youcantusethatitsnotperformant_DB47/image_thumb.png" title="image" /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://blogs.msdn.com/blogfiles/milanz/WindowsLiveWriter/Youcantusethatitsnotperformant_DB47/image_2.png"&gt;&lt;img alt="image" src="http://blogs.msdn.com/blogfiles/milanz/WindowsLiveWriter/Youcantusethatitsnotperformant_DB47/image_thumb.png" title="image"&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;Looking at the results, the XmlReader and Serializer implementation look
 like they perform and scale pretty close to identically.  That’s pretty
 impressive, and makes me wonder if the Serializer implementation uses
@@ -4271,4 +4406,4 @@ turning vague performance worries into concrete results that can be
 discussed practically.  Once you start having these sorts of
 conversations, you can advance to the point where you have concrete,
 user-focused and testable performance goals – much easier to satisfy
-than a vague sense of dread.&lt;/p&gt;</summary><category term="performance"></category></entry></feed>
+than a vague sense of dread.&lt;/p&gt;</content><category term="performance"></category></entry></feed>

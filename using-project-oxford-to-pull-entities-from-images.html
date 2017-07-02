@@ -74,7 +74,7 @@ GitHub</a>under MIT
 license, but probably not quite as terse (I've removed braces from
 single statements etc. to mitigate TL;DR syndrome).</p>
 <h2>The Input</h2>
-<p><img alt="Morpheus: What if I told you it was staring you right in the face?" src="http://www.mikelanzetta.com/images/1wL61Ro1.jpg" /></p>
+<p><img alt="Morpheus: What if I told you it was staring you right in the face?" src="http://www.mikelanzetta.com/images/1wL61Ro1.jpg"></p>
 <p>So what sort of input data should we use? It needs to be images with
 structured text, and the text should have both an overall
 intent/category as well as individual entities within it. Where could we
@@ -190,7 +190,7 @@ single string, which I do using the following:</p>
 <p>Joining all of the words' text together for all lines in all
 regions. Let's take a look at the results.</p>
 <h2>Results... and a Realization</h2>
-<p><img alt="Stuff" src="http://www.mikelanzetta.com/images/5ocZvsW1.jpg" /></p>
+<p><img alt="Stuff" src="http://www.mikelanzetta.com/images/5ocZvsW1.jpg"></p>
 <p>So running the OCR on our example image above, I notice a problem - it's
 missed a chunk of text and returned "what if it was staring you right in
 the face?". Crap, well at least the text it did find it got right.
@@ -218,10 +218,10 @@ adding "utterances" - for each utterance you pick an intent and then
 label any entities within it. You can then re-train the model with the
 button in the bottom left and see how it did - here's a shot of what my
 model looks like after a few training utterances have been added:</p>
-<p><a href="http://www.mikelanzetta.com/images/luis_training.png"><img alt="LUIS_Training" src="http://www.mikelanzetta.com/images/luis_training.png" /></a></p>
+<p><a href="http://www.mikelanzetta.com/images/luis_training.png"><img alt="LUIS_Training" src="http://www.mikelanzetta.com/images/luis_training.png"></a></p>
 <p>Now that it's trained, you can go back to your application list and hit
 "Publish":</p>
-<p><a href="http://www.mikelanzetta.com/images/LUIS_Publish.png"><img alt="LUIS_Publish" src="http://www.mikelanzetta.com/images/LUIS_Publish.png" /></a></p>
+<p><a href="http://www.mikelanzetta.com/images/LUIS_Publish.png"><img alt="LUIS_Publish" src="http://www.mikelanzetta.com/images/LUIS_Publish.png"></a></p>
 <p>Once it's published, you can just invoke it with the given URL and the
 utterance you want it to try and tag. For the Boromir example above,
 I've run it through the single-channel filter (blue) and then passed it
@@ -285,7 +285,7 @@ MIT license, so feel free to use it as you see fit.</p>
 </section>
         <section id="extras" class="body">
                 <div class="blogroll">
-                        <h2>blogroll</h2>
+                        <h2>links</h2>
                         <ul>
                             <li><a href="https://blogs.technet.microsoft.com/machinelearning/">Cortana Analytics</a></li>
                             <li><a href="http://www.kdnuggets.com/">KDNuggets</a></li>
@@ -312,14 +312,13 @@ MIT license, so feel free to use it as you see fit.</p>
         </footer><!-- /#contentinfo -->
 
     <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-54597100-1']);
-    _gaq.push(['_trackPageview']);
-    (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = 'https://ssl.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-54597100-1', 'auto');
+    ga('send', 'pageview');
     </script>
 <script type="text/javascript">
     var disqus_shortname = 'intelligentartifice';

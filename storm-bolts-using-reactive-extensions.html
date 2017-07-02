@@ -64,7 +64,7 @@ a future post I will discuss using this structure to process input
 from EventHubs. Programming note: all of the code in this post is
 <a href="https://github.com/noodlefrenzy/ReactiveStorm">available on GitHub</a>.</p>
 <h2>Into the Storm</h2>
-<p><img alt="topology" src="http://www.mikelanzetta.com/images/topology1.png" /></p>
+<p><img alt="topology" src="http://www.mikelanzetta.com/images/topology1.png"></p>
 <p>Like any other data processing pipeline, Apache Storm consists of a way to
 get data into the system followed by a series of processing
 steps resulting in one or more data outputs.  In Storm, the
@@ -88,7 +88,7 @@ installing the tools, connecting to your subscription and getting
 started.  You'll notice a host of new project types specifically for
 working with HDInsight once you've installed it and restarted VS - we
 want "Storm Application".</p>
-<p><img alt="HDInsight -&gt; Storm Application" src="http://www.mikelanzetta.com/images/create_storm_project.png" /></p>
+<p><img alt="HDInsight -&gt; Storm Application" src="http://www.mikelanzetta.com/images/create_storm_project.png"></p>
 <p>When you create the project, you'll wind up with a C# Class Library
 project with a few files you can use as templates to build out your
 storm Topology - we'll be replacing most of those, as outlined below.
@@ -504,7 +504,7 @@ are welcome.</p>
 </section>
         <section id="extras" class="body">
                 <div class="blogroll">
-                        <h2>blogroll</h2>
+                        <h2>links</h2>
                         <ul>
                             <li><a href="https://blogs.technet.microsoft.com/machinelearning/">Cortana Analytics</a></li>
                             <li><a href="http://www.kdnuggets.com/">KDNuggets</a></li>
@@ -531,14 +531,13 @@ are welcome.</p>
         </footer><!-- /#contentinfo -->
 
     <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-54597100-1']);
-    _gaq.push(['_trackPageview']);
-    (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = 'https://ssl.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-54597100-1', 'auto');
+    ga('send', 'pageview');
     </script>
 <script type="text/javascript">
     var disqus_shortname = 'intelligentartifice';

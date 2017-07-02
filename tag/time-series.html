@@ -55,7 +55,7 @@ support for
 time-series</a>
 data manipulation.  The ability to normalize dates, roll up into
 aggregates, and easily slice ranges is phenomenal.</p>
-<p><img alt="execute_python" src="http://www.mikelanzetta.com/images/execute_python.png" /></p>
+<p><img alt="execute_python" src="http://www.mikelanzetta.com/images/execute_python.png"></p>
 <p>To get started, we'll pull in some time-series data, and mess around
 with it in the Python module - set up an experiment with a Reader
 connected to an "Execute Python Script" module.</p>
@@ -67,7 +67,7 @@ TSLA: http://ichart.finance.yahoo.com/table.csv?s=TSLA.  This returns
 data as a CSV with a header row, leading to the final Reader
 configuration
 below.</p>
-<p><img alt="ichart_reader_config" src="http://www.mikelanzetta.com/images/ichart_reader_config.png" /></p>
+<p><img alt="ichart_reader_config" src="http://www.mikelanzetta.com/images/ichart_reader_config.png"></p>
 <p>Once we have the data coming in, it's time to do something fun with it.
  Let's take a first crack at it - we'll take the input and turn it into
 monthly means.  In regular Python with Pandas, that looks like:</p>
@@ -156,7 +156,7 @@ conversion before our set_index call:</p>
 </pre></div>
 
 
-<p><img alt="orig_output" src="http://www.mikelanzetta.com/images/orig_output.png" /> </p>
+<p><img alt="orig_output" src="http://www.mikelanzetta.com/images/orig_output.png"> </p>
 <p>This worked!  However, looking at the output there is no Date column - so I'm
 guessing that in the same way the input data didn't pull the first
 column as an index, the output doesn't write out the index either.
@@ -189,7 +189,7 @@ list.</p><p>There are <a href="http://www.mikelanzetta.com/time-series-processin
             </aside><!-- /#featured -->
         <section id="extras" class="body">
                 <div class="blogroll">
-                        <h2>blogroll</h2>
+                        <h2>links</h2>
                         <ul>
                             <li><a href="https://blogs.technet.microsoft.com/machinelearning/">Cortana Analytics</a></li>
                             <li><a href="http://www.kdnuggets.com/">KDNuggets</a></li>
@@ -216,14 +216,13 @@ list.</p><p>There are <a href="http://www.mikelanzetta.com/time-series-processin
         </footer><!-- /#contentinfo -->
 
     <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-54597100-1']);
-    _gaq.push(['_trackPageview']);
-    (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = 'https://ssl.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-54597100-1', 'auto');
+    ga('send', 'pageview');
     </script>
 <script type="text/javascript">
     var disqus_shortname = 'intelligentartifice';

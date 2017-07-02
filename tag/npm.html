@@ -180,13 +180,13 @@ GitHub and can then go deal with the PRs.  For example, I've submitted
 this change to <code>node-sbus</code> from my fork to the originator.  Since I'm a
 contributor on the upstream repo, the view I see when I go to the Pull
 Requests tab on that repo looks like:</p>
-<p><img alt="merge_pr" src="http://www.mikelanzetta.com/images/merge_pr.png" /></p>
+<p><img alt="merge_pr" src="http://www.mikelanzetta.com/images/merge_pr.png"></p>
 <p>Note that I can automatically merge this PR, but since I have Travis set
 up it's telling me that it hasn't yet passed the build.  I should wait
 until I get a green light on that before considering accepting the PR -
 in the meantime I can click on the one change to go to a diff view and
 review it:</p>
-<p><img alt="pr_diff" src="http://www.mikelanzetta.com/images/pr_diff_sm.png" /></p>
+<p><img alt="pr_diff" src="http://www.mikelanzetta.com/images/pr_diff_sm.png"></p>
 <p>Looks good to me, and the Travis build has now passed (not strictly
 necessary since this was just a content change), so I accept the PR.</p>
 <h2>Multiple Owners, Multiple Publishers</h2>
@@ -195,7 +195,7 @@ add them as a collaborator.  You'll need to add them in both GitHub and
 NPM in order to make them a full peer for pushing/handling PRs and
 publishing.  For GitHub, you'll add them as a collaborator to your
 project using Settings->Collaborators:</p>
-<p><img alt="github_collaborators" src="http://www.mikelanzetta.com/images/github_collaborators.png" /></p>
+<p><img alt="github_collaborators" src="http://www.mikelanzetta.com/images/github_collaborators.png"></p>
 <p>And for NPM you'll need to <a href="https://docs.npmjs.com/cli/owner" title="NPM Owner">add the user as an
 owner</a>.  This should allow
 both of you to push changes, integrate pull requests, and publish new
@@ -206,7 +206,7 @@ projects.</p><p>There are <a href="http://www.mikelanzetta.com/collaboration-on-
             </aside><!-- /#featured -->
         <section id="extras" class="body">
                 <div class="blogroll">
-                        <h2>blogroll</h2>
+                        <h2>links</h2>
                         <ul>
                             <li><a href="https://blogs.technet.microsoft.com/machinelearning/">Cortana Analytics</a></li>
                             <li><a href="http://www.kdnuggets.com/">KDNuggets</a></li>
@@ -233,14 +233,13 @@ projects.</p><p>There are <a href="http://www.mikelanzetta.com/collaboration-on-
         </footer><!-- /#contentinfo -->
 
     <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-54597100-1']);
-    _gaq.push(['_trackPageview']);
-    (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = 'https://ssl.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-54597100-1', 'auto');
+    ga('send', 'pageview');
     </script>
 <script type="text/javascript">
     var disqus_shortname = 'intelligentartifice';

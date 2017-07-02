@@ -75,11 +75,11 @@ purposes.</p>
 ever to fire up a new VM running a Docker engine. Using the now-GA "new"
 portal, just search for "Docker on Ubuntu":</p>
 <p><img alt="Search for docker on ubuntu
-server" src="http://www.mikelanzetta.com/images/New_Docker.png" /></p>
+server" src="http://www.mikelanzetta.com/images/New_Docker.png"></p>
 <p>Once you select "Docker on Ubuntu Server" you'll be guided through the
 creation process:</p>
 <p><img alt="Docker VM Creation
-Process" src="http://www.mikelanzetta.com/images/Docker_VM_Create.png" /></p>
+Process" src="http://www.mikelanzetta.com/images/Docker_VM_Create.png"></p>
 <p>Upon completion, your VM will start up, and you can then SSH into it and
 execute whatever Docker commands you wish.</p>
 <h2>Installing TensorFlow</h2>
@@ -100,10 +100,10 @@ VM, but we need to port-forward from the VM externally. To do so, we
 simple expose that port via the Azure portal by adding a new endpoint
 mapping 8888 to whichever external port you choose:</p>
 <p><img alt="Exposing the Jupyter notebook
-endpoint" src="http://www.mikelanzetta.com/images/Expose_VM_Endpoint.png" /></p>
+endpoint" src="http://www.mikelanzetta.com/images/Expose_VM_Endpoint.png"></p>
 <p>Now that you've exposed the endpoint from Azure, you can fire up the
 Docker container by using the command:</p>
-<div class="highlight"><pre><span></span>docker run -d -p 8888:8888 -v /notebook:/notebook xblaster/tensorflow-jupyter
+<div class="highlight"><pre><span></span>docker run -d -p <span class="m">8888</span>:8888 -v /notebook:/notebook xblaster/tensorflow-jupyter
 </pre></div>
 
 
@@ -188,7 +188,7 @@ follow</a>.</p>
 mechanism for designating one instance of a group as the primary (or
 leader) and the others as secondaries (or followers), and is typically
 used for coordination amongst groups of machines in a distributed
-system. I first learned of leader election back in the olden times of ...</p>
+system. I first learned of leader election back in the olden times of …</p>
                 <a class="readmore" href="http://www.mikelanzetta.com/leader-election-in-node-js-using-azure-blob-storage.html">read more</a>
 <p>There are <a href="http://www.mikelanzetta.com/leader-election-in-node-js-using-azure-blob-storage.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
@@ -216,7 +216,7 @@ was recently working on a project training <a href="http://www.readcube.com/arti
 ConvNets</a>
 for image recognition. As with any Machine Learning project one of the
 primary things you need to make it successful is large amounts of data -
-quality labeled data. With image-based convnets, though, the data ...</p>
+quality labeled data. With image-based convnets, though, the data …</p>
                 <a class="readmore" href="http://www.mikelanzetta.com/managing-a-corpus-of-images-in-azure-blob-storage.html">read more</a>
 <p>There are <a href="http://www.mikelanzetta.com/managing-a-corpus-of-images-in-azure-blob-storage.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
@@ -243,7 +243,7 @@ ConvNets</a>
 for image recognition tasks, and ran into several interesting problems
 along the way. This post is the first in a series outlining some of
 those problems and how I went about solving them, and it focuses on the
-problem ...</p>
+problem …</p>
                 <a class="readmore" href="http://www.mikelanzetta.com/image-stream-processing-to-blob-storage.html">read more</a>
 <p>There are <a href="http://www.mikelanzetta.com/image-stream-processing-to-blob-storage.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
@@ -268,7 +268,8 @@ problem ...</p>
 </footer><!-- /.post-info -->                <p>With the general availability of Azure Machine Learning, the team has
 added a ton of new features.  Perhaps the one I'm most excited about is
 the addition of a general "Execute Python Script" module.  I've been
-meaning to brush up on my Python skills, and with the inclusion ...</p>
+meaning to brush up on my Python skills, and with the inclusion of
+Pandas …</p>
                 <a class="readmore" href="http://www.mikelanzetta.com/time-series-processing-in-azure-ml-using-python.html">read more</a>
 <p>There are <a href="http://www.mikelanzetta.com/time-series-processing-in-azure-ml-using-python.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
@@ -294,7 +295,7 @@ meaning to brush up on my Python skills, and with the inclusion ...</p>
 AMQP 1.0</a> - the <em>lingua
 franca</em> of Azure's EventHub and ServiceBus.  Well, the EventHub support
 is just about complete, and ServiceBus Topics and Queues should follow
-shortly thereafter (it's just me working on ...</p>
+shortly thereafter (it's just me working on it, so it's …</p>
                 <a class="readmore" href="http://www.mikelanzetta.com/node-js-and-net-talking-eventhub-together.html">read more</a>
 <p>There are <a href="http://www.mikelanzetta.com/node-js-and-net-talking-eventhub-together.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
@@ -322,7 +323,7 @@ a while now, and it's fantastic.  Having done ML in a few other
 platforms over the years, the ease with which I can put together a few
 regression models, do parameter-sweeps, and compare results is just
 groundbreaking.</p>
-<p>However, one area where it ...</p>
+<p>However, one area where it isn't quite …</p>
                 <a class="readmore" href="http://www.mikelanzetta.com/data-cleaning-with-azureml-and-r-dates.html">read more</a>
 <p>There are <a href="http://www.mikelanzetta.com/data-cleaning-with-azureml-and-r-dates.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
@@ -347,7 +348,7 @@ groundbreaking.</p>
 </footer><!-- /.post-info -->                <p>Lately, I've been working on a Node.js-based library for speaking AMQP
 1.0, since all of the existing ones are still on 0.9.1 and don't seem
 intent on updating, or are based on Qpid Proton and thus burdened with
-more native code than I'd ...</p>
+more native code than I'd like.  It's still …</p>
                 <a class="readmore" href="http://www.mikelanzetta.com/talking-to-eventhub-with-amqp-1-0.html">read more</a>
 <p>There are <a href="http://www.mikelanzetta.com/talking-to-eventhub-with-amqp-1-0.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
@@ -376,7 +377,7 @@ some new technologies, get exposed to the ~~pain ~~wonder of working
 with IoT hardware, and watch my bosses (<a href="http://blogs.msdn.com/b/johnshews_blog/">John
 Shewchuk</a> and <a href="http://channel9.msdn.com/Events/Visual-Studio/Visual-Studio-Live/Tracey-Trewin-Architecture-Intellitrace-DevOps-Unit-Testing">Tracey
 Trewin</a>)
-sling some ...</p>
+sling some …</p>
                 <a class="readmore" href="http://www.mikelanzetta.com/talking-to-eventhub-from-node.html">read more</a>
 <p>There are <a href="http://www.mikelanzetta.com/talking-to-eventhub-from-node.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
@@ -401,7 +402,7 @@ sling some ...</p>
 </footer><!-- /.post-info -->                <p>I've been dealing with Azure Storage for years now, and while most of
 the time it's rock solid, on occasion you can get hit with networking
 issues or other "brownout" drops in availability that can make you
-question your sanity.  I find it helpful to know what's ...</p>
+question your sanity.  I find it helpful to know what's going on behind …</p>
                 <a class="readmore" href="http://www.mikelanzetta.com/azure-storage-architecture-troubleshooting.html">read more</a>
 <p>There are <a href="http://www.mikelanzetta.com/azure-storage-architecture-troubleshooting.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
@@ -429,7 +430,7 @@ API</a>
 support, with a Node.js-backed API implementation.  I've used (and
 loved) Mobile Services in the past for their push notification
 infrastructure, but this was new ground for me.  I liked the easy
-setup ...</p>
+setup - trivial …</p>
                 <a class="readmore" href="http://www.mikelanzetta.com/running-azure-mobile-services-locally.html">read more</a>
 <p>There are <a href="http://www.mikelanzetta.com/running-azure-mobile-services-locally.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
@@ -437,7 +438,7 @@ setup ...</p>
                 </section><!-- /#content -->
         <section id="extras" class="body">
                 <div class="blogroll">
-                        <h2>blogroll</h2>
+                        <h2>links</h2>
                         <ul>
                             <li><a href="https://blogs.technet.microsoft.com/machinelearning/">Cortana Analytics</a></li>
                             <li><a href="http://www.kdnuggets.com/">KDNuggets</a></li>
@@ -464,14 +465,13 @@ setup ...</p>
         </footer><!-- /#contentinfo -->
 
     <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-54597100-1']);
-    _gaq.push(['_trackPageview']);
-    (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = 'https://ssl.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-54597100-1', 'auto');
+    ga('send', 'pageview');
     </script>
 <script type="text/javascript">
     var disqus_shortname = 'intelligentartifice';
