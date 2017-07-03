@@ -7,6 +7,10 @@ Slug: deep-learning-on-windows
 Status: published
 Summary: A primer on how to get deep learning frameworks up and running on Windows, with examples.
 
+## UPDATE
+
+Please see [my new post](./deep-learning-on-windows-redux.html) on this - everything has changed in less than a year so fairly massive revisions were necessary.
+
 ## A Quick Guide to Deep Learning
 
 Deep Learning is a relatively new set of techniques in the field of Machine Learning that have shown the power to generalize well over a whole host of problems, and even solve some problems that were considered unsolveable just a few years before. There are [many](http://deeplearning.net/tutorial/) [tutorials](http://deeplearning.stanford.edu/tutorial/) and [write-ups](https://www.quora.com/What-is-deep-learning) on these techniques [online](https://www.microsoft.com/en-us/research/publication/deep-learning-methods-and-applications/), so I won't go too deep, but I'll lay out the basics.

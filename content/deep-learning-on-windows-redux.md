@@ -4,7 +4,7 @@ Author: noodlefrenzy
 Category: Machine Learning
 Tags: Windows, Deep Learning, Machine Learning, Cognitive Toolkit, CNTK, TensorFlow, Keras
 Slug: deep-learning-on-windows-redux
-Status: draft
+Status: published
 Summary: An updated primer on how to get deep learning frameworks up and running on Windows, with examples.
 
 ## Why the Rewrite?
@@ -13,7 +13,7 @@ When I wrote my initial [Deep Learning on Windows](./deep-learning-on-windows.ht
 
 ## A Quick Guide to Deep Learning
 
-Deep Learning is a newly-popular set of techniques in the field of Machine Learning that have shown the power to generalize well over a whole host of problems, and even solve some problems that were considered unsolveable just a few years before. There are [many](http://deeplearning.net/tutorial/) [tutorials](http://deeplearning.stanford.edu/tutorial/) and [write-ups](https://www.quora.com/What-is-deep-learning) on these techniques [online](https://www.microsoft.com/en-us/research/publication/deep-learning-methods-and-applications/), so I won't go too deep, but I'll lay out the basics.
+Deep Learning is a newly-popular set of techniques in the field of Machine Learning that have shown the power to generalize well over a whole host of problems, and even solve some problems that were considered unsolvable just a few years before. There are [many](http://deeplearning.net/tutorial/) [tutorials](http://deeplearning.stanford.edu/tutorial/) and [write-ups](https://www.quora.com/What-is-deep-learning) on these techniques [online](https://www.microsoft.com/en-us/research/publication/deep-learning-methods-and-applications/), so I won't go too deep, but I'll lay out the basics.
 
 People have known for some time that a particular Machine Learning technique - Neural Networks - has the capability to learn complex mappings from inputs (e.g. images) to outputs (e.g. "which digit is this?") through the use of a "hidden layer" that mapped between the two.
 
@@ -57,7 +57,9 @@ Within your new environment we need to install the modern Deep Learning toolkits
 
 #### But First, a Word From Our GPU Overlords
 
-We could install and run our Deep Learning tools right now, but as soon as you tried to train any model of complexity you'd grow old before it completed. For any reasonable training time, you'll need GPU support. I mentioned in the beginning that you should have an NVidia GPU for training, so let's set it up for Deep Learning Toolkit support. Head to the [NVidia CUDA Toolkit](https://developer.nvidia.com/cuda-toolkit) home and download and install it. Then hit up the [NVidia Deep Learning](https://developer.nvidia.com/deep-learning) center and sign up for a developer account. Download the [CUDnn library](https://developer.nvidia.com/cudnn) and install it - currently [TensorFlow wants](https://www.tensorflow.org/install/install_windows) CUDnn v5.1 with CUDA Toolkit v8.0, but that changes fast so click through and choose appropritely.
+We could install and run our Deep Learning tools right now, but as soon as you tried to train any model of complexity you'd grow old before it completed. For any reasonable training time, you'll need GPU support. I mentioned in the beginning that you should have an NVidia GPU for training, so let's set it up for Deep Learning Toolkit support. Head to the [NVidia CUDA Toolkit](https://developer.nvidia.com/cuda-toolkit) home and download and install it. Then hit up the [NVidia Deep Learning](https://developer.nvidia.com/deep-learning) center and sign up for a developer account. Download the [CUDnn library](https://developer.nvidia.com/cudnn) and install it - currently [TensorFlow wants](https://www.tensorflow.org/install/install_windows) CUDnn v5.1 with CUDA Toolkit v8.0, but that changes fast so click through and choose appropriately.
+
+NOTE: Once you install the CUDA Toolkit and CUDnn, you will likely need to restart your console and reactivate your environment to refresh your paths.
 
 #### Adding the Latest Versions of CNTK, TensorFlow, and Keras
 
@@ -97,6 +99,7 @@ into
 
 [![Ninjacat, dreamy edition]({filename}/images/ninjadream_small_redux.png)]({filename}/images/ninjadream_large_redux.png)
 
+NOTE: For those of you who don't have `wget`, might I recommend installing Gnu tools for Windows from [GOW](https://github.com/bmatzelle/gow/wiki) (and potentially checking out my earlier [post on Windows tools](./developing-on-windows.html)).
 
 ## Neural Artistry
 
