@@ -27,7 +27,108 @@
 
             <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href="http://www.mikelanzetta.com/nips-2016-trip-report.html">NIPS 2016 Trip Report</a></h1>
+                    <h1 class="entry-title"><a href="http://www.mikelanzetta.com/deep-learning-on-windows-redux.html">Deep Learning on Windows, Redux</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2017-06-27T12:34:00-07:00">
+                Published: Tue 27 June 2017
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="http://www.mikelanzetta.com/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="http://www.mikelanzetta.com/category/machine-learning.html">Machine Learning</a>.</p>
+<p>tags: <a href="http://www.mikelanzetta.com/tag/windows.html">Windows</a> <a href="http://www.mikelanzetta.com/tag/deep-learning.html">Deep Learning</a> <a href="http://www.mikelanzetta.com/tag/machine-learning.html">Machine Learning</a> <a href="http://www.mikelanzetta.com/tag/cognitive-toolkit.html">Cognitive Toolkit</a> <a href="http://www.mikelanzetta.com/tag/cntk.html">CNTK</a> <a href="http://www.mikelanzetta.com/tag/tensorflow.html">TensorFlow</a> <a href="http://www.mikelanzetta.com/tag/keras.html">Keras</a> </p>
+</footer><!-- /.post-info --><h2>Why the Rewrite?</h2>
+<p>When I wrote my initial <a href="./deep-learning-on-windows.html">Deep Learning on Windows</a> guide, it was a year ago - TensorFlow was just starting to surface and was far from running on Windows, CNTK didn't run in Python, and Theano was the current king of the heap. Seems like a lifetime ago in the Deep Learning world, and the whole universe of DL has changed since then. For one, it's dramatically easier to get up and running, and my example is woefully out of date. It's time for an update.</p>
+<h2>A Quick Guide to Deep Learning</h2>
+<p>Deep Learning is a newly-popular set of techniques in the field of Machine Learning that have shown the power to generalize well over a whole host of problems, and even solve some problems that were considered unsolvable just a few years before. There are <a href="http://deeplearning.net/tutorial/">many</a> <a href="http://deeplearning.stanford.edu/tutorial/">tutorials</a> and <a href="https://www.quora.com/What-is-deep-learning">write-ups</a> on these techniques <a href="https://www.microsoft.com/en-us/research/publication/deep-learning-methods-and-applications/">online</a>, so I won't go too deep, but I'll lay out the basics.</p>
+<p>People have known for some time that a particular Machine Learning technique - Neural Networks - has the capability to learn complex mappings from inputs (e.g. images) to outputs (e.g. "which digit is this?") through the use of a "hidden layer" that mapped between the two.</p>
+<p><img alt="A Simple MLP" src="http://www.mikelanzetta.com/images/Multilayer_Perceptron.png"></p>
+<p>With the advent of <em>Big Data</em>, we suddenly have incredibly large sets of input data we could feed to these models, and with the increasing power of GPUs we have the compute capacity to do so. We had seen Neural Networks with multiple hidden layers in the past, but training them was so expensive and they didn't seem to outperform other techniques, so they'd been discarded. Someone realized that with the amount of data we now have and the compute resources available to us, these constraints no longer applied and these older networks were brought back.  </p>
+<p><img alt="Denser, Deeper Neural Network" src="http://www.mikelanzetta.com/images/Dense_NN.png"></p>
+<p>Since then, networks have only gotten deeper (more hidden layers) and their shapes have only gotten stranger (convolutional neurons, feedback loops, and layer skipping). At this point we know they are powerful, but we don't really know how powerful they can get and the field is wide open for advancement. For a more detailed and far more eloquent history of the field, see <a href="https://devblogs.nvidia.com/parallelforall/deep-learning-nutshell-history-training/">NVidia's great post</a>.</p>
+<p>In this post I'll walk you through how to get one of the most popular toolkits up and running on Windows, and run through and explain some fun examples. Speaking of NVidia, this post assumes you have an NVidia GPU which will make your neural networks train <em>MUCH</em> faster.</p>
+<h2>Deep Learning Toolkits</h2>
+<p>Machine Learning has been around for a long time and there are dozens of frameworks out there written in everything from low-level C code to AzureML. In the Deep Learning space several frameworks have risen to prominence only to gradually lose ground to the "next big thing". It's hard to say who has the best framework, and a lot of it right now comes down to choices about whether it supports your current and expected needs, whether it runs on your platform and whether you can code to it in a language you enjoy. TensorFlow seems to be the current king of the heap and has a lot of mind-share behind it, but PyTorch is coming up as a strong contender and of course Microsoft's Cognitive Toolkit is now a player with v2's support for Python.</p>
+<p><a href="http://caffe.berkeleyvision.org/">Caffe</a> is one of the elders of the field, and with their "Model Zoo" of pre-trained models makes a compelling case for continued usefulness. With plenty of tutorials, good documentation, and a binding for Python it's a solid choice. It was supplanted by <a href="http://torch.ch/">Torch</a>, Facebook's framework for Lua. This was popular for a while until it started being replaced by more modern Tensor-based variants. These Tensor-based networks allow for <em>networks of computations</em> instead of <em>networks of layers</em> and have proven to be more flexible for modern deep learning models. Since this is all just math, both of these have been revised to more gracefully support computation networks at this point, and with <a href="http://pytorch.org/">PyTorch</a> and <a href="https://caffe2.ai/">Caffe2</a> both of these frameworks have a new lease on life.</p>
+<p>Microsoft's <a href="https://github.com/Microsoft/CNTK">Cognitive Toolkit</a> and Google's <a href="https://github.com/tensorflow/tensorflow">TensorFlow</a> are both Tensor-based systems - both run on Linux and Windows. <a href="https://github.com/fchollet/keras">Keras</a> is a wrapper around existing Tensor toolkits that allows for easier model building, training, and evaluation - it easily runs atop TensorFlow and CNTK, as well as an older alternate I used in the previous version of this article (<a href="https://github.com/Theano/Theano">Theano</a>).</p>
+<h2>Keras, TensorFlow, and CNTK</h2>
+<h3>Installing on Windows</h3>
+<p>Keras, TensorFlow and CNTK all (can) run as Python libraries, so the first thing we'll need to do is get a Python installation on Windows. For this, there are a couple of great options out there, but I'll go with <a href="https://www.continuum.io/downloads">Anaconda</a> - this differs from my previous post where I used <a href="https://winpython.github.io/">WinPython</a>. Why did I change? Primarily because I'm now on so many different projects that I need to maintain a large number of environments sometimes using different Python versions, and I find that Anaconda makes that easier. My point about WinPython having a side-effect-free installation, however, still holds true.</p>
+<h4>Installing Anaconda, Using Conda</h4>
+<p>Navigate to the Anaconda <a href="https://www.continuum.io/downloads">download page</a> and download the latest 64-bit installer. Once you've installed it into your location of choice, start up a new command window and we'll be ready to install the rest of the tools. First, though, you should take a brief detour to learn about <a href="https://conda.io/docs/using/index.html"><code>conda</code></a> - we'll be using <code>conda</code> to manage our environment, consider it like a <code>virtualenv</code>++. If you already have Anaconda installed, consider trying <code>conda update conda</code> and potentially <code>conda update python</code> to make sure you're up to date.</p>
+<p>You should create an environment to isolate your baseline Python installation from any packages you install - this is both good practice for maintaining your installation, and for allowing you to document it and replicate it elsewhere (e.g. Docker, other VMs). To do so, pick a name (e.g. "deep-windows") and create a new environment using <code>conda create -n deep-windows</code> (or whatever name you've chosen). You can then activate it using <code>activate deep-windows</code>.</p>
+<h4>Adding the Baseline</h4>
+<p>Within your new environment we need to install the modern Deep Learning toolkits we'll be using, but first let's install several packages that we'll commonly need. Anaconda's repos tend to be a bit out of date, but they contain <a href="https://software.intel.com/en-us/mkl">MKL-optimized</a> versions of several packages that are useful. As such, I typically install those using <code>conda install</code> and then use <code>pip install</code> for all others. We'll be installing Numpy, Scipy, Pandas, Scikit-Learn, and Jupyter Notebooks. We'll need h5py because H5 is a common format for serialized models (including the Keras model we will be using below), and PIL (well, Pillow) for processing images. We should also consider installing Bokeh and/or Dash for better charting.</p>
+<div class="highlight"><pre><span></span>&gt; conda install numpy scipy
+&gt; pip install pandas scikit-learn jupyter h5py Pillow
+&gt; pip install bokeh dash
+</pre></div>
+
+
+<h4>But First, a Word From Our GPU Overlords</h4>
+<p>We could install and run our Deep Learning tools right now, but as soon as you tried to train any model of complexity you'd grow old before it completed. For any reasonable training time, you'll need GPU support. I mentioned in the beginning that you should have an NVidia GPU for training, so let's set it up for Deep Learning Toolkit support. Head to the <a href="https://developer.nvidia.com/cuda-toolkit">NVidia CUDA Toolkit</a> home and download and install it. Then hit up the <a href="https://developer.nvidia.com/deep-learning">NVidia Deep Learning</a> center and sign up for a developer account. Download the <a href="https://developer.nvidia.com/cudnn">CUDnn library</a> and install it - currently <a href="https://www.tensorflow.org/install/install_windows">TensorFlow wants</a> CUDnn v5.1 with CUDA Toolkit v8.0, but that changes fast so click through and choose appropriately.</p>
+<p>NOTE: Once you install the CUDA Toolkit and CUDnn, you will likely need to restart your console and reactivate your environment to refresh your paths.</p>
+<h4>Adding the Latest Versions of CNTK, TensorFlow, and Keras</h4>
+<p>Now that your environment has a solid baseline to build upon, we'll install the latest releases of some of the modern Deep Learning toolkits I mentioned above. CNTK installs via Wheel files which you can find on their <a href="https://docs.microsoft.com/en-us/cognitive-toolkit/Setup-Windows-Python">installation page</a> (Note that if you want to use CNTK with BrainScript and/or the command line, you'll want <a href="https://docs.microsoft.com/en-us/cognitive-toolkit/Setup-Windows-Binary-Script">the full install</a> instead). TensorFlow installs via Pip and we'll be using the GPU version. Keras installs via Pip as well - it used to depend on Theano (see my previous post) and as of this writing it still winds up installing it, so expect some compilation here. If anything fails, this is likely where it'll go wrong. </p>
+<div class="highlight"><pre><span></span>&gt; # Choose the install wheel from https://docs.microsoft.com/en-us/cognitive-toolkit/Setup-Windows-Python 
+&gt; pip install https://cntk.ai/PythonWheel/GPU/cntk-2.0-cp36-cp36m-win_amd64.whl
+&gt; pip install tensorflow-gpu
+&gt; pip install keras
+</pre></div>
+
+
+<h4>Testing Your Installation</h4>
+<p>With the latest CNTK, TensorFlow and Keras installed, ensure you can import the libraries:</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">python</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">cntk</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">tensorflow</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">keras</span>
+</pre></div>
+
+
+<h2>Deep Dreaming</h2>
+<p><a href="https://research.googleblog.com/2015/06/inceptionism-going-deeper-into-neural.html">Deep Dream</a> has evolved some since my previous version of this post, so let's go straight to the (Keras) source, grab their example, and use that as our baseline. The Keras version now uses Inception V3 as opposed to the previous version using VGG16 - let's grab it and run it on our example image:</p>
+<p><a href="http://www.mikelanzetta.com/images/ninjacat_large.png"><img alt="Ninjacat" src="http://www.mikelanzetta.com/images/ninjacat_small.png"></a></p>
+<p>Download the <a href="https://raw.githubusercontent.com/fchollet/keras/master/examples/deep_dream.py"><code>deep_dream.py</code></a> example from the Keras GitHub repo and run it on our example image. Assume you've downloaded the image above (the large version), you should be able to run the below and take a look at the result.</p>
+<div class="highlight"><pre><span></span>&gt; wget https://raw.githubusercontent.com/fchollet/keras/master/examples/deep_dream.py
+&gt; python deep_dream.py ninjacat_large.png ninjadream
+&gt; explorer ninjadream.png
+</pre></div>
+
+
+<p>And this would turn</p>
+<p><a href="http://www.mikelanzetta.com/images/ninjacat_large.png"><img alt="Ninjacat" src="http://www.mikelanzetta.com/images/ninjacat_small.png"></a></p>
+<p>into</p>
+<p><a href="http://www.mikelanzetta.com/images/ninjadream_large_redux.png"><img alt="Ninjacat, dreamy edition" src="http://www.mikelanzetta.com/images/ninjadream_small_redux.png"></a></p>
+<p>NOTE: For those of you who don't have <code>wget</code>, might I recommend installing Gnu tools for Windows from <a href="https://github.com/bmatzelle/gow/wiki">GOW</a> (and potentially checking out my earlier <a href="./developing-on-windows.html">post on Windows tools</a>).</p>
+<h2>Neural Artistry</h2>
+<p>Neural Artistry first surfaced with a <a href="https://arxiv.org/pdf/1508.06576v2.pdf">paper from Germany</a> and has since become another big showcase example for the power of Deep Learning. Essentially, the way it works is to take an existing trained Convolutional Neural Network and use it to convolve two images together, by joining the outputs of different convolutional layers from each image. The Keras example (as of now) still uses VGG16 for its network, so download the script and we'll use it to merge our favorite NinjaCat with a <a href="https://en.wikipedia.org/wiki/The_Scream#/media/File:The_Scream.jpg">lesser known Norwegian work</a>.</p>
+<div class="highlight"><pre><span></span>&gt; wget https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/The_Scream.jpg/1280px-The_Scream.jpg -O the_scream.jpg
+&gt; wget https://raw.githubusercontent.com/fchollet/keras/master/examples/neural_style_transfer.py
+&gt; python neural_style_transfer.py ninjacat_large.png the_scream.jpg ninjascream
+</pre></div>
+
+
+<p>And that'd turn</p>
+<p><a href="http://www.mikelanzetta.com/images/ninjacat_large.png"><img alt="Ninjacat" src="http://www.mikelanzetta.com/images/ninjacat_small.png"></a></p>
+<p>into</p>
+<p><a href="http://www.mikelanzetta.com/images/ninjascream_large_redux.png"><img alt="Ninjacat, screamy edition" src="http://www.mikelanzetta.com/images/ninjascream_small_redux.png"></a></p>
+<h2>Conclusion and Future Work</h2>
+<p>Setting up deep learning toolkits on Windows has become substantially easier in just the short time since I wrote my initial version of this article. TensorFlow now runs on Windows (finally), CNTK v2 works with Python and installs much more easily, and Keras runs against both TensorFlow (its new default) and CNTK. I'll write a follow-up to this with information on using Keras to switch between CNTK and TensorFlow, and how to use Docker containers to manage your Deep Learning training.</p><p>There are <a href="http://www.mikelanzetta.com/deep-learning-on-windows-redux.html#disqus_thread">comments</a>.</p>                </article>
+            </aside><!-- /#featured -->
+                <section id="content" class="body">
+                    <h1>Other articles</h1>
+                    <hr />
+                    <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://www.mikelanzetta.com/nips-2016-trip-report.html" rel="bookmark"
+                           title="Permalink to NIPS 2016 Trip Report">NIPS 2016 Trip Report</a></h1>
+                </header>
+
+                <div class="entry-content">
 <footer class="post-info">
         <abbr class="published" title="2016-12-13T11:52:00-08:00">
                 Published: Tue 13 December 2016
@@ -38,69 +139,10 @@
         </address>
 <p>In <a href="http://www.mikelanzetta.com/category/machine-learning.html">Machine Learning</a>.</p>
 <p>tags: <a href="http://www.mikelanzetta.com/tag/ml.html">ML</a> <a href="http://www.mikelanzetta.com/tag/machine-learning.html">Machine Learning</a> <a href="http://www.mikelanzetta.com/tag/deep-learning.html">Deep Learning</a> <a href="http://www.mikelanzetta.com/tag/gan.html">GAN</a> <a href="http://www.mikelanzetta.com/tag/deep-rl.html">Deep RL</a> </p>
-</footer><!-- /.post-info --><p><img alt="NIPS Logo" src="http://www.mikelanzetta.com/images/NipsLogoSmall.png" title="NIPS Logo">
-<a href="https://nips.cc">NIPS (Neural Information Processing Symposium)</a> is one of the two largest academic conferences in the Machine Learning world (the other being ICML). This year the conference was held in Barcelona, which worked out well for me because I was planning to attend a hackfest the following week in Milan, so I decided to go as an attendee. </p>
-<p>The conference has doubled in size in the past year, with ~6000 attendees, so their advice to pick up your badge the day before the conference began proved to be quite wise.</p>
-<p><a style='text-decoration: none; color: orange;'>
-<img src="http://www.mikelanzetta.com/images/nips2016-registration-line.jpg" alt="Huge line at registration"/>
-<div style="width:790px;text-align:center;">Picking up the day before == brilliant</div>
-</a></p>
-<h2>General Insights</h2>
-<p>There were a few general insights I had during the conference. First - Google, Facebook, and OpenAI are the stars of the show - from the lanyard giving Google and Facebook pride-of-place, to the dueling Google Research and DeepMind booths, Google seems to be the dominant force. Deep Learning is still the star, but Tensor-based learning methods are generally only increasing in prominence - very little on "traditional" methods. Microsoft's booth had solid attendance, but our relatively confusing story (how many offerings do we have? is our Deep Learning system named CNTK or Cognitive Toolkit?) seemed to prevent "virality" compared to Google's TensorFlow or Facebook's Torch. I talked up CNTK v2 to a few people, but when they went to our booth to get stickers only "Microsoft Cognitive Toolkit" stickers could be found.</p>
-<p><a style='text-decoration: none; color: orange'>
-<img src="http://www.mikelanzetta.com/images/nips2016-google-research-booth.jpg" alt="Crowd around Google Research booth" style="float:left;margin-right:10px"/>
-<img src="http://www.mikelanzetta.com/images/nips2016-microsoft-booth.jpg" alt="Crowd around Microsoft booth"/>
-<div style="width:790px;text-align:center;">Google Research vs. Microsoft Booths</div>
-</a></p>
-<h2>Machine Learning Trends</h2>
-<h3>Keynote Talks</h3>
-<p><a href="https://en.wikipedia.org/wiki/Yann_LeCun">Yann LeCun</a> gave an interesting keynote on the need for unsupervised learning in general domains as the big open challenge for the future of ML. He called the talk <a href="https://drive.google.com/file/d/0BxKBnD5y2M8NREZod0tVdW5FLTQ/view">Predictive Learning</a>, and described the need for the model to maintain an accurate "world state" in order to begin reasoning in a more general sense.</p>
-<p><a style='text-decoration: none; color: orange;'>
-<img src="http://www.mikelanzetta.com/images/yanns-cake.png" alt="Cake as illustration of learning challenges"/>
-<div style="width:790px;text-align:center;">Yann's now-famous cake</div>
-</a></p>
-<p>Drew Purves (former Microsoftie, now at DeepMind) gave a keynote where he talked about the launch of <a href="https://github.com/deepmind/lab">DeepMind's Lab</a> and more generally talked about the obligation of ML to help solve some of our most pressing environmental problems. He had some great illustrations in those slides, but I haven't seen him post them yet unfortunately.</p>
-<blockquote class="twitter-tweet" data-lang="en"><p lang="en" dir="ltr">Psyched so many at <a href="https://twitter.com/hashtag/nips2016?src=hash">#nips2016</a> loved illustrations from my <a href="https://twitter.com/DeepMindAI">@DeepMindAI</a> artist colleague Max Cant! Here&#39;s a decent version of the medley :) <a href="https://t.co/I7ShngYiMQ">pic.twitter.com/I7ShngYiMQ</a></p>&mdash; Drew Purves (@DrewPurves) <a href="https://twitter.com/DrewPurves/status/806427029306560512">December 7, 2016</a></blockquote>
-
-<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
-
-<p><a href="https://en.wikipedia.org/wiki/Kyle_Cranmer">Kyle Cranmer</a> presented on using ML models in the processing of data at CERN, and some of the unique challenges they face there. They deal with truly big data there, and do a substantial amount of pre-filtering in order to even scope the problem down to something surmountable (<a href="https://figshare.com/articles/NIPS_2016_Keynote_Machine_Learning_Likelihood_Free_Inference_in_Particle_Physics/4291565/1">slides</a> and <a href="https://cds.cern.ch/record/1541893">video</a>). With ~1PB of data per second, mountains of processors filter the incoming data to attempt to trap only "relevant" events (leading to "only" 100GB/s of data). His talk ranged over many different approaches so I encourage you to take a look at the slide deck. I'll just call out two interesting developments. First, <a href="http://diana-hep.org/carl/">CARL</a>, a module for "likelihood-free inference" in Python for using likelihood estimation techniques in model-training. Second, a <a href="https://github.com/lukasheinrich/weinberg-test">Jupyter Notebook</a> for generating high-energy physics simulations on the web. </p>
-<h3>Generative Adversarial Networks</h3>
-<p>Earlier this year at ICML the big trends were around understanding Deep Neural Nets and exploring Deep Reinforcement Learning. At NIPS Generative Adversarial Networks were the star of the show, with <a href="https://en.wikipedia.org/wiki/Yann_LeCun">Yann LeCun</a> saying in his keynote that they were the most important development in ML in the last ten to twenty years. Ian Goodfellow gave a great tutorial on GANs (see <a href="http://www.iangoodfellow.com/slides/2016-12-04-NIPS.pdf">slides here</a>), and the creators of <a href="https://arxiv.org/abs/1606.03657v1">InfoGAN</a> also gave a great talk.</p>
-<p><a style='text-decoration: none; color: orange;'>
-<img src="http://www.mikelanzetta.com/images/goodfellow-generative-taxonomy.png" alt="Taxonomy of generative models"/>
-<div style="width:790px;text-align:center;">Great overview of generative models</div>
-</a></p>
-<p>One key takeaway was that there is really no good method at present for judging the "success" of GANs in many domains. Maximum likelihood optimization results in blurry images, or images that bear some resemblance to reality but are still far from real. This extends to other domains as well, and is one of the big open issues in the field. In addition, mode collapse is still an unsolved problem (where a GAN Generator learns to generate a single sample type, instead of a diversity, since that's enough to fool the Descriminator). There has been some progress in this area, but it's another open area of research for a more general solution.</p>
-<p>There was a great talk going into the state of the art on the hacks that people are currently using to train GANs effectively by the folks at Facebook AI Research. If you're planning on working with GANs, I'd consider it required reading (<a href="https://github.com/soumith/ganhacks">GitHub here</a>).</p>
-<h3>Deep Learning and Tensors</h3>
-<p>In the Deep Learning space one of the star papers was on <a href="https://arxiv.org/abs/1610.09513v1">Phased LSTMs</a>, which added a time-based phase gate to each LSTM memory unit with learned phase offsets, meaning each memory gate only updated when "in phase" and leading to the equivalent of an attention memory network without the complexity. </p>
-<p>In a similar vein to the work using GANs as an input to a loss function for training other networks, my favorite-named paper <a href="https://arxiv.org/abs/1606.04474">Learning to Learn by Gradient Descent by Gradient Descent</a> had a strong showing at the poster session, although I missed their talk (was in the GAN workshop instead).</p>
-<p>There was a great talk in the Tensor workshop on how Deep Networks - and in particular CNNs - create exponential expressiveness with only polynomial parameters. This is due to overlapping of the CNN kernels and pooling. He also outlined in this talk how the choice of pooling creates local areas of attention, and alternate choices of pooling can lean to different network topologies able to detect global structure. Additionally, he pointed out that using e.g. CNNs to learn a single binary classifier limits the amount of information that can be learned from any given training sample, resulting in slower convergence and decreased expressiveness.</p>
-<p>The workshops seemed to give some actual in-the-wild implementations a chance to present, with an interesting talk from someone at Sandia on using a DNN to compute better estimates for parameters in dynamical systems - in their case fluid flow dynamics. This led to substantial improvements of the simulation over their current default simplifying assumptions, with only a marginal increase in simulation runtime.</p>
-<p><a style='text-decoration: none; color: orange;'>
-<img src="http://www.mikelanzetta.com/images/bcn-beach.jpg" alt="Beach scene as example of dynamical system"/>
-<div style="width:790px;text-align:center;">Another fluid-flow example</div>
-</a></p>
-<h3>Other Methods</h3>
-<p>Variational Inference was big as well, with a great tutorial on it that outlined the method as well as its utility (<a href="http://www.cs.columbia.edu/~blei/talks/2016_NIPS_VI_tutorial.pdf">slides</a>). They walked through the origin of Variational Inference, from the requirement to approximate the Posterior distribution of a predictive model, through the mean-field method, using topic modeling as a motivating example. They then went through scaling VI via stochastic VI, and went deeper with approximating the ELBO via pathwise estimation and several other methods for scaling out VI. Finally, they finished with a deep-dive into better posterior estimation techniques.</p>
-<p>Forecasting and Time-Series were not ignored, but still seem like areas where traditional methods (e.g. ARIMA and its descendents) are holding their own. One tutorial went into deep math around why DL methods could forecast well, but was based on (IMHO) the questionable assumption of "smoothness" in the range [T-S, T]. As someone who did Forecasting for Amazon, I can guarantee that the area around Black Friday is anything but differentiable. </p>
-<p><a style='text-decoration: none; color: orange;'>
-<img src="http://www.mikelanzetta.com/images/smooth-surfaces-were-a-theme.jpg" alt="Rounded hallway in Park Guell"/>
-<div style="width:790px;text-align:center;">Smoothness in action</div>
-</a></p>
-<h2>Conclusion</h2>
-<p>I cannot even begin to discuss the full breadth of content presented at NIPS. Machine Learning as a field is expanding far beyond even the specialists' ability to understand all of it, so for a non-theoretician practitioner it's nigh impossible to keep up. <a href="https://tryolabs.com/blog/2016/12/06/major-advancements-deep-learning-2016/">Another article</a> (far better than mine) regarding the advances in the past year just went viral on HN. I'd read that as well to get additional insight. This year at ICML it was quite clear that we didn't even know where the edges were with respect to what DNNs could do. That still seems to be the case at NIPS, and with GANs it's even more evident we still don't know what the limits might be. </p>
-<p>Definitely an exciting time to be in the field - I just wish I had more time to keep up. By the end of the conference, my brain felt thoroughly chewed on.</p>
-<p><a style='text-decoration: none; color: orange;'>
-<img src="http://www.mikelanzetta.com/images/brain-eaten.jpg" alt="Snake-head sculpture appearing to chew on woman's head"/>
-<div style="width:490px;text-align:center;">Braiinnnzzz</div>
-</a></p><p>There are <a href="http://www.mikelanzetta.com/nips-2016-trip-report.html#disqus_thread">comments</a>.</p>                </article>
-            </aside><!-- /#featured -->
-                <section id="content" class="body">
-                    <h1>Other articles</h1>
-                    <hr />
-                    <ol id="posts-list" class="hfeed">
+</footer><!-- /.post-info -->                <p>Thoughts and insights from the 2016 NIPS conference</p>
+                <a class="readmore" href="http://www.mikelanzetta.com/nips-2016-trip-report.html">read more</a>
+<p>There are <a href="http://www.mikelanzetta.com/nips-2016-trip-report.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
 
             <li><article class="hentry">
                 <header>
