@@ -27,7 +27,99 @@
 
             <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href="http://www.mikelanzetta.com/python-list-comprehensions-gone-crazy.html">Python List Comprehensions Gone Crazy</a></h1>
+                    <h1 class="entry-title"><a href="http://www.mikelanzetta.com/jupytercon-2017.html">JupyterCon 2017</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2017-08-26T12:34:56-07:00">
+                Published: Sat 26 August 2017
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="http://www.mikelanzetta.com/author/noodlefrenzy.html">noodlefrenzy</a>
+        </address>
+<p>In <a href="http://www.mikelanzetta.com/category/software.html">Software</a>.</p>
+<p>tags: <a href="http://www.mikelanzetta.com/tag/jupyter.html">Jupyter</a> <a href="http://www.mikelanzetta.com/tag/python.html">Python</a> <a href="http://www.mikelanzetta.com/tag/r.html">R</a> <a href="http://www.mikelanzetta.com/tag/data-science.html">Data Science</a> <a href="http://www.mikelanzetta.com/tag/machine-learning.html">Machine Learning</a> </p>
+</footer><!-- /.post-info --><h2>JupyterCon 2017</h2>
+<p>I've just returned from the first JupyterCon, held from August 22-25, 2017 in downtown Manhattan. It was a relatively low-key conference focused on <a href="https://jupyter.org/">Jupyter</a>, starting with tutorials and workshops, and ending with two days of talks in four tracks. <a href="https://twitter.com/fperez_org">Fernando Perez</a>, the inventor of IPython and instigator of this whole Jupyter phenomenon, keynoted the conference with a humbleness and collaborative vision of a vibrant Jupyter-rich future that was infectious. As with some of the best open-source-focused conferences, JupyterCon focused far more on cooperation and sharing learnings and best practices than on advertising. Of course, there were sponsors and booths, but it never felt intrusive.</p>
+<h2>Key Takeaways (TL;DR)</h2>
+<p>For those who don't want to read the full take below, here are my top-line observations:</p>
+<ul>
+<li>Jupyter is continuing to grow in use, especially in the academic space where entire courses are being taught out of Jupyter notebooks</li>
+<li><a href="https://github.com/jupyterlab/jupyterlab">JupyterLab</a> (or Jupyter v.next) looks very promising and is almost ready for users to start adopting (EOY17)</li>
+<li>Multi-user managed deployments are coming along (both through <a href="https://github.com/jupyterhub/jupyterhub">JupyterHub</a> and through PaaS solutions like <a href="https://notebooks.azure.com/">Azure Notebooks</a>)</li>
+<li>Some early careful thoughts about the kernel separation and about protocols have paid dividends, allowing JupyterLab to completely rewrite Jupyter Notebooks while maintaining (almost) full compatibility, allowing light-weight Kernel frameworks like <a href="https://github.com/QuantStack/xeus">Xeus</a> and some crazy Kernel wrappers.</li>
+</ul>
+<h2>Tutorial - Polyglot Notebooks</h2>
+<p>As a speaker I didn't have permission to do the two-day training, so have no feedback on their quality, but anecdotal evidence from others suggests they were useful. I only went to one tutorial as I had to spend the rest of the day getting my talk cleaned up and all of my code running on my <a href="https://docs.microsoft.com/en-us/azure/machine-learning/machine-learning-data-science-virtual-machine-overview">Data Science VM</a>. Since my team works with such a wide variety of technologies, I often wind up using Python for one project and R for the next. I love Python, don't get me wrong, but I find myself missing dplyr and GGPlot whenever I'm in Pandas/Matplotlib-land (yes, I know about Bokeh/Seaborn/Plotly/Dash), so when I saw <a href="https://conferences.oreilly.com/jupyter/jup-ny/public/schedule/detail/59828">the tutorial</a> for mixing SQL, Python and R in one Notebook I knew that was where I needed to be.</p>
+<p>The tutorial, given by <a href="https://twitter.com/lgautier">Laurent Gautier</a> (the creator of <a href="https://pypi.python.org/pypi/rpy2/">rpy2</a>), had some initial setup hiccups getting people up and running (mostly due to people trying to get started without using the provided Docker container), but once those were resolved it was quite interesting. He started by setting up a <a href="https://sqlite.org/">SQLite</a> instance and showing how to execute SQL queries using <a href="https://docs.python.org/3/library/sqlite3.html">sqlite3</a> and then <a href="http://www.sqlalchemy.org/">SQLAlchemy</a>, pointing out that while the SQLAlchemy code looks more elegant and certainly more <em>Pythonic</em> than the raw SQL, by using the library you've replaced learning a language (SQL) with learning an API (SQLAlchemy). A valid point, especially given the ubiquity of SQL well beyond the RDBMS world.</p>
+<p>Laurent then walked through Pandas and R DataFrames, comparing filtering, aggregation and other methods between Pandas and dplyr. He walked through examples of some reasonably advanced R plotting using <a href="https://cran.r-project.org/web/packages/lattice/index.html">lattice</a> and <a href="http://ggplot2.org/">ggplot</a>, plotting some interesting earthquake-related data. All of this R work was done using <code>%%R</code> magic to run against an R Kernel loaded by <code>%load_ext rpy2.ipython</code>. </p>
+<p>Finally, with all of the preliminaries out of the way, we got to the fun part - Python and R together, sharing data and having fun like one big math-nerd play-date. He loaded <code>rpy2.ipython</code> as before, but then showed off <code>importr</code> and imported some native R packages. These could immediately be accessed just like they were Python:</p>
+<div class="highlight"><pre><span></span><span class="n">stats</span> <span class="o">=</span> <span class="n">importr</span><span class="p">(</span><span class="s1">&#39;stats&#39;</span><span class="p">)</span>
+<span class="nb">tuple</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">rnorm</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
+</pre></div>
+
+
+<p>Laurent then showed off the even more important <code>rpy2.robjects.lib.dplyr</code> and <code>ggplot2</code>, allowing what looked like straight-up Python dplyr and ggplot code.</p>
+<div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">dplyr</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">table_join</span><span class="p">)</span>
+              <span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="s1">&#39;something&#39;</span><span class="p">)</span>
+              <span class="o">.</span><span class="n">summarize</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="s1">&#39;count(something_else)&#39;</span><span class="p">)</span>
+              <span class="o">.</span><span class="n">arrange</span><span class="p">(</span><span class="s1">&#39;desc(n)&#39;</span><span class="p">)</span>
+              <span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+
+<span class="n">display</span><span class="p">(</span><span class="n">image_png</span><span class="p">(</span>
+<span class="n">ggplot2</span><span class="o">.</span><span class="n">ggplot</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+       <span class="o">.</span><span class="n">geom_bar</span><span class="p">(</span><span class="n">gg</span><span class="o">.</span><span class="n">aes_string</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;factor(something, levels=as.character(something))&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;n&#39;</span><span class="p">),</span>
+                 <span class="n">stat</span><span class="o">=</span><span class="s1">&#39;identity&#39;</span><span class="p">)</span> <span class="o">+</span> 
+       <span class="n">ggplot2</span><span class="o">.</span><span class="n">scale_x_discrete</span><span class="p">(</span><span class="s1">&#39;something&#39;</span><span class="p">)</span>
+<span class="p">))</span> 
+</pre></div>
+
+
+<h2>Day One Sessions</h2>
+<h3>Keynotes</h3>
+<p><a href="https://twitter.com/fperez_org">Fernando Perez</a> and <a href="https://twitter.com/odewahn">Andrew Odewahn</a> opened the keynotes with, as mentioned previously, a humbleness and a collaborative open spirit that was admirable and infectious. Fernando talked about their new Data Science course at UCBerkeley taught entirely through Jupyter Notebooks in the (private) cloud, allowing them to avoid any student-related setup issues and opening the course to people from sixty different majors.  <a href="https://twitter.com/pwang">Peter Wang</a> talked about Anaconda's role and helped reinforce Fernando's worry about the health of Jupyter and its community in the future - talking about Continuum's experience as the OSS community around Python evolved and pointing out potential traps for the future, as Jupyter users went from forgiving early adopters to a broader user base.</p>
+<p>Rachel Thomas talked about her experience running <a href="http://www.fast.ai/">fast.ai's</a> <a href="http://course.fast.ai/">Deep Learning course</a> and how Jupyter helped enable the project, as well as the motivations behind it and some success stories from her students. <a href="https://twitter.com/wesmckinn">Wes McKinney</a> (of Pandas fame) talked about his efforts on <a href="https://arrow.apache.org/">Arrow</a> (language-agnostic data frames) and <a href="https://conferences.oreilly.com/jupyter/jup-ny/public/schedule/detail/62655">Demba Ba</a> discussed their JupyterHub-taught courses at Harvard.</p>
+<h3><a href="https://conferences.oreilly.com/jupyter/jup-ny/public/schedule/detail/63158">JupyterLab</a></h3>
+<p>Bryan Granger, Chris Colbert, and Ian Rose presented the latest progress on JupyterLab. Honestly, I'd never seen JupyterLab and was amazed by how promising it looks. They've managed to fully decouple model from view, allowing a single notebook to be opened to multiple locations and easily docking views in whichever configurations make the most sense. I was also impressed by their live Markdown previewer with the ability to attach a Kernel - letting you Shift+Enter on e.g. a Python cell and execute it in a console window. Finally they showed a collaborative editing scenario using Google Docs, which made me want to try and build a similar scenario using the Microsoft stack. It's looking like it'll be stable enough for users to start using it shortly, and ready for developers to start porting and writing new extensions by the end of the year.</p>
+<h3>Domain-Specific Notebook Extensions</h3>
+<p>I then watched talks on <a href="https://conferences.oreilly.com/jupyter/jup-ny/public/schedule/detail/59874">Graph/Network-based Notebooks</a> and <a href="https://conferences.oreilly.com/jupyter/jup-ny/public/schedule/detail/59861">Geo-based Notebooks</a>. Both extensions seemed fairly heavyweight and I'm not sure how they will work in the new JupyterLab world, but it was interesting to see these domain-specific adaptations. The Geo-notebook adaptation seemed more useful to me in practice as it included a GeoTile server; it seemed like the Graph extension could probably mostly be accomplished with the Gremlin extension and some creative D3 or Seaborn/GGPlot work.</p>
+<h2>Day Two Sessions</h2>
+<h3>Keynotes</h3>
+<p><a href="https://twitter.com/fperez_org">Fernando Perez</a> and <a href="https://twitter.com/odewahn">Andrew Odewahn</a> opened the keynotes today as well, and led quickly into a talk by <a href="https://twitter.com/thefreemanlab">Jeremy Freeman</a> from the <a href="https://chanzuckerberg.com/">Chan Zuckerberg Initiative</a>. He discussed how Jupyter was pivotal in the work they were doing, and how tools can help enable science to happen faster (a pivotal part of their mission), and the challenges ahead in making that happen. <a href="https://twitter.com/brettsky">Brett Cannon</a> hammered the point home with a talk that, in some respects, boiled down to the OSS version of the Wil Wheaton Rule.</p>
+<p><img alt="OSS Wheaton Rule" src="./images/oss_wheaton_rule.jpg"></p>
+<p><a href="https://twitter.com/LorenaABarba">Lorena Barba</a> had a great <a href="https://conferences.oreilly.com/jupyter/jup-ny/public/schedule/detail/60034">talk about reproducibility</a> and the tension between interactivity and reproducible results. I could say more, but honestly I'd just <a href="https://twitter.com/LorenaABarba/status/901204006768435200">recommend watching it</a>.</p>
+<h3><a href="https://conferences.oreilly.com/jupyter/jup-ny/public/schedule/detail/63159">Kernel Hacking and Following the Protocol</a></h3>
+<p>Paul Ivanov and Matthias Bussonnier had a really interesting talk on the Jupyter infrastructure and protocols. Paul's section on the interaction between the notebook and the kernel was eye-opening with a great sequence diagram that really laid out how they interact. I lost the train a bit, however, when he showed the underlying wire protocol. Matthias talked about the protocol and how Jupyter renders objects to the notebook, showing how easy it was to enable custom rendering. It is <em>shockingly</em> easy! That made me excited for being able to e.g. render DNN topologies in notebooks easily - we'll see how easy it is to do so in practice.</p>
+<h3><a href="https://conferences.oreilly.com/jupyter/jup-ny/public/schedule/detail/60109">Notebook Narratives</a></h3>
+<p><a href="https://twitter.com/SingingData">Patty Ryan</a>, <a href="https://twitter.com/lee_stott">Lee Stott</a> and <a href="https://twitter.com/noodlefrenzy">I</a> gave a talk outlining some of the varied work we've done within the CSE team that involved Jupyter Notebooks. Lee has done a ton of work with academia, enabling large-scale Jupyter deployments and helping people adopt <a href="https://notebooks.azure.com/">Azure Notebooks</a> - showing off their capability for displaying a "Profile" and letting you publish a set of libraries that outline your entire corpus of work. </p>
+<blockquote class="twitter-tweet" data-lang="en"><p lang="en" dir="ltr">The best part of co-presenting - no-one complains when you take a picture from the stage <a href="https://twitter.com/hashtag/JupyterCon?src=hash">#JupyterCon</a> w/ <a href="https://twitter.com/SingingData">@SingingData</a> and <a href="https://twitter.com/lee_stott">@lee_stott</a> <a href="https://t.co/sdno2WZq2Z">pic.twitter.com/sdno2WZq2Z</a></p>&mdash; Mike Lanzetta (@noodlefrenzy) <a href="https://twitter.com/noodlefrenzy/status/901153580442427392">August 25, 2017</a></blockquote>
+
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<p>Patty discussed her <a href="https://www.microsoft.com/developerblog/2017/08/07/developing-a-custom-search-engine-for-an-expert-system/">work with Ernst &amp; Young</a> enabling easy discovery of tax policies through a custom Azure Search deployment. She also went into some detail on an <a href="https://www.microsoft.com/developerblog/2017/06/29/iot-sports-sensor-machine-learning-helps-amateurs-up-their-game/">IoT scenario with the Professional Ski Instructors of America</a> for improving skiers performance by benchmarking them against professional skiers. I discussed a <a href="https://www.microsoft.com/developerblog/2017/07/31/using-object-detection-complex-image-classification-scenarios/">scenario using object detection</a> with Fast R-CNN for auditing inventory against vendor policies, enabling massive cost savings against the current painful manual process. Jupyter Notebooks are pivotal in these cases for quick iteration, documenting our assumptions and settings inline with the code, and being able to share these with both the partners and the world after our hackfest or short engagement is complete. Of course, all of our work is <a href="https://github.com/CatalystCode/JupyterCon2017">open source</a> and free (as in beer).</p>
+<h3><a href="https://conferences.oreilly.com/jupyter/jup-ny/public/schedule/detail/59995">Big In Japan</a></h3>
+<p>Yoshi Masatani gave a talk on the solution they've built out in the National Institute of Informatics that, honestly, was pretty mind-blowing. He was obviously struggling to speak English to such a large group and was incredibly soft-spoken (some mic issues didn't help), but the content of his talk was great. I'd say my two favorite take-aways were his "Enhanced Collapsible Headings" which allowed you to collapse notebook sections and run multiple blocks within them with a single click of a "play" button - this would lock successful cells (or <em>freeze</em> them) and mark failing cells as red, and his log summary/truncation functionality which would execute verbose commands and log all output to a file, rendering only the head/tail and errors to the notebook. He had a <em>lot</em> more in his talk, though, so I'd recommend watching it when it comes online.</p>
+<h3><a href="https://conferences.oreilly.com/jupyter/jup-ny/public/schedule/detail/60152">Azure Notebooks Evolved</a></h3>
+<p>Chris Wilcox from the Azure Notebooks team gave a great talk about how Azure Notebooks evolved from prototype to scalable system. I liked that he focused on the journey and their learnings in the process of going from a product team focused on Python and R Tools for Visual Studio to an online service. His insight on the increased impact of flaky tests as you went from a product ship schedule to a service ship schedule was something I hadn't considered before (I come from a services background so flaky tests were always anathema).</p>
+<h3><a href="https://conferences.oreilly.com/jupyter/jup-ny/public/schedule/detail/60038">Xeus, or My OMGWTFBBQ Moment</a></h3>
+<p>The final talk of the conference for me was perhaps the most mind-blowing and interesting, even if it's not directly relevant to my day-to-day work. Sylvain Corlay and Johan Mabile presented <a href="https://github.com/QuantStack/xeus">Xeus</a>, their simple C++ Jupyter Kernel base implementation, allowing people to easily implement their own custom kernels. This in an of itself is an achievement and should allow custom kernels to flourish, but wasn't the most mind-blowing part.</p>
+<p>They then gave a great demo of their first custom kernel implementation - a Jupyter Kernel wrapped around <a href="https://root.cern.ch/cling">Cling</a>. Cling is a C++ Interpreter built by the folks at CERN - obviously driven mad contemplating Quantum Chromo-Dynamics. Wrapping Cling in Xeus, they demo'd interpreted C++ inside the Jupyter Notebook showing off polymorphic inheritance and template specialization - quite impressive. They followed this up with a demo of their <a href="http://quantstack.net/xtensor">XTensor</a> library showing very Numpy-like code written in C++ and running inside Jupyter. It was awesome - in that it was both amazing and terrifying.</p>
+<p>They also gave me the quote of the conference: "C++ was never meant to be interpreted". So very true.</p>
+<h2>End Notes</h2>
+<p>I came into this conference a fan of Jupyter, but unaware of either its current power or its future direction. I left incredibly excited for the coming year, and looking forward to the next JupyterCon and the progress it will bring. Thanks Fernando et.al. for such a great tool and conference to go along with it!</p>
+<p><img alt="JupyterCon 2018" src="./images/jupytercon_2018.jpg"></p><p>There are <a href="http://www.mikelanzetta.com/jupytercon-2017.html#disqus_thread">comments</a>.</p>                </article>
+            </aside><!-- /#featured -->
+                <section id="content" class="body">
+                    <h1>Other articles</h1>
+                    <hr />
+                    <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://www.mikelanzetta.com/python-list-comprehensions-gone-crazy.html" rel="bookmark"
+                           title="Permalink to Python List Comprehensions Gone Crazy">Python List Comprehensions Gone Crazy</a></h1>
+                </header>
+
+                <div class="entry-content">
 <footer class="post-info">
         <abbr class="published" title="2016-01-27T15:48:00-08:00">
                 Published: Wed 27 January 2016
@@ -38,88 +130,13 @@
         </address>
 <p>In <a href="http://www.mikelanzetta.com/category/software.html">Software</a>.</p>
 <p>tags: <a href="http://www.mikelanzetta.com/tag/python.html">Python</a> </p>
-</footer><!-- /.post-info --><p>Recently, I was messing around with some image recognition tasks in
+</footer><!-- /.post-info -->                <p>Recently, I was messing around with some image recognition tasks in
 Python, and wanted to take a look at some of the images in my training
 set. At first, I was tempted to go open file explorer and walk around
-the directory tree spot-checking a few, but then I remembered that it
-was easy to display images in an <a href="http://ipython.org/">IPython</a> notebook
-using `IPython.display`.</p>
-<p>Perhaps I could write some code to walk the tree and show a few random
-images from each directory. Surely it couldn't be that hard. I wrote a
-simple method to do so:</p>
-<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Image</span>
-
-<span class="k">def</span> <span class="nf">select_rand</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">dirname</span><span class="p">,</span> <span class="n">filenames</span><span class="p">):</span>
-    <span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="nb">file</span> <span class="k">for</span> <span class="nb">file</span> <span class="ow">in</span> <span class="n">filenames</span> <span class="k">if</span> <span class="nb">file</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s1">&#39;.jpg&#39;</span><span class="p">,</span><span class="s1">&#39;.png&#39;</span><span class="p">))]</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Found &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39; files in &#39;</span> <span class="o">+</span> <span class="n">dirname</span><span class="p">)</span>
-        <span class="n">files</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">),</span> <span class="n">num</span><span class="p">))</span>
-        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
-            <span class="n">display</span><span class="p">(</span><span class="n">Image</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirname</span><span class="p">,</span> <span class="n">filename</span><span class="p">)))</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Found no files for &#39;</span> <span class="o">+</span> <span class="n">dirname</span><span class="p">)</span>
-
-<span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="n">select_rand</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-</pre></div>
-
-
-<p>Probably not the most efficient in the world, but it did exactly what I
-wanted. Of course, at this point I was basically procrastinating from
-what I was actually supposed to be doing, so decided to take it further.</p>
-<p>Could I reduce this whole shebang to a single list comprehension? Is
-this good programming? Nope, definitely not, but it's a fun way to test
-your understanding of a language, so let's do it.</p>
-<p>First, let's find a method that returns all of the files in a directory
-tree, walking the tree like `os.path.walk` but returning the results
-instead of visiting them - `os.walk` should do the trick. Why is
-`os.path.walk` a visitor pattern and `os.walk` a generator? No clue,
-let's move on.</p>
-<div class="highlight"><pre><span></span><span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">root_dir</span><span class="p">)]</span>
-</pre></div>
-
-
-<p>Second, we'll filter the files to images only:</p>
-<div class="highlight"><pre><span></span><span class="p">[</span><span class="n">img</span>
- <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">root_dir</span><span class="p">)</span>
- <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">if</span> <span class="n">img</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s1">&#39;.png&#39;</span><span class="p">,</span> <span class="s1">&#39;.jpg&#39;</span><span class="p">))]</span>
-</pre></div>
-
-
-<p>Now let's turn these into actual Image objects by replacing `img` with
-`Image(os.path.join(t[0], img))`. Okay, we now have Image objects for
-<em>all</em> images, but that's too many to display in our notebook. We should
-limit to three random ones from each directory:</p>
-<div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Image</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">img</span><span class="p">))</span>
- <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">root_dir</span><span class="p">)</span> 
- <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">([</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s1">&#39;.png&#39;</span><span class="p">,</span><span class="s1">&#39;.jpg&#39;</span><span class="p">))],</span> <span class="mi">3</span><span class="p">)]</span>
-</pre></div>
-
-
-<p>We replace our `t[2]` with a random sample based on an inner
-comprehension, and move our "is it an image" test into that
-comprehension. This, however, explodes in my example with</p>
-<div class="highlight"><pre><span></span><span class="n">ValueError</span><span class="o">:</span> <span class="n">sample</span> <span class="n">larger</span> <span class="n">than</span> <span class="n">population</span>
-</pre></div>
-
-
-<p>Boom! I apparently have some subdirectory in there with only one or two
-images. Rather than try for some even crazier nested inner lambda, I'll
-just define a simple specialization of `sample` that's protected
-against too few results, and replace `random.sample` with that. We
-then `map` each result to the `display` method to show it in the
-notebook:</p>
-<div class="highlight"><pre><span></span><span class="n">sample</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">l</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="n">l</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="k">else</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
-<span class="nb">map</span><span class="p">(</span><span class="n">display</span><span class="p">,</span> <span class="p">[</span><span class="n">Image</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">img</span><span class="p">))</span>
- <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">root_dir</span><span class="p">)</span> 
- <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">sample</span><span class="p">([</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s1">&#39;.png&#39;</span><span class="p">,</span><span class="s1">&#39;.jpg&#39;</span><span class="p">))],</span> <span class="mi">3</span><span class="p">)])</span>
-</pre></div><p>There are <a href="http://www.mikelanzetta.com/python-list-comprehensions-gone-crazy.html#disqus_thread">comments</a>.</p>                </article>
-            </aside><!-- /#featured -->
-                <section id="content" class="body">
-                    <h1>Other articles</h1>
-                    <hr />
-                    <ol id="posts-list" class="hfeed">
+the directory tree spot-checking a few, but then I remembered …</p>
+                <a class="readmore" href="http://www.mikelanzetta.com/python-list-comprehensions-gone-crazy.html">read more</a>
+<p>There are <a href="http://www.mikelanzetta.com/python-list-comprehensions-gone-crazy.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
 
             <li><article class="hentry">
                 <header>
